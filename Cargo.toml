@@ -2,6 +2,10 @@
 name = "zetanom"
 version = "0.1.0"
 edition = "2024"
+description = "A diet-tracking app."
+homepage = "https://github.com/eudoxia0/zetanom"
+repository = "https://github.com/eudoxia0/zetanom"
+categories = ["command-line-utilities"]
 
 [dependencies]
 axum = "0.8.6"
