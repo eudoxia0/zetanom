@@ -15,6 +15,9 @@
 use axum::Router;
 use axum::routing::get;
 use clap::Parser;
+use std::io::stdin;
+use std::io::stdout;
+use std::io::Write;
 
 const PORT: u16 = 12001;
 
@@ -37,7 +40,23 @@ async fn main() {
 }
 
 fn start_repl() -> () {
-    todo!()
+    loop {
+	print!("> ");
+	flush();
+	let l = readline();
+	println!("Echo: {l}");
+    }
+}
+
+fn flush() {
+    stdout().flush().unwrap();
+}
+
+fn readline() -> String {
+    let mut buf = String::new();
+    let stdin = stdin();
+    stdin.read_line(&mut buf).unwrap();
+    buf.trim().to_string()
 }
 
 async fn start_server() -> () {
