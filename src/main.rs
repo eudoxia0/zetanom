@@ -14,11 +14,33 @@
 
 use axum::Router;
 use axum::routing::get;
+use clap::Parser;
 
 const PORT: u16 = 12001;
 
+#[derive(Parser)]
+#[command(version, about, long_about = None)]
+enum Command {
+    /// Start an interactive REPL.
+    Repl,
+    /// Start a server.
+    Serve,
+}
+
 #[tokio::main]
 async fn main() {
+    let c: Command = Command::parse();
+    match c {
+        Command::Repl => start_repl(),
+        Command::Serve => start_server().await,
+    };
+}
+
+fn start_repl() -> () {
+    todo!()
+}
+
+async fn start_server() -> () {
     let app = Router::new().route("/", get(|| async { "Hello, World!" }));
     let bind = format!("0.0.0.0:{PORT}");
     println!("Started server on {bind}.");
