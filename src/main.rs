@@ -12,23 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use axum::Router;
-use axum::routing::get;
+mod cli;
+
 use clap::Parser;
-use std::io::stdin;
-use std::io::stdout;
-use std::io::Write;
-
-const PORT: u16 = 12001;
-
-#[derive(Parser)]
-#[command(version, about, long_about = None)]
-enum Command {
-    /// Start an interactive REPL.
-    Repl,
-    /// Start a server.
-    Serve,
-}
+use cli::Command;
+use cli::start_repl;
+use cli::start_server;
 
 #[tokio::main]
 async fn main() {
@@ -37,32 +26,4 @@ async fn main() {
         Command::Repl => start_repl(),
         Command::Serve => start_server().await,
     };
-}
-
-fn start_repl() -> () {
-    loop {
-	print!("> ");
-	flush();
-	let l = readline();
-	println!("Echo: {l}");
-    }
-}
-
-fn flush() {
-    stdout().flush().unwrap();
-}
-
-fn readline() -> String {
-    let mut buf = String::new();
-    let stdin = stdin();
-    stdin.read_line(&mut buf).unwrap();
-    buf.trim().to_string()
-}
-
-async fn start_server() -> () {
-    let app = Router::new().route("/", get(|| async { "Hello, World!" }));
-    let bind = format!("0.0.0.0:{PORT}");
-    println!("Started server on {bind}.");
-    let listener = tokio::net::TcpListener::bind(bind).await.unwrap();
-    axum::serve(listener, app).await.unwrap();
 }
