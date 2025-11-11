@@ -12,21 +12,4 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod cli;
-mod db;
-mod repl;
-mod www;
-
-use clap::Parser;
-use cli::Command;
-use repl::start_repl;
-use www::start_server;
-
-#[tokio::main]
-async fn main() {
-    let c: Command = Command::parse();
-    match c {
-        Command::Repl => start_repl(),
-        Command::Serve => start_server().await,
-    };
-}
+pub struct Db {}
