@@ -12,20 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod cli;
-mod www;
-mod repl;
+use std::io::Write;
+use std::io::stdin;
+use std::io::stdout;
 
-use clap::Parser;
-use cli::Command;
-use repl::start_repl;
-use www::start_server;
+pub fn start_repl() -> () {
+    loop {
+        print!("> ");
+        flush();
+        let l = readline();
+        println!("Echo: {l}");
+    }
+}
 
-#[tokio::main]
-async fn main() {
-    let c: Command = Command::parse();
-    match c {
-        Command::Repl => start_repl(),
-        Command::Serve => start_server().await,
-    };
+fn flush() {
+    stdout().flush().unwrap();
+}
+
+fn readline() -> String {
+    let mut buf = String::new();
+    let stdin = stdin();
+    stdin.read_line(&mut buf).unwrap();
+    buf.trim().to_string()
 }

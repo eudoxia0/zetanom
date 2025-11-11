@@ -12,20 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod cli;
-mod www;
-mod repl;
+use axum::Router;
+use axum::routing::get;
 
-use clap::Parser;
-use cli::Command;
-use repl::start_repl;
-use www::start_server;
+const PORT: u16 = 12001;
 
-#[tokio::main]
-async fn main() {
-    let c: Command = Command::parse();
-    match c {
-        Command::Repl => start_repl(),
-        Command::Serve => start_server().await,
-    };
+pub async fn start_server() -> () {
+    let app = Router::new().route("/", get(|| async { "Hello, World!" }));
+    let bind = format!("0.0.0.0:{PORT}");
+    println!("Started server on {bind}.");
+    let listener = tokio::net::TcpListener::bind(bind).await.unwrap();
+    axum::serve(listener, app).await.unwrap();
 }
