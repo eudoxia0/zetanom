@@ -12,4 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-pub struct Db {}
+use rusqlite::Connection;
+use rusqlite::config::DbConfig;
+
+use crate::error::Fallible;
+
+pub struct Db {
+    conn: Connection,
+}
+
+impl Db {
+    pub fn new(path: &str) -> Fallible<Self> {
+        let mut conn = Connection::open(path)?;
+        conn.set_db_config(DbConfig::SQLITE_DBCONFIG_ENABLE_FKEY, true)?;
+        Ok(Self { conn })
+    }
+}

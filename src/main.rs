@@ -14,6 +14,7 @@
 
 mod cli;
 mod db;
+mod error;
 mod repl;
 mod www;
 
