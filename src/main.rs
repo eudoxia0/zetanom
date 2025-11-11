@@ -13,8 +13,8 @@
 // limitations under the License.
 
 mod cli;
-mod www;
 mod repl;
+mod www;
 
 use clap::Parser;
 use cli::Command;
