@@ -1,5 +1,7 @@
 # zetanom
 
+[![test](https://github.com/eudoxia0/zetanom/actions/workflows/test.yaml/badge.svg)](https://github.com/eudoxia0/zetanom/actions/workflows/test.yaml)
+
 A diet-tracking app.
 
 ## License
