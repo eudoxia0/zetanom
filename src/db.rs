@@ -22,9 +22,12 @@ pub struct Db {
 }
 
 impl Db {
-    pub fn new(path: &str) -> Fallible<Self> {
-        let mut conn = Connection::open(path)?;
+    pub fn new() -> Fallible<Self> {
+        let mut conn = Connection::open_in_memory()?;
         conn.set_db_config(DbConfig::SQLITE_DBCONFIG_ENABLE_FKEY, true)?;
+        let tx = conn.transaction()?;
+        tx.execute_batch(include_str!("schema.sql"))?;
+        tx.commit()?;
         Ok(Self { conn })
     }
 }

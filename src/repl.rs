@@ -16,7 +16,10 @@ use std::io::Write;
 use std::io::stdin;
 use std::io::stdout;
 
+use crate::db::Db;
+
 pub fn start_repl() -> () {
+    let db = Db::new();
     loop {
         print!("> ");
         flush();
