@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 11px;
+    margin: 20px;
+    background: #f0f0f0;
+}
+.header {
+    background: #003366;
+    color: white;
+    padding: 8px 12px;
+    margin-bottom: 2px;
+    font-weight: bold;
+}
+.subheader {
+    background: #336699;
+    color: white;
+    padding: 5px 12px;
+    font-size: 10px;
+    margin-bottom: 10px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    margin-bottom: 15px;
+    border: 1px solid #999;
+}
+th {
+    background: #cccccc;
+    padding: 4px 8px;
+    text-align: left;
+    border: 1px solid #999;
+    font-size: 10px;
+    font-weight: bold;
+}
+td {
+    padding: 4px 8px;
+    border: 1px solid #ddd;
+}
+.numeric {
+    text-align: right;
+}
+.totals-table {
+    width: 400px;
+}
+.totals-table td {
+    background: #e8e8e8;
+}
+.over-limit {
+    color: #cc0000;
+    font-weight: bold;
+}
+.button-bar {
+    margin-bottom: 15px;
+}
+button {
+    background: #f0f0f0;
+    border: 1px solid #999;
+    padding: 4px 12px;
+    font-size: 10px;
+    cursor: pointer;
+}
+button:hover {
+    background: #e0e0e0;
+}
+input[type="text"] {
+    border: 1px solid #999;
+    padding: 3px;
+    font-size: 11px;
+    width: 300px;
+}
+</style>
+</head>
+<body>
+
+<div class="header">DIET TRACKER - DAILY LOG</div>
+<div class="subheader">Saturday, 08 November 2025</div>
+
+<div class="button-bar">
+    <button>← Previous Day</button>
+    <button>Today</button>
+    <button>Next Day →</button>
+    <span style="margin-left: 20px;">
+        <input type="text" placeholder="Search food to add...">
+        <button>Add</button>
+    </span>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Time</th>
+            <th>Food</th>
+            <th>Brand</th>
+            <th>Amount</th>
+            <th class="numeric">Energy (kcal)</th>
+            <th class="numeric">Protein (g)</th>
+            <th class="numeric">Fat (g)</th>
+            <th class="numeric">Sat Fat (g)</th>
+            <th class="numeric">Carbs (g)</th>
+            <th class="numeric">Fiber (g)</th>
+            <th class="numeric">Sodium (mg)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>08:30</td>
+            <td>Rolled Oats</td>
+            <td>—</td>
+            <td>50g</td>
+            <td class="numeric">185</td>
+            <td class="numeric">6.5</td>
+            <td class="numeric">3.5</td>
+            <td class="numeric">0.6</td>
+            <td class="numeric">28.0</td>
+            <td class="numeric">5.0</td>
+            <td class="numeric">2</td>
+            <td><button>Edit</button> <button>Delete</button></td>
+        </tr>
+        <tr>
+            <td>08:35</td>
+            <td>Full Cream Milk</td>
+            <td>Dairy Farmers</td>
+            <td>200ml</td>
+            <td class="numeric">132</td>
+            <td class="numeric">6.8</td>
+            <td class="numeric">7.2</td>
+            <td class="numeric">4.8</td>
+            <td class="numeric">9.8</td>
+            <td class="numeric">0.0</td>
+            <td class="numeric">90</td>
+            <td><button>Edit</button> <button>Delete</button></td>
+        </tr>
+        <tr>
+            <td>13:15</td>
+            <td>Chicken Breast</td>
+            <td>—</td>
+            <td>180g</td>
+            <td class="numeric">297</td>
+            <td class="numeric">62.3</td>
+            <td class="numeric">6.5</td>
+            <td class="numeric">1.4</td>
+            <td class="numeric">0.0</td>
+            <td class="numeric">0.0</td>
+            <td class="numeric">144</td>
+            <td><button>Edit</button> <button>Delete</button></td>
+        </tr>
+        <tr>
+            <td>13:20</td>
+            <td>White Rice</td>
+            <td>—</td>
+            <td>150g</td>
+            <td class="numeric">195</td>
+            <td class="numeric">3.5</td>
+            <td class="numeric">0.5</td>
+            <td class="numeric">0.1</td>
+            <td class="numeric">42.5</td>
+            <td class="numeric">0.6</td>
+            <td class="numeric">3</td>
+            <td><button>Edit</button> <button>Delete</button></td>
+        </tr>
+        <tr>
+            <td>19:45</td>
+            <td>Tikka Masala</td>
+            <td>Trader Joe's</td>
+            <td>1 package (340g)</td>
+            <td class="numeric">408</td>
+            <td class="numeric">17.7</td>
+            <td class="numeric">20.4</td>
+            <td class="numeric">10.2</td>
+            <td class="numeric">37.4</td>
+            <td class="numeric">3.4</td>
+            <td class="numeric">884</td>
+            <td><button>Edit</button> <button>Delete</button></td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="header">DAILY TOTALS</div>
+<table class="totals-table">
+    <tr>
+        <td><strong>Energy</strong></td>
+        <td class="numeric">1,217 kcal</td>
+        <td class="numeric" style="font-size: 9px; color: #666;">Target: 2,000</td>
+    </tr>
+    <tr>
+        <td><strong>Protein</strong></td>
+        <td class="numeric">96.8 g</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><strong>Fat</strong></td>
+        <td class="numeric">38.1 g</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><strong>Saturated Fat</strong></td>
+        <td class="numeric class="over-limit"">17.1 g</td>
+        <td class="numeric" style="font-size: 9px; color: #666;">Limit: 15g</td>
+    </tr>
+    <tr>
+        <td><strong>Carbohydrate</strong></td>
+        <td class="numeric">117.7 g</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><strong>Fiber</strong></td>
+        <td class="numeric">9.0 g</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><strong>Sodium</strong></td>
+        <td class="numeric" class="over-limit">1,123 mg</td>
+        <td class="numeric" style="font-size: 9px; color: #666;">Limit: 2,300mg</td>
+    </tr>
+</table>
+
+</body>
+</html>

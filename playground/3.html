@@ -1,0 +1,196 @@
+<!doctype html>
+<html>
+    <head>
+        <style>
+            body {
+                font-family: Verdana, Arial, sans-serif;
+                font-size: 11px;
+                margin: 20px;
+                background: #f0f0f0;
+            }
+            .header {
+                background: #003366;
+                color: white;
+                padding: 8px 12px;
+                margin-bottom: 2px;
+                font-weight: bold;
+            }
+            .subheader {
+                background: #336699;
+                color: white;
+                padding: 5px 12px;
+                font-size: 10px;
+                margin-bottom: 15px;
+            }
+            .section {
+                background: white;
+                border: 1px solid #999;
+                margin-bottom: 15px;
+                padding: 0;
+            }
+            .section-title {
+                background: #cccccc;
+                padding: 4px 8px;
+                font-weight: bold;
+                border-bottom: 1px solid #999;
+            }
+            .section-content {
+                padding: 10px;
+            }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+            td {
+                padding: 3px 8px;
+                border-bottom: 1px solid #eee;
+            }
+            .label {
+                width: 200px;
+                font-weight: bold;
+                color: #333;
+            }
+            .value {
+                color: #000;
+            }
+            .button-bar {
+                margin-bottom: 15px;
+            }
+            button {
+                background: #f0f0f0;
+                border: 1px solid #999;
+                padding: 4px 12px;
+                font-size: 10px;
+                cursor: pointer;
+                margin-right: 5px;
+            }
+            button:hover {
+                background: #e0e0e0;
+            }
+            .metadata {
+                color: #666;
+                font-size: 9px;
+                margin-top: 10px;
+                padding-top: 10px;
+                border-top: 1px solid #ddd;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">FOOD DATABASE - RECORD VIEW</div>
+        <div class="subheader">
+            Food ID: 00042 | Created: 2025-11-03 14:22:18
+        </div>
+
+        <div class="button-bar">
+            <button>← Back to List</button>
+            <button>Edit</button>
+            <button>Delete</button>
+            <button>Clone</button>
+        </div>
+
+        <div class="section">
+            <div class="section-title">IDENTIFICATION</div>
+            <div class="section-content">
+                <table>
+                    <tr>
+                        <td class="label">Food Name:</td>
+                        <td class="value">Tikka Masala</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Brand:</td>
+                        <td class="value">Trader Joe's</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Base Unit:</td>
+                        <td class="value">g (grams)</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">NUTRITION INFORMATION (per 100g)</div>
+            <div class="section-content">
+                <table>
+                    <tr>
+                        <td class="label">Energy:</td>
+                        <td class="value">120 kcal</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Protein:</td>
+                        <td class="value">5.2 g</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Fat (Total):</td>
+                        <td class="value">6.0 g</td>
+                    </tr>
+                    <tr>
+                        <td class="label">— Saturated Fat:</td>
+                        <td class="value">3.0 g</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Carbohydrate (Available):</td>
+                        <td class="value">11.0 g</td>
+                    </tr>
+                    <tr>
+                        <td class="label">— Sugars:</td>
+                        <td class="value">2.8 g</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Dietary Fiber:</td>
+                        <td class="value">1.0 g</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Sodium:</td>
+                        <td class="value">260 mg</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">CUSTOM SERVING SIZES</div>
+            <div class="section-content">
+                <table>
+                    <tr>
+                        <td class="label">1 package =</td>
+                        <td class="value">340 g</td>
+                    </tr>
+                    <tr>
+                        <td class="label">1 serving =</td>
+                        <td class="value">170 g</td>
+                    </tr>
+                </table>
+                <div style="margin-top: 10px">
+                    <button>+ Add Custom Serving</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">USAGE STATISTICS</div>
+            <div class="section-content">
+                <table>
+                    <tr>
+                        <td class="label">Times Logged:</td>
+                        <td class="value">7</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Last Logged:</td>
+                        <td class="value">2025-11-08 19:45</td>
+                    </tr>
+                    <tr>
+                        <td class="label">First Logged:</td>
+                        <td class="value">2025-10-15 20:10</td>
+                    </tr>
+                </table>
+
+                <div class="metadata">
+                    Record created: 2025-11-03 14:22:18 | Last modified:
+                    2025-11-05 09:14:02
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
