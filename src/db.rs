@@ -30,4 +30,11 @@ impl Db {
         tx.commit()?;
         Ok(Self { conn })
     }
+
+    /// Return the total number of foods in the library.
+    pub fn count_foods(&self) -> Fallible<usize> {
+        let sql = "select count(*) from foods;";
+        let count: i64 = self.conn.query_row(sql, [], |row| row.get(0))?;
+        Ok(count as usize)
+    }
 }

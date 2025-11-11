@@ -17,15 +17,29 @@ use std::io::stdin;
 use std::io::stdout;
 
 use crate::db::Db;
+use crate::error::Fallible;
 
-pub fn start_repl() -> () {
-    let db = Db::new();
+pub fn start_repl() -> Fallible<()> {
+    let db = Db::new()?;
     loop {
         print!("> ");
         flush();
         let l = readline();
-        println!("Echo: {l}");
+        match l.as_ref() {
+            "count" => {
+                let c = db.count_foods()?;
+                println!("The library has {c} foods.");
+            }
+            "q" => {
+                println!("Bye!");
+                break;
+            }
+            _ => {
+                println!("Unknown command.");
+            }
+        }
     }
+    Ok(())
 }
 
 fn flush() {

@@ -15,12 +15,15 @@
 use axum::Router;
 use axum::routing::get;
 
+use crate::error::Fallible;
+
 const PORT: u16 = 12001;
 
-pub async fn start_server() -> () {
+pub async fn start_server() -> Fallible<()> {
     let app = Router::new().route("/", get(|| async { "Hello, World!" }));
     let bind = format!("0.0.0.0:{PORT}");
     println!("Started server on {bind}.");
     let listener = tokio::net::TcpListener::bind(bind).await.unwrap();
     axum::serve(listener, app).await.unwrap();
+    Ok(())
 }

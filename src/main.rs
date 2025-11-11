@@ -18,16 +18,25 @@ mod error;
 mod repl;
 mod www;
 
+use std::process::ExitCode;
+
 use clap::Parser;
 use cli::Command;
 use repl::start_repl;
 use www::start_server;
 
 #[tokio::main]
-async fn main() {
+async fn main() -> ExitCode {
     let c: Command = Command::parse();
-    match c {
+    let res = match c {
         Command::Repl => start_repl(),
         Command::Serve => start_server().await,
     };
+    match res {
+        Ok(_) => ExitCode::SUCCESS,
+        Err(e) => {
+            eprintln!("zetanom: {e}");
+            ExitCode::FAILURE
+        }
+    }
 }
