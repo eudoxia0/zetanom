@@ -45,18 +45,18 @@ async fn index_handler() -> (StatusCode, Html<String>) {
         "Hello, world!"
     }
     };
-    let html = page(body);
+    let html = page("zetanom", body);
     (StatusCode::OK, Html(html.into_string()))
 }
 
-pub fn page(body: Markup) -> Markup {
+pub fn page(title: &str, body: Markup) -> Markup {
     html! {
         (DOCTYPE)
         html lang="en" {
             head {
                 meta charset="utf-8";
                 meta name="viewport" content="width=device-width, initial-scale=1";
-                title { "zetanom" }
+                title { (title) }
             }
             body {
                 (body)
