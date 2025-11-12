@@ -13,7 +13,12 @@
 // limitations under the License.
 
 use axum::Router;
+use axum::http::StatusCode;
+use axum::response::Html;
 use axum::routing::get;
+use maud::DOCTYPE;
+use maud::Markup;
+use maud::html;
 
 use crate::error::Fallible;
 
@@ -34,6 +39,28 @@ fn make_app() -> Router<()> {
     app
 }
 
-async fn index_handler() -> &'static str {
-    "Hello, world!"
+async fn index_handler() -> (StatusCode, Html<String>) {
+    let body = html! {
+    p {
+        "Hello, world!"
+    }
+    };
+    let html = page(body);
+    (StatusCode::OK, Html(html.into_string()))
+}
+
+pub fn page(body: Markup) -> Markup {
+    html! {
+        (DOCTYPE)
+        html lang="en" {
+            head {
+                meta charset="utf-8";
+                meta name="viewport" content="width=device-width, initial-scale=1";
+                title { "zetanom" }
+            }
+            body {
+                (body)
+            }
+        }
+    }
 }
