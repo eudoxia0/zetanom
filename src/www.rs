@@ -60,7 +60,27 @@ pub fn page(title: &str, body: Markup) -> Markup {
                 title { (title) }
             }
             body {
-                (body)
+		div.Root {
+		    div.LeftPane {
+			nav {
+			    ul {
+				li {
+				    a {
+					"Tracker"
+				    }
+				}
+				li {
+				    a {
+					"Library"
+				    }
+				}
+			    }
+			}
+		    }
+		    div.ContentPane {
+			(body)
+		    }
+		}
             }
         }
     }
