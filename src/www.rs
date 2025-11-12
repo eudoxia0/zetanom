@@ -19,16 +19,17 @@ use axum::routing::get;
 use maud::DOCTYPE;
 use maud::Markup;
 use maud::html;
+use tokio::net::TcpListener;
 
 use crate::error::Fallible;
 
 const PORT: u16 = 12001;
 
 pub async fn start_server() -> Fallible<()> {
-    let app = make_app();
-    let bind = format!("0.0.0.0:{PORT}");
+    let app: Router<()> = make_app();
+    let bind: String = format!("0.0.0.0:{PORT}");
     println!("Started server on {bind}.");
-    let listener = tokio::net::TcpListener::bind(bind).await.unwrap();
+    let listener: TcpListener = TcpListener::bind(bind).await.unwrap();
     axum::serve(listener, app).await.unwrap();
     Ok(())
 }
@@ -40,12 +41,12 @@ fn make_app() -> Router<()> {
 }
 
 async fn index_handler() -> (StatusCode, Html<String>) {
-    let body = html! {
+    let body: Markup = html! {
 	p {
             "Hello, world!"
 	}
     };
-    let html = page("zetanom", body);
+    let html: Markup = page("zetanom", body);
     (StatusCode::OK, Html(html.into_string()))
 }
 
