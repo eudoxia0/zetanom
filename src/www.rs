@@ -20,10 +20,20 @@ use crate::error::Fallible;
 const PORT: u16 = 12001;
 
 pub async fn start_server() -> Fallible<()> {
-    let app = Router::new().route("/", get(|| async { "Hello, World!" }));
+    let app = make_app();
     let bind = format!("0.0.0.0:{PORT}");
     println!("Started server on {bind}.");
     let listener = tokio::net::TcpListener::bind(bind).await.unwrap();
     axum::serve(listener, app).await.unwrap();
     Ok(())
+}
+
+fn make_app() -> Router<()> {
+    let app = Router::new();
+    let app = app.route("/", get(index_handler));
+    app
+}
+
+async fn index_handler() -> &'static str {
+    "Hello, world!"
 }
