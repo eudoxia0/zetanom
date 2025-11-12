@@ -22,6 +22,7 @@ use maud::html;
 use tokio::net::TcpListener;
 
 use crate::error::Fallible;
+use crate::ui::page;
 
 const PORT: u16 = 12001;
 
@@ -42,46 +43,10 @@ fn make_app() -> Router<()> {
 
 async fn index_handler() -> (StatusCode, Html<String>) {
     let body: Markup = html! {
-	p {
+        p {
             "Hello, world!"
-	}
+        }
     };
     let html: Markup = page("zetanom", body);
     (StatusCode::OK, Html(html.into_string()))
-}
-
-pub fn page(title: &str, body: Markup) -> Markup {
-    html! {
-        (DOCTYPE)
-        html lang="en" {
-	    head {
-                meta charset="utf-8";
-                meta name="viewport" content="width=device-width, initial-scale=1";
-                title { (title) }
-	    }
-	    body {
-		div .Root {
-		    div.LeftPane {
-			nav {
-			    ul {
-				li {
-				    a {
-					"Tracker"
-				    }
-				}
-				li {
-				    a {
-					"Library"
-				    }
-				}
-			    }
-			}
-		    }
-		    div.ContentPane {
-			(body)
-		    }
-		}
-	    }
-        }
-    }
 }

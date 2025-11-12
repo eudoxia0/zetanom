@@ -16,6 +16,7 @@ mod cli;
 mod db;
 mod error;
 mod repl;
+mod ui;
 mod www;
 
 use std::process::ExitCode;
