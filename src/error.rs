@@ -50,3 +50,11 @@ impl From<rusqlite::Error> for AppError {
         }
     }
 }
+
+impl From<std::io::Error> for AppError {
+    fn from(value: std::io::Error) -> Self {
+        AppError {
+            message: format!("I/O error: {value:#?}"),
+        }
+    }
+}
