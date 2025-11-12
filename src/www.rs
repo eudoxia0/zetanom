@@ -16,7 +16,6 @@ use axum::Router;
 use axum::http::StatusCode;
 use axum::response::Html;
 use axum::routing::get;
-use maud::DOCTYPE;
 use maud::Markup;
 use maud::html;
 use tokio::net::TcpListener;
