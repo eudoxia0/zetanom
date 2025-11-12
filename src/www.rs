@@ -29,7 +29,7 @@ pub async fn start_server() -> Fallible<()> {
     let app: Router<()> = make_app();
     let bind: String = format!("0.0.0.0:{PORT}");
     println!("Started server on {bind}.");
-    let listener: TcpListener = TcpListener::bind(bind).await.unwrap();
+    let listener: TcpListener = TcpListener::bind(bind).await?;
     axum::serve(listener, app).await?;
     Ok(())
 }
@@ -42,9 +42,9 @@ fn make_app() -> Router<()> {
 
 async fn index_handler() -> (StatusCode, Html<String>) {
     let body: Markup = html! {
-	p {
+    p {
             "Hello, world!"
-	}
+    }
     };
     let html: Markup = page("zetanom", body);
     (StatusCode::OK, Html(html.into_string()))
