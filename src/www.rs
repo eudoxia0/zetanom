@@ -30,7 +30,7 @@ pub async fn start_server() -> Fallible<()> {
     let bind: String = format!("0.0.0.0:{PORT}");
     println!("Started server on {bind}.");
     let listener: TcpListener = TcpListener::bind(bind).await.unwrap();
-    axum::serve(listener, app).await.unwrap();
+    axum::serve(listener, app).await?;
     Ok(())
 }
 
