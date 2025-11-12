@@ -42,9 +42,9 @@ fn make_app() -> Router<()> {
 
 async fn index_handler() -> (StatusCode, Html<String>) {
     let body: Markup = html! {
-    p {
+	p {
             "Hello, world!"
-    }
+	}
     };
     let html: Markup = page("zetanom", body);
     (StatusCode::OK, Html(html.into_string()))
