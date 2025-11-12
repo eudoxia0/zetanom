@@ -12,19 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod cli;
-mod db;
-mod error;
-mod repl;
-mod ui;
-mod www;
-
+use core::cli::Command;
+use core::repl::start_repl;
+use core::www::start_server;
 use std::process::ExitCode;
 
 use clap::Parser;
-use cli::Command;
-use repl::start_repl;
-use www::start_server;
 
 #[tokio::main]
 async fn main() -> ExitCode {

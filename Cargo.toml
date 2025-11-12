@@ -1,14 +1,15 @@
-[package]
-name = "zetanom"
-version = "0.1.0"
-edition = "2024"
-description = "A diet-tracking app."
-homepage = "https://github.com/eudoxia0/zetanom"
-repository = "https://github.com/eudoxia0/zetanom"
-license = "Apache-2.0"
-categories = ["command-line-utilities"]
+[workspace]
+resolver = "3"
+members = ["crates/*"]
 
-[dependencies]
+[workspace.package]
+edition = "2024"
+license = "Apache-2.0"
+
+[workspace.dependencies]
+# local
+core = { path = "./crates/core" }
+# external
 axum = "0.8.6"
 clap = { version = "4.5.51", features = ["derive"] }
 maud = "0.27.0"
