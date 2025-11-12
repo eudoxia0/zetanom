@@ -23,8 +23,8 @@ pub fn start_repl() -> Fallible<()> {
     let db = Db::new()?;
     loop {
         print!("> ");
-        flush();
-        let l = readline();
+        flush()?;
+        let l = readline()?;
         match l.as_ref() {
             "count" => {
                 let c = db.count_foods()?;
@@ -42,13 +42,14 @@ pub fn start_repl() -> Fallible<()> {
     Ok(())
 }
 
-fn flush() {
-    stdout().flush().unwrap();
+fn flush() -> Fallible<()> {
+    stdout().flush()?;
+    Ok(())
 }
 
-fn readline() -> String {
+fn readline() -> Fallible<String> {
     let mut buf = String::new();
     let stdin = stdin();
-    stdin.read_line(&mut buf).unwrap();
-    buf.trim().to_string()
+    stdin.read_line(&mut buf)?;
+    Ok(buf.trim().to_string())
 }
