@@ -9,4 +9,3 @@ axum.workspace = true
 tokio.workspace = true
 maud.workspace = true
 rusqlite.workspace = true
-clap.workspace = true

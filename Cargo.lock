@@ -183,7 +183,6 @@ name = "core"
 version = "0.0.0"
 dependencies = [
  "axum",
- "clap",
  "maud",
  "rusqlite",
  "tokio",

@@ -12,12 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use core::cli::Command;
 use core::repl::start_repl;
 use core::www::start_server;
 use std::process::ExitCode;
 
 use clap::Parser;
+
+#[derive(Parser)]
+#[command(version, about, long_about = None)]
+enum Command {
+    /// Start an interactive REPL.
+    Repl,
+    /// Start a server.
+    Serve,
+}
 
 #[tokio::main]
 async fn main() -> ExitCode {
