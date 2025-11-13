@@ -6,7 +6,4 @@ license.workspace = true
 
 [dependencies]
 error.workspace = true
-axum.workspace = true
-tokio.workspace = true
-maud.workspace = true
 rusqlite.workspace = true
