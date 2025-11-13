@@ -36,8 +36,7 @@ pub async fn start_server() -> Fallible<()> {
 
 fn make_app() -> Router<()> {
     let app = Router::new();
-    let app = app.route("/", get(index_handler));
-    app
+    app.route("/", get(index_handler))
 }
 
 async fn index_handler() -> (StatusCode, Html<String>) {
