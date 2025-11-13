@@ -13,7 +13,10 @@
 // limitations under the License.
 
 use axum::Router;
+use axum::http::HeaderName;
 use axum::http::StatusCode;
+use axum::http::header::CACHE_CONTROL;
+use axum::http::header::CONTENT_TYPE;
 use axum::response::Html;
 use axum::routing::get;
 use error::Fallible;
@@ -36,7 +39,8 @@ pub async fn start_server() -> Fallible<()> {
 
 fn make_app() -> Router<()> {
     let app = Router::new();
-    app.route("/", get(index_handler))
+    let app = app.route("/", get(index_handler));
+    app.route("/static/style.css", get(css_handler))
 }
 
 async fn index_handler() -> (StatusCode, Html<String>) {
@@ -47,4 +51,13 @@ async fn index_handler() -> (StatusCode, Html<String>) {
     };
     let html: Markup = page("zetanom", body);
     (StatusCode::OK, Html(html.into_string()))
+}
+
+async fn css_handler() -> (StatusCode, [(HeaderName, &'static str); 2], &'static [u8]) {
+    let bytes = include_bytes!("style.css");
+    (
+        StatusCode::OK,
+        [(CONTENT_TYPE, "text/css"), (CACHE_CONTROL, "no-cache")],
+        bytes,
+    )
 }
