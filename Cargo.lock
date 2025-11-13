@@ -182,21 +182,15 @@ checksum = "b05b61dc5112cbb17e4b6cd61790d9845d13888356391624cbe7e41efeac1e75"
 name = "db"
 version = "0.0.0"
 dependencies = [
- "axum",
  "error",
- "maud",
  "rusqlite",
- "tokio",
 ]
 
 [[package]]
 name = "error"
 version = "0.0.0"
 dependencies = [
- "axum",
- "maud",
  "rusqlite",
- "tokio",
 ]
 
 [[package]]
@@ -865,7 +859,6 @@ name = "www"
 version = "0.0.0"
 dependencies = [
  "axum",
- "db",
  "error",
  "maud",
  "tokio",
