@@ -16,8 +16,9 @@ use std::io::Write;
 use std::io::stdin;
 use std::io::stdout;
 
+use error::Fallible;
+
 use crate::db::Db;
-use crate::error::Fallible;
 
 pub fn start_repl() -> Fallible<()> {
     let db = Db::new()?;

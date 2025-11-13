@@ -183,6 +183,17 @@ name = "core"
 version = "0.0.0"
 dependencies = [
  "axum",
+ "error",
+ "maud",
+ "rusqlite",
+ "tokio",
+]
+
+[[package]]
+name = "error"
+version = "0.0.0"
+dependencies = [
+ "axum",
  "maud",
  "rusqlite",
  "tokio",

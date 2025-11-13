@@ -13,7 +13,6 @@
 // limitations under the License.
 
 pub mod db;
-pub mod error;
 pub mod repl;
 pub mod ui;
 pub mod www;

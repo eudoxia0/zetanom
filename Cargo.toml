@@ -8,6 +8,7 @@ license = "Apache-2.0"
 
 [workspace.dependencies]
 # local
+error = { path = "./crates/error" }
 core = { path = "./crates/core" }
 # external
 axum = "0.8.6"

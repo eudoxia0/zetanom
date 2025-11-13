@@ -16,11 +16,11 @@ use axum::Router;
 use axum::http::StatusCode;
 use axum::response::Html;
 use axum::routing::get;
+use error::Fallible;
 use maud::Markup;
 use maud::html;
 use tokio::net::TcpListener;
 
-use crate::error::Fallible;
 use crate::ui::page;
 
 const PORT: u16 = 12001;
