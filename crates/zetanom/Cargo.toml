@@ -10,6 +10,7 @@ repository = "https://github.com/eudoxia0/zetanom"
 categories = ["command-line-utilities"]
 
 [dependencies]
-core.workspace = true
+repl.workspace = true
+www.workspace = true
 tokio.workspace = true
 clap.workspace = true

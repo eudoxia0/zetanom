@@ -12,6 +12,5 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-pub mod repl;
-pub mod ui;
+mod ui;
 pub mod www;

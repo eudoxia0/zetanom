@@ -9,8 +9,9 @@ license = "Apache-2.0"
 [workspace.dependencies]
 # local
 error = { path = "./crates/error" }
-core = { path = "./crates/core" }
 db = { path = "./crates/db" }
+repl = { path = "./crates/repl" }
+www = { path = "./crates/www" }
 # external
 axum = "0.8.6"
 clap = { version = "4.5.51", features = ["derive"] }

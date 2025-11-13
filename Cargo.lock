@@ -179,18 +179,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b05b61dc5112cbb17e4b6cd61790d9845d13888356391624cbe7e41efeac1e75"
 
 [[package]]
-name = "core"
-version = "0.0.0"
-dependencies = [
- "axum",
- "db",
- "error",
- "maud",
- "rusqlite",
- "tokio",
-]
-
-[[package]]
 name = "db"
 version = "0.0.0"
 dependencies = [
@@ -543,6 +531,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "repl"
+version = "0.0.0"
+dependencies = [
+ "db",
+ "error",
+]
+
+[[package]]
 name = "rusqlite"
 version = "0.37.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -865,10 +861,22 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d6bbff5f0aada427a1e5a6da5f1f98158182f26556f345ac9e04d36d0ebed650"
 
 [[package]]
+name = "www"
+version = "0.0.0"
+dependencies = [
+ "axum",
+ "db",
+ "error",
+ "maud",
+ "tokio",
+]
+
+[[package]]
 name = "zetanom"
 version = "0.1.0"
 dependencies = [
  "clap",
- "core",
+ "repl",
  "tokio",
+ "www",
 ]

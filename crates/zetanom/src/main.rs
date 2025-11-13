@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use core::repl::start_repl;
-use core::www::start_server;
 use std::process::ExitCode;
 
 use clap::Parser;
+use repl::start_repl;
+use www::www::start_server;
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
