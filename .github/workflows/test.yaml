@@ -61,4 +61,4 @@ jobs:
       - name: fetch deps
         run: cargo fetch
 
-      - name: cargo test
+      - run: cargo test
