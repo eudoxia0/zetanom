@@ -1,0 +1,246 @@
+/* CSS Reset */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+
+body {
+    line-height: 1;
+}
+
+ol, ul {
+    list-style: none;
+}
+
+blockquote, q {
+    quotes: none;
+}
+
+blockquote::before, blockquote::after,
+q::before, q::after {
+    content: '';
+    content: none;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/* Application Styles */
+body {
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 11px;
+    background: #e0e0e0;
+}
+
+.dt-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Sidebar */
+.dt-sidebar {
+    width: 180px;
+    background: #f5f5f5;
+    border-right: 2px solid #999;
+    padding: 10px;
+}
+
+.dt-app-title {
+    font-weight: bold;
+    font-size: 13px;
+    color: #003366;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #999;
+}
+
+.dt-nav-section {
+    margin-bottom: 20px;
+}
+
+.dt-nav-section-title {
+    font-size: 9px;
+    color: #666;
+    text-transform: uppercase;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.dt-nav-item {
+    padding: 6px 8px;
+    margin-bottom: 2px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    background: #fff;
+}
+
+.dt-nav-item:hover {
+    background: #e8e8e8;
+    border: 1px solid #999;
+}
+
+.dt-nav-item-active {
+    background: #336699;
+    color: white;
+    border: 1px solid #003366;
+    font-weight: bold;
+}
+
+/* Main content */
+.dt-main-content {
+    flex: 1;
+    overflow: auto;
+    padding: 15px;
+}
+
+.dt-panel {
+    background: white;
+    border: 2px solid #666;
+    margin-bottom: 15px;
+}
+
+.dt-panel-header {
+    background: linear-gradient(to bottom, #6699cc 0%, #336699 100%);
+    color: white;
+    padding: 8px 12px;
+    font-weight: bold;
+    border-bottom: 2px solid #003366;
+    font-size: 12px;
+}
+
+.dt-panel-content {
+    padding: 12px;
+}
+
+/* Buttons and controls */
+.dt-button-bar {
+    margin-bottom: 12px;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.dt-button {
+    background: #f0f0f0;
+    border: 1px solid #999;
+    padding: 4px 12px;
+    font-size: 10px;
+    cursor: pointer;
+    font-family: Verdana, Arial, sans-serif;
+}
+
+.dt-button:hover {
+    background: #e0e0e0;
+}
+
+.dt-button:active {
+    background: #d0d0d0;
+}
+
+.dt-input-text {
+    border: 1px solid #999;
+    padding: 4px;
+    font-size: 11px;
+    font-family: Verdana, Arial, sans-serif;
+}
+
+.dt-search-input {
+    width: 300px;
+}
+
+.dt-spacer {
+    flex: 1;
+}
+
+/* Tables */
+.dt-food-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border: 1px solid #999;
+}
+
+.dt-food-table th {
+    background: #cccccc;
+    padding: 4px 8px;
+    text-align: left;
+    border: 1px solid #999;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.dt-food-table td {
+    padding: 4px 8px;
+    border: 1px solid #ddd;
+}
+
+.dt-numeric {
+    text-align: right;
+}
+
+/* Summary box */
+.dt-summary-box {
+    background: white;
+    border: 2px solid #666;
+    margin-top: 15px;
+}
+
+.dt-summary-content {
+    padding: 12px;
+}
+
+.dt-summary-table {
+    width: 100%;
+    border: none;
+}
+
+.dt-summary-table td {
+    border: none;
+    padding: 3px 8px;
+    background: #f8f8f8;
+    border-bottom: 1px solid #ddd;
+}
+
+.dt-summary-table-label {
+    font-weight: bold;
+    width: 200px;
+}
+
+.dt-over-limit {
+    color: #cc0000;
+    font-weight: bold;
+}
+
+.dt-target-info {
+    font-size: 9px;
+    color: #666;
+}
