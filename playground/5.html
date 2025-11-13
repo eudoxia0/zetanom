@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 11px;
+    margin: 0;
+    padding: 0;
+    background: #e0e0e0;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 180px;
+    background: #f5f5f5;
+    border-right: 2px solid #999;
+    padding: 10px;
+}
+
+.app-title {
+    font-weight: bold;
+    font-size: 13px;
+    color: #003366;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #999;
+}
+
+.nav-section {
+    margin-bottom: 20px;
+}
+
+.nav-section-title {
+    font-size: 9px;
+    color: #666;
+    text-transform: uppercase;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.nav-item {
+    padding: 6px 8px;
+    margin-bottom: 2px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    background: #fff;
+}
+
+.nav-item:hover {
+    background: #e8e8e8;
+    border: 1px solid #999;
+}
+
+.nav-item.active {
+    background: #336699;
+    color: white;
+    border: 1px solid #003366;
+    font-weight: bold;
+}
+
+/* Main content */
+.main-content {
+    flex: 1;
+    overflow: auto;
+    padding: 15px;
+}
+
+.panel {
+    background: white;
+    border: 2px solid #666;
+    margin-bottom: 15px;
+}
+
+.panel-header {
+    background: linear-gradient(to bottom, #6699cc 0%, #336699 100%);
+    color: white;
+    padding: 8px 12px;
+    font-weight: bold;
+    border-bottom: 2px solid #003366;
+    font-size: 12px;
+}
+
+.panel-content {
+    padding: 12px;
+}
+
+/* Buttons and controls */
+.button-bar {
+    margin-bottom: 12px;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+button {
+    background: #f0f0f0;
+    border: 1px solid #999;
+    padding: 4px 12px;
+    font-size: 10px;
+    cursor: pointer;
+    font-family: Verdana, Arial, sans-serif;
+}
+
+button:hover {
+    background: #e0e0e0;
+}
+
+button:active {
+    background: #d0d0d0;
+}
+
+input[type="text"] {
+    border: 1px solid #999;
+    padding: 4px;
+    font-size: 11px;
+    font-family: Verdana, Arial, sans-serif;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border: 1px solid #999;
+}
+
+th {
+    background: #cccccc;
+    padding: 4px 8px;
+    text-align: left;
+    border: 1px solid #999;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+td {
+    padding: 4px 8px;
+    border: 1px solid #ddd;
+}
+
+.numeric {
+    text-align: right;
+}
+
+/* Summary box */
+.summary-box {
+    background: white;
+    border: 2px solid #666;
+    margin-top: 15px;
+}
+
+.summary-content {
+    padding: 12px;
+}
+
+.summary-table {
+    width: 100%;
+    border: none;
+}
+
+.summary-table td {
+    border: none;
+    padding: 3px 8px;
+    background: #f8f8f8;
+    border-bottom: 1px solid #ddd;
+}
+
+.summary-table td:first-child {
+    font-weight: bold;
+    width: 200px;
+}
+
+.over-limit {
+    color: #cc0000;
+    font-weight: bold;
+}
+
+.target-info {
+    font-size: 9px;
+    color: #666;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="app-title">DIET TRACKER</div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Views</div>
+            <div class="nav-item active">Today</div>
+            <div class="nav-item">Week View</div>
+            <div class="nav-item">Calendar</div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Library</div>
+            <div class="nav-item">All Foods</div>
+            <div class="nav-item">Add New Food</div>
+            <div class="nav-item">Recent Foods</div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Reports</div>
+            <div class="nav-item">Weekly Summary</div>
+            <div class="nav-item">Export Data</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Date Navigation Panel -->
+        <div class="panel">
+            <div class="panel-header">Daily Log — Saturday, 08 November 2025</div>
+            <div class="panel-content">
+                <div class="button-bar">
+                    <button>← Previous Day</button>
+                    <button>Today</button>
+                    <button>Next Day →</button>
+                    <span style="flex: 1;"></span>
+                    <input type="text" placeholder="Search food to add..." style="width: 300px;">
+                    <button>Add</button>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Food</th>
+                            <th>Brand</th>
+                            <th>Amount</th>
+                            <th class="numeric">Energy (kcal)</th>
+                            <th class="numeric">Protein (g)</th>
+                            <th class="numeric">Fat (g)</th>
+                            <th class="numeric">Sat Fat (g)</th>
+                            <th class="numeric">Carbs (g)</th>
+                            <th class="numeric">Fiber (g)</th>
+                            <th class="numeric">Sodium (mg)</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>08:30</td>
+                            <td>Rolled Oats</td>
+                            <td>—</td>
+                            <td>50g</td>
+                            <td class="numeric">185</td>
+                            <td class="numeric">6.5</td>
+                            <td class="numeric">3.5</td>
+                            <td class="numeric">0.6</td>
+                            <td class="numeric">28.0</td>
+                            <td class="numeric">5.0</td>
+                            <td class="numeric">2</td>
+                            <td><button>Edit</button> <button>Delete</button></td>
+                        </tr>
+                        <tr>
+                            <td>08:35</td>
+                            <td>Full Cream Milk</td>
+                            <td>Dairy Farmers</td>
+                            <td>200ml</td>
+                            <td class="numeric">132</td>
+                            <td class="numeric">6.8</td>
+                            <td class="numeric">7.2</td>
+                            <td class="numeric">4.8</td>
+                            <td class="numeric">9.8</td>
+                            <td class="numeric">0.0</td>
+                            <td class="numeric">90</td>
+                            <td><button>Edit</button> <button>Delete</button></td>
+                        </tr>
+                        <tr>
+                            <td>13:15</td>
+                            <td>Chicken Breast</td>
+                            <td>—</td>
+                            <td>180g</td>
+                            <td class="numeric">297</td>
+                            <td class="numeric">62.3</td>
+                            <td class="numeric">6.5</td>
+                            <td class="numeric">1.4</td>
+                            <td class="numeric">0.0</td>
+                            <td class="numeric">0.0</td>
+                            <td class="numeric">144</td>
+                            <td><button>Edit</button> <button>Delete</button></td>
+                        </tr>
+                        <tr>
+                            <td>13:20</td>
+                            <td>White Rice</td>
+                            <td>—</td>
+                            <td>150g</td>
+                            <td class="numeric">195</td>
+                            <td class="numeric">3.5</td>
+                            <td class="numeric">0.5</td>
+                            <td class="numeric">0.1</td>
+                            <td class="numeric">42.5</td>
+                            <td class="numeric">0.6</td>
+                            <td class="numeric">3</td>
+                            <td><button>Edit</button> <button>Delete</button></td>
+                        </tr>
+                        <tr>
+                            <td>19:45</td>
+                            <td>Tikka Masala</td>
+                            <td>Trader Joe's</td>
+                            <td>1 package (340g)</td>
+                            <td class="numeric">408</td>
+                            <td class="numeric">17.7</td>
+                            <td class="numeric">20.4</td>
+                            <td class="numeric">10.2</td>
+                            <td class="numeric">37.4</td>
+                            <td class="numeric">3.4</td>
+                            <td class="numeric">884</td>
+                            <td><button>Edit</button> <button>Delete</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Summary Panel -->
+        <div class="summary-box">
+            <div class="panel-header">Daily Totals</div>
+            <div class="summary-content">
+                <table class="summary-table">
+                    <tr>
+                        <td>Energy</td>
+                        <td class="numeric">1,217 kcal</td>
+                        <td class="target-info">Target: 2,000 kcal</td>
+                    </tr>
+                    <tr>
+                        <td>Protein</td>
+                        <td class="numeric">96.8 g</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Fat</td>
+                        <td class="numeric">38.1 g</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Saturated Fat</td>
+                        <td class="numeric over-limit">17.1 g</td>
+                        <td class="target-info over-limit">Limit: 15g (EXCEEDED)</td>
+                    </tr>
+                    <tr>
+                        <td>Carbohydrate</td>
+                        <td class="numeric">117.7 g</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Fiber</td>
+                        <td class="numeric">9.0 g</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Sodium</td>
+                        <td class="numeric">1,123 mg</td>
+                        <td class="target-info">Limit: 2,300 mg</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
