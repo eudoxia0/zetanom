@@ -10,6 +10,7 @@ license = "Apache-2.0"
 # local
 error = { path = "./crates/error" }
 core = { path = "./crates/core" }
+db = { path = "./crates/db" }
 # external
 axum = "0.8.6"
 clap = { version = "4.5.51", features = ["derive"] }
