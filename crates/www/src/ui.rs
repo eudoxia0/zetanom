@@ -36,13 +36,18 @@ pub fn page(title: &str, body: Markup) -> Markup {
                         nav {
                             ul {
                                 li {
-                                    a {
-                                    "Tracker"
+                                    a href="/" {
+                                        "Today"
                                     }
                                 }
                                 li {
-                                    a {
-                                    "Library"
+                                    a href="/library" {
+                                        "List Foods"
+                                    }
+                                }
+                                li {
+                                    a href="/library/new" {
+                                        "Create Food"
                                     }
                                 }
                             }
