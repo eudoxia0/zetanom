@@ -111,7 +111,7 @@ async fn library_new_handler() -> Fallible<(StatusCode, Html<String>)> {
             h1 {
                 "Library: New Food"
             }
-            form {
+            form method="post" action="/library/new" {
                 (label("name", "Name"));
                 (text_input("name"));
                 br;
@@ -148,6 +148,7 @@ async fn library_new_handler() -> Fallible<(StatusCode, Html<String>)> {
                 (label("sodium", "Sodium (mg)"));
                 (text_input("sodium"));
                 br;
+                input type="submit" value="Save";
             }
         }
     };
