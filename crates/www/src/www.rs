@@ -133,8 +133,14 @@ async fn library_new_handler() -> Fallible<(StatusCode, Html<String>)> {
                 (label("fat", "Fat (g)"));
                 (text_input("fat"));
                 br;
+                (label("fat_saturated", "Fat — Saturated (g)"));
+                (text_input("fat_saturated"));
+                br;
                 (label("carbs", "Carbohydrate (g)"));
                 (text_input("carbs"));
+                br;
+                (label("carbs_sugars", "Carbohydrate — Sugars (g)"));
+                (text_input("carbs_sugars"));
                 br;
                 (label("fibre", "Fibre (g)"));
                 (text_input("fibre"));
