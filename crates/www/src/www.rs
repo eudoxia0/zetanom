@@ -91,14 +91,14 @@ async fn favicon_handler() -> (StatusCode, [(HeaderName, &'static str); 2], &'st
     )
 }
 
-async fn library_handler(Path(date): Path<String>) -> Fallible<(StatusCode, Html<String>)> {
+async fn library_handler() -> Fallible<(StatusCode, Html<String>)> {
     todo!()
 }
 
-async fn library_new_handler(Path(date): Path<String>) -> Fallible<(StatusCode, Html<String>)> {
+async fn library_new_handler() -> Fallible<(StatusCode, Html<String>)> {
     todo!()
 }
 
-async fn library_new_post_handler(Path(date): Path<String>) -> Fallible<(StatusCode, Html<String>)> {
+async fn library_new_post_handler() -> Fallible<(StatusCode, Html<String>)> {
     todo!()
 }
