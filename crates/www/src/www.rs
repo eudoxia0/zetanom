@@ -40,7 +40,8 @@ pub async fn start_server() -> Fallible<()> {
 fn make_app() -> Router<()> {
     let app = Router::new();
     let app = app.route("/", get(index_handler));
-    app.route("/static/style.css", get(css_handler))
+    let app = app.route("/static/style.css", get(css_handler));
+    app.route("/favicon.ico", get(favicon_handler))
 }
 
 async fn index_handler() -> (StatusCode, Html<String>) {
@@ -58,6 +59,15 @@ async fn css_handler() -> (StatusCode, [(HeaderName, &'static str); 2], &'static
     (
         StatusCode::OK,
         [(CONTENT_TYPE, "text/css"), (CACHE_CONTROL, "no-cache")],
+        bytes,
+    )
+}
+
+async fn favicon_handler() -> (StatusCode, [(HeaderName, &'static str); 2], &'static [u8]) {
+    let bytes = include_bytes!("favicon.png");
+    (
+        StatusCode::OK,
+        [(CONTENT_TYPE, "image/png"), (CACHE_CONTROL, "no-cache")],
         bytes,
     )
 }
