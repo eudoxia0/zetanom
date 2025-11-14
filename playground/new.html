@@ -1,0 +1,449 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 11px;
+    margin: 0;
+    padding: 0;
+    background: #e0e0e0;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 180px;
+    background: #f5f5f5;
+    border-right: 2px solid #999;
+    padding: 10px;
+}
+
+.app-title {
+    font-weight: bold;
+    font-size: 13px;
+    color: #003366;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #999;
+}
+
+.nav-section {
+    margin-bottom: 20px;
+}
+
+.nav-section-title {
+    font-size: 9px;
+    color: #666;
+    text-transform: uppercase;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.nav-item {
+    padding: 6px 8px;
+    margin-bottom: 2px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    background: #fff;
+}
+
+.nav-item:hover {
+    background: #e8e8e8;
+    border: 1px solid #999;
+}
+
+.nav-item.active {
+    background: #336699;
+    color: white;
+    border: 1px solid #003366;
+    font-weight: bold;
+}
+
+/* Main content */
+.main-content {
+    flex: 1;
+    overflow: auto;
+    padding: 15px;
+}
+
+.panel {
+    background: white;
+    border: 2px solid #666;
+    margin-bottom: 15px;
+}
+
+.panel-header {
+    background: linear-gradient(to bottom, #6699cc 0%, #336699 100%);
+    color: white;
+    padding: 8px 12px;
+    font-weight: bold;
+    border-bottom: 2px solid #003366;
+    font-size: 12px;
+}
+
+.panel-content {
+    padding: 20px;
+}
+
+/* Form styles */
+.form-section {
+    margin-bottom: 25px;
+}
+
+.form-section-title {
+    font-size: 10px;
+    font-weight: bold;
+    color: #003366;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #ccc;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 12px;
+    align-items: center;
+}
+
+.form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.half {
+    flex: 0 0 calc(50% - 7.5px);
+}
+
+.form-group.third {
+    flex: 0 0 calc(33.333% - 10px);
+}
+
+label {
+    font-size: 10px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 3px;
+    display: block;
+}
+
+.label-required::after {
+    content: " *";
+    color: #c00;
+}
+
+.label-hint {
+    font-size: 9px;
+    color: #666;
+    font-weight: normal;
+    font-style: italic;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+    border: 1px solid #999;
+    padding: 5px;
+    font-size: 11px;
+    font-family: Verdana, Arial, sans-serif;
+    background: white;
+    width: 100%;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus {
+    outline: none;
+    border: 1px solid #336699;
+    background: #fffff0;
+}
+
+input[type="number"] {
+    text-align: right;
+}
+
+select {
+    padding: 4px;
+}
+
+.unit-suffix {
+    font-size: 10px;
+    color: #666;
+    margin-left: 5px;
+    white-space: nowrap;
+}
+
+/* Buttons */
+.button-bar {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 2px solid #ccc;
+    display: flex;
+    gap: 8px;
+}
+
+button {
+    background: #f0f0f0;
+    border: 1px solid #999;
+    padding: 6px 16px;
+    font-size: 10px;
+    cursor: pointer;
+    font-family: Verdana, Arial, sans-serif;
+    font-weight: bold;
+}
+
+button:hover {
+    background: #e0e0e0;
+}
+
+button:active {
+    background: #d0d0d0;
+}
+
+button.primary {
+    background: #336699;
+    color: white;
+    border: 1px solid #003366;
+}
+
+button.primary:hover {
+    background: #2a5580;
+}
+
+button.primary:active {
+    background: #1f4466;
+}
+
+.info-box {
+    background: #ffffc0;
+    border: 1px solid #ccc;
+    padding: 10px;
+    font-size: 10px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.info-box strong {
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Custom servings section */
+.serving-list {
+    border: 1px solid #ccc;
+    background: #f8f8f8;
+    padding: 10px;
+    margin-bottom: 10px;
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.serving-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 6px;
+    background: white;
+    border: 1px solid #ddd;
+    margin-bottom: 4px;
+    font-size: 10px;
+}
+
+.serving-item:last-child {
+    margin-bottom: 0;
+}
+
+.add-serving-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+}
+
+.add-serving-row .form-group {
+    flex: 1;
+}
+
+.add-serving-row button {
+    flex: 0 0 auto;
+    padding: 5px 12px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="app-title">DIET TRACKER</div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Views</div>
+            <div class="nav-item">Today</div>
+            <div class="nav-item">Week View</div>
+            <div class="nav-item">Calendar</div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Library</div>
+            <div class="nav-item">All Foods</div>
+            <div class="nav-item active">Add New Food</div>
+            <div class="nav-item">Recent Foods</div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Reports</div>
+            <div class="nav-item">Weekly Summary</div>
+            <div class="nav-item">Export Data</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="panel">
+            <div class="panel-header">Add New Food</div>
+            <div class="panel-content">
+                <div class="info-box">
+                    <strong>Note:</strong> All nutrition information should be entered per 100g or per 100ml as shown on the Australian nutrition label.
+                </div>
+
+                <form>
+                    <!-- Basic Information -->
+                    <div class="form-section">
+                        <div class="form-section-title">Basic Information</div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="label-required">Food Name</label>
+                                <input type="text" placeholder="e.g., Rolled Oats">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label>Brand <span class="label-hint">(optional, leave blank for generic foods)</span></label>
+                                <input type="text" placeholder="e.g., Uncle Tobys">
+                            </div>
+
+                            <div class="form-group half">
+                                <label class="label-required">Base Unit</label>
+                                <select>
+                                    <option value="g">Grams (g)</option>
+                                    <option value="ml">Milliliters (ml)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nutrition Information -->
+                    <div class="form-section">
+                        <div class="form-section-title">Nutrition Information (per 100g or 100ml)</div>
+
+                        <div class="form-row">
+                            <div class="form-group third">
+                                <label class="label-required">Energy (kcal)</label>
+                                <input type="number" step="0.1" placeholder="0.0">
+                            </div>
+
+                            <div class="form-group third">
+                                <label class="label-required">Protein (g)</label>
+                                <input type="number" step="0.1" placeholder="0.0">
+                            </div>
+
+                            <div class="form-group third">
+                                <label class="label-required">Fat (g)</label>
+                                <input type="number" step="0.1" placeholder="0.0">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group third">
+                                <label class="label-required">Saturated Fat (g)</label>
+                                <input type="number" step="0.1" placeholder="0.0">
+                            </div>
+
+                            <div class="form-group third">
+                                <label class="label-required">Carbohydrate (g) <span class="label-hint">available carbs</span></label>
+                                <input type="number" step="0.1" placeholder="0.0">
+                            </div>
+
+                            <div class="form-group third">
+                                <label class="label-required">Sugars (g)</label>
+                                <input type="number" step="0.1" placeholder="0.0">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group third">
+                                <label class="label-required">Dietary Fiber (g)</label>
+                                <input type="number" step="0.1" placeholder="0.0">
+                            </div>
+
+                            <div class="form-group third">
+                                <label class="label-required">Sodium (mg)</label>
+                                <input type="number" step="1" placeholder="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Custom Serving Sizes -->
+                    <div class="form-section">
+                        <div class="form-section-title">Custom Serving Sizes (Optional)</div>
+
+                        <div class="serving-list" id="serving-list">
+                            <div style="text-align: center; color: #999; font-size: 10px; padding: 20px;">
+                                No custom servings added yet
+                            </div>
+                        </div>
+
+                        <div class="add-serving-row">
+                            <div class="form-group">
+                                <label>Serving Name</label>
+                                <input type="text" placeholder="e.g., package, cup, slice">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Amount (in base unit)</label>
+                                <input type="number" step="0.1" placeholder="e.g., 340">
+                            </div>
+
+                            <button type="button">Add Serving</button>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="button-bar">
+                        <button type="submit" class="primary">Save Food</button>
+                        <button type="button">Save & Add Another</button>
+                        <button type="button">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Help Panel -->
+        <div class="panel">
+            <div class="panel-header">Help</div>
+            <div class="panel-content">
+                <p style="font-size: 10px; line-height: 1.6; margin: 0 0 10px 0;">
+                    <strong>Where to find nutrition information:</strong><br>
+                    Look at the nutrition information panel on the back of food packaging. In Australia, all values are shown per 100g or per 100ml.
+                </p>
+                <p style="font-size: 10px; line-height: 1.6; margin: 0;">
+                    <strong>Custom serving sizes:</strong><br>
+                    Add shortcuts like "1 package = 340g" or "1 cup = 250ml" to make logging faster. You can add these later if you're not sure.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
