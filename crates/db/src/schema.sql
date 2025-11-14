@@ -19,8 +19,8 @@ create table foods (
     carbs real not null,
     -- Sugars per serving in g.
     carbs_sugars real not null,
-    -- Dietary fiber per serving in g.
-    fiber real not null,
+    -- Dietary fibre per serving in g.
+    fibre real not null,
     -- Sodium per serving in mg.
     sodium real not null,
 
