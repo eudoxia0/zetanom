@@ -29,7 +29,10 @@ pub fn page(title: &str, body: Markup) -> Markup {
             }
             body {
                 div .Root {
-                    div.LeftPane {
+                    div.NavPane {
+                        h1 {
+                            "Navigation"
+                        }
                         nav {
                             ul {
                                 li {
@@ -46,6 +49,9 @@ pub fn page(title: &str, body: Markup) -> Markup {
                         }
                     }
                     div.ContentPane {
+                        h1 {
+                            "Content"
+                        }
                         (body)
                     }
                 }
