@@ -109,6 +109,13 @@ async fn library_new_handler() -> Fallible<(StatusCode, Html<String>)> {
             h1 {
                 "Library: New Food"
             }
+            form {
+                label for="name" { "Name" };
+                input type="text" name="name" id="name";
+                br;
+                label for="brand" { "Brand" };
+                input type="text" name="brand" id="brand";
+            }
         }
     };
     let html: Markup = page("zetanom", body);
