@@ -16,6 +16,10 @@ use std::error::Error;
 use std::fmt::Display;
 use std::fmt::Formatter;
 
+use axum::http::StatusCode;
+use axum::response::IntoResponse;
+use axum::response::Response;
+
 #[derive(Debug)]
 pub struct AppError {
     message: String,
@@ -56,5 +60,12 @@ impl From<std::io::Error> for AppError {
         AppError {
             message: format!("I/O error: {value:#?}"),
         }
+    }
+}
+
+impl IntoResponse for AppError {
+    fn into_response(self) -> Response {
+        let msg = self.to_string();
+        (StatusCode::INTERNAL_SERVER_ERROR, msg).into_response()
     }
 }
