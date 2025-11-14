@@ -33,6 +33,7 @@ use serde::Deserialize;
 use tokio::net::TcpListener;
 
 use crate::ui::label;
+use crate::ui::number_input;
 use crate::ui::page;
 use crate::ui::text_input;
 
@@ -128,28 +129,28 @@ async fn library_new_handler() -> Fallible<(StatusCode, Html<String>)> {
                 }
                 br;
                 (label("energy", "Energy (kcal)"));
-                (text_input("energy"));
+                (number_input("energy"));
                 br;
                 (label("protein", "Protein (g)"));
-                (text_input("protein"));
+                (number_input("protein"));
                 br;
                 (label("fat", "Fat (g)"));
-                (text_input("fat"));
+                (number_input("fat"));
                 br;
                 (label("fat_saturated", "Fat — Saturated (g)"));
-                (text_input("fat_saturated"));
+                (number_input("fat_saturated"));
                 br;
                 (label("carbs", "Carbohydrate (g)"));
-                (text_input("carbs"));
+                (number_input("carbs"));
                 br;
                 (label("carbs_sugars", "Carbohydrate — Sugars (g)"));
-                (text_input("carbs_sugars"));
+                (number_input("carbs_sugars"));
                 br;
                 (label("fibre", "Fibre (g)"));
-                (text_input("fibre"));
+                (number_input("fibre"));
                 br;
                 (label("sodium", "Sodium (mg)"));
-                (text_input("sodium"));
+                (number_input("sodium"));
                 br;
                 input type="submit" value="Save";
             }
@@ -163,6 +164,14 @@ async fn library_new_handler() -> Fallible<(StatusCode, Html<String>)> {
 struct CreateFoodForm {
     name: String,
     brand: String,
+    serving_unit: String,
+    energy: f64,
+    protein: f64,
+    fat: f64,
+    fat_saturated: f64,
+    carbs: f64,
+    carbs_sugars: f64,
+    sodium: f64,
 }
 
 async fn library_new_post_handler(Form(form): Form<CreateFoodForm>) -> Redirect {

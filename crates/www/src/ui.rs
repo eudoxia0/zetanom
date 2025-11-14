@@ -78,3 +78,10 @@ pub fn text_input(id: &str) -> Markup {
         input type="text" name=(id) id=(id);
     }
 }
+
+/// Numeric input.
+pub fn number_input(id: &str) -> Markup {
+    html! {
+        input type="number" name=(id) id=(id);
+    }
+}
