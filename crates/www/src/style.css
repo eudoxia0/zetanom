@@ -1,0 +1,22 @@
+/* Reset */
+
+* {
+    margin: 0;
+    padding: 0;
+    font-weight: normal;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Basic layout */
+
+html,
+body,
+.root {
+    width: 100vw;
+    height: 100vh;
+}
