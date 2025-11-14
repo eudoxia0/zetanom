@@ -42,13 +42,14 @@ body,
     width: 180px;
     border-right: 1px solid #999;
     padding: 16px;
-}
 
-.NavPane a {
-    color: blue;
-    text-decoration: none;
+    a {
+        color: blue;
+        text-decoration: none;
+    }
 }
 
 .ContentPane {
     flex: 1;
+    padding: 16px;
 }
