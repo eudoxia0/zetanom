@@ -13,12 +13,17 @@
 // limitations under the License.
 
 use axum::Router;
+use axum::extract::Path;
 use axum::http::HeaderName;
 use axum::http::StatusCode;
 use axum::http::header::CACHE_CONTROL;
 use axum::http::header::CONTENT_TYPE;
 use axum::response::Html;
+use axum::response::Redirect;
 use axum::routing::get;
+use chrono::Local;
+use chrono::NaiveDate;
+use error::AppError;
 use error::Fallible;
 use maud::Markup;
 use maud::html;
@@ -40,18 +45,27 @@ pub async fn start_server() -> Fallible<()> {
 fn make_app() -> Router<()> {
     let app = Router::new();
     let app = app.route("/", get(index_handler));
+    let app = app.route("/log/{date}", get(date_handler));
     let app = app.route("/static/style.css", get(css_handler));
     app.route("/favicon.ico", get(favicon_handler))
 }
 
-async fn index_handler() -> (StatusCode, Html<String>) {
+async fn index_handler() -> Redirect {
+    let today: NaiveDate = Local::now().naive_local().date();
+    let url: String = format!("/log/{}", today.format("%Y-%m-%d"));
+    Redirect::to(&url)
+}
+
+async fn date_handler(Path(date): Path<String>) -> Fallible<(StatusCode, Html<String>)> {
+    let date: NaiveDate = NaiveDate::parse_from_str(&date, "%Y-%m-%d")
+        .map_err(|_| AppError::new(format!("Failed to parse date: '{date}'.")))?;
     let body: Markup = html! {
         p {
-            "Hello, world!"
+            (format!("Log: {date}"))
         }
     };
     let html: Markup = page("zetanom", body);
-    (StatusCode::OK, Html(html.into_string()))
+    Ok((StatusCode::OK, Html(html.into_string())))
 }
 
 async fn css_handler() -> (StatusCode, [(HeaderName, &'static str); 2], &'static [u8]) {
