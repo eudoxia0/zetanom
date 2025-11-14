@@ -30,7 +30,9 @@ use maud::Markup;
 use maud::html;
 use tokio::net::TcpListener;
 
+use crate::ui::label;
 use crate::ui::page;
+use crate::ui::text_input;
 
 const PORT: u16 = 12001;
 
@@ -110,11 +112,36 @@ async fn library_new_handler() -> Fallible<(StatusCode, Html<String>)> {
                 "Library: New Food"
             }
             form {
-                label for="name" { "Name" };
-                input type="text" name="name" id="name";
+                (label("name", "Name"));
+                (text_input("name"));
                 br;
-                label for="brand" { "Brand" };
-                input type="text" name="brand" id="brand";
+                (label("brand", "Brand"));
+                (text_input("brand"));
+                br;
+                (label("serving_unit", "Serving Unit"));
+                select id="serving_unit" name="serving_unit" {
+                    option value="g" { "g" }
+                    option value="ml" { "ml" }
+                }
+                br;
+                (label("energy", "Energy (kcal)"));
+                (text_input("energy"));
+                br;
+                (label("protein", "Protein (g)"));
+                (text_input("protein"));
+                br;
+                (label("fat", "Fat (g)"));
+                (text_input("fat"));
+                br;
+                (label("carbs", "Carbohydrate (g)"));
+                (text_input("carbs"));
+                br;
+                (label("fibre", "Fibre (g)"));
+                (text_input("fibre"));
+                br;
+                (label("sodium", "Sodium (mg)"));
+                (text_input("sodium"));
+                br;
             }
         }
     };

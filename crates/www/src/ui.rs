@@ -64,3 +64,17 @@ pub fn page(title: &str, body: Markup) -> Markup {
         }
     }
 }
+
+/// Form label.
+pub fn label(id: &str, text: &str) -> Markup {
+    html! {
+        label for=(id) { (text) };
+    }
+}
+
+/// Text input.
+pub fn text_input(id: &str) -> Markup {
+    html! {
+        input type="text" name=(id) id=(id);
+    }
+}
