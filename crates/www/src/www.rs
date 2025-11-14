@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use axum::Form;
 use axum::Router;
 use axum::extract::Path;
 use axum::http::HeaderName;
@@ -28,6 +29,7 @@ use error::AppError;
 use error::Fallible;
 use maud::Markup;
 use maud::html;
+use serde::Deserialize;
 use tokio::net::TcpListener;
 
 use crate::ui::label;
@@ -157,6 +159,12 @@ async fn library_new_handler() -> Fallible<(StatusCode, Html<String>)> {
     Ok((StatusCode::OK, Html(html.into_string())))
 }
 
-async fn library_new_post_handler() -> Redirect {
+#[derive(Deserialize)]
+struct CreateFoodForm {
+    name: String,
+    brand: String,
+}
+
+async fn library_new_post_handler(Form(form): Form<CreateFoodForm>) -> Redirect {
     todo!()
 }
