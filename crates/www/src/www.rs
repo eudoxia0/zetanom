@@ -47,7 +47,8 @@ fn make_app() -> Router<()> {
     let app = app.route("/", get(index_handler));
     let app = app.route("/log/{date}", get(date_handler));
     let app = app.route("/static/style.css", get(css_handler));
-    app.route("/favicon.ico", get(favicon_handler))
+    let app = app.route("/favicon.ico", get(favicon_handler));
+    app
 }
 
 async fn index_handler() -> Redirect {
