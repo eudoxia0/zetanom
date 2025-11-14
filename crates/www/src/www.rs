@@ -21,6 +21,7 @@ use axum::http::header::CONTENT_TYPE;
 use axum::response::Html;
 use axum::response::Redirect;
 use axum::routing::get;
+use axum::routing::post;
 use chrono::Local;
 use chrono::NaiveDate;
 use error::AppError;
@@ -46,6 +47,9 @@ fn make_app() -> Router<()> {
     let app = Router::new();
     let app = app.route("/", get(index_handler));
     let app = app.route("/favicon.ico", get(favicon_handler));
+    let app = app.route("/library", get(library_handler));
+    let app = app.route("/library/new", get(library_new_handler));
+    let app = app.route("/library/new", post(library_new_post_handler));
     let app = app.route("/log/{date}", get(date_handler));
     let app = app.route("/static/style.css", get(css_handler));
     app
@@ -85,4 +89,16 @@ async fn favicon_handler() -> (StatusCode, [(HeaderName, &'static str); 2], &'st
         [(CONTENT_TYPE, "image/png"), (CACHE_CONTROL, "no-cache")],
         bytes,
     )
+}
+
+async fn library_handler(Path(date): Path<String>) -> Fallible<(StatusCode, Html<String>)> {
+    todo!()
+}
+
+async fn library_new_handler(Path(date): Path<String>) -> Fallible<(StatusCode, Html<String>)> {
+    todo!()
+}
+
+async fn library_new_post_handler(Path(date): Path<String>) -> Fallible<(StatusCode, Html<String>)> {
+    todo!()
 }
