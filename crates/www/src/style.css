@@ -32,6 +32,8 @@ body,
 }
 
 .NavPane {
+    background: #f5f5f5;
+    width: 180px;
 }
 
 .ContentPane {
