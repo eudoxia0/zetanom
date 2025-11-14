@@ -45,6 +45,7 @@ pub async fn start_server() -> Fallible<()> {
     Ok(())
 }
 
+#[allow(clippy::let_and_return)]
 fn make_app() -> Router<()> {
     let app = Router::new();
     let app = app.route("/", get(index_handler));
