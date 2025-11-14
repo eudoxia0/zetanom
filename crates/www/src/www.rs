@@ -92,13 +92,29 @@ async fn favicon_handler() -> (StatusCode, [(HeaderName, &'static str); 2], &'st
 }
 
 async fn library_handler() -> Fallible<(StatusCode, Html<String>)> {
-    todo!()
+    let body: Markup = html! {
+        p {
+            h1 {
+                "Library"
+            }
+        }
+    };
+    let html: Markup = page("zetanom", body);
+    Ok((StatusCode::OK, Html(html.into_string())))
 }
 
 async fn library_new_handler() -> Fallible<(StatusCode, Html<String>)> {
-    todo!()
+    let body: Markup = html! {
+        p {
+            h1 {
+                "Library: New Food"
+            }
+        }
+    };
+    let html: Markup = page("zetanom", body);
+    Ok((StatusCode::OK, Html(html.into_string())))
 }
 
-async fn library_new_post_handler() -> Fallible<(StatusCode, Html<String>)> {
+async fn library_new_post_handler() -> Redirect {
     todo!()
 }
