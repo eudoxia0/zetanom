@@ -16,11 +16,11 @@ use std::path::Path;
 
 use chrono::DateTime;
 use chrono::Utc;
-use error::AppError;
 use error::Fallible;
 use rusqlite::Connection;
 use rusqlite::config::DbConfig;
 use rusqlite::params;
+use shared::basic_unit::BasicUnit;
 use shared::date::Date;
 
 pub struct Db {
@@ -28,33 +28,6 @@ pub struct Db {
 }
 
 pub type FoodId = i64;
-
-#[derive(Clone, Copy)]
-pub enum BasicUnit {
-    Grams,
-    Milliliters,
-}
-
-impl BasicUnit {
-    pub fn as_str(self) -> &'static str {
-        match self {
-            Self::Grams => "g",
-            Self::Milliliters => "ml",
-        }
-    }
-}
-
-impl TryFrom<&str> for BasicUnit {
-    type Error = AppError;
-
-    fn try_from(value: &str) -> Fallible<Self> {
-        match value {
-            "g" => Ok(Self::Grams),
-            "ml" => Ok(Self::Milliliters),
-            _ => Err(AppError::new("Invalid value for serving unit.")),
-        }
-    }
-}
 
 /// The name of a food.
 pub type FoodName = String;

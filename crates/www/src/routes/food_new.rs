@@ -23,10 +23,10 @@ use axum::routing::post;
 use chrono::Utc;
 use db::CreateFoodInput;
 use db::FoodId;
-use db::BasicUnit;
 use error::Fallible;
 use maud::html;
 use serde::Deserialize;
+use shared::basic_unit::BasicUnit;
 
 use crate::routes::food_view::FoodViewHandler;
 use crate::ui::*;

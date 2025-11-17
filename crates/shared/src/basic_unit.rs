@@ -12,5 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-pub mod basic_unit;
-pub mod date;
+use error::AppError;
+use error::Fallible;
+
+#[derive(Clone, Copy)]
+pub enum BasicUnit {
+    Grams,
+    Milliliters,
+}
+
+impl BasicUnit {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Grams => "g",
+            Self::Milliliters => "ml",
+        }
+    }
+}
+
+impl TryFrom<&str> for BasicUnit {
+    type Error = AppError;
+
+    fn try_from(value: &str) -> Fallible<Self> {
+        match value {
+            "g" => Ok(Self::Grams),
+            "ml" => Ok(Self::Milliliters),
+            _ => Err(AppError::new("Invalid value for serving unit.")),
+        }
+    }
+}
