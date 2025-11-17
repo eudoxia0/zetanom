@@ -184,9 +184,18 @@ pub struct Entry {
 
 impl Db {
     pub fn new(path: &Path) -> Fallible<Self> {
-        let conn = Connection::open(path)?;
-        conn.set_db_config(DbConfig::SQLITE_DBCONFIG_ENABLE_FKEY, true)?;
-        Ok(Self { conn })
+        if path.exists() {
+            let conn = Connection::open(path)?;
+            conn.set_db_config(DbConfig::SQLITE_DBCONFIG_ENABLE_FKEY, true)?;
+            Ok(Self { conn })
+        } else {
+            let mut conn = Connection::open(path)?;
+            conn.set_db_config(DbConfig::SQLITE_DBCONFIG_ENABLE_FKEY, true)?;
+            let tx = conn.transaction()?;
+            tx.execute_batch(include_str!("schema.sql"))?;
+            tx.commit()?;
+            Ok(Self { conn })
+        }
     }
 
     pub fn new_in_memory() -> Fallible<Self> {
