@@ -22,9 +22,11 @@ use crate::www::ServerState;
 
 pub struct RootHandler {}
 
+pub const URL_TODAY: &'static str = "/";
+
 impl RootHandler {
     pub fn route(router: Router<ServerState>) -> Router<ServerState> {
-        router.route("/", get(handler))
+        router.route(URL_TODAY, get(handler))
     }
 }
 

@@ -17,6 +17,7 @@ use maud::Markup;
 use maud::html;
 
 use crate::routes::assets::URL_CSS;
+use crate::routes::root::URL_TODAY;
 
 /// Page template.
 pub fn page(title: &str, body: Markup) -> Markup {
@@ -38,7 +39,7 @@ pub fn page(title: &str, body: Markup) -> Markup {
                         nav {
                             ul {
                                 li {
-                                    a href="/" {
+                                    a href=(URL_TODAY) {
                                         "Today"
                                     }
                                 }
