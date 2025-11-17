@@ -235,14 +235,51 @@ impl Db {
     }
 
     pub fn create_serving(&self, input: ServingInput) -> Fallible<ServingId> {
-        todo!()
+        let sql = "
+            insert into serving_sizes (food_id, serving_name, serving_amount, created_at)
+            values (?1, ?2, ?3, ?4)
+            returning serving_id;
+        ";
+        let serving_id: i64 = self.conn.query_row(
+            sql,
+            params![
+                input.food_id,
+                input.serving_name,
+                input.serving_amount,
+                input.created_at,
+            ],
+            |row| row.get(0),
+        )?;
+        Ok(serving_id)
     }
 
     pub fn delete_serving(&self, serving_id: ServingId) -> Fallible<()> {
-        todo!()
+        let sql = "delete from serving_sizes where serving_id = ?1;";
+        self.conn.execute(sql, params![serving_id])?;
+        Ok(())
     }
 
-    pub fn list_servings(&self, food_id: FoodId) -> Fallible<Serving> {
-        todo!()
+    pub fn list_servings(&self, food_id: FoodId) -> Fallible<Vec<Serving>> {
+        let sql = "
+            select serving_id, food_id, serving_name, serving_amount, created_at
+            from serving_sizes
+            where food_id = ?1
+            order by serving_name;
+        ";
+        let mut stmt = self.conn.prepare(sql)?;
+        let rows = stmt.query_map(params![food_id], |row| {
+            Ok(Serving {
+                serving_id: row.get(0)?,
+                food_id: row.get(1)?,
+                serving_name: row.get(2)?,
+                serving_amount: row.get(3)?,
+                created_at: row.get(4)?,
+            })
+        })?;
+        let mut servings = Vec::new();
+        for serving in rows {
+            servings.push(serving?);
+        }
+        Ok(servings)
     }
 }
