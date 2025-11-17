@@ -37,14 +37,12 @@ impl Date {
         Self(Local::now().naive_local().date())
     }
 
-    pub fn yesterday() -> Self {
-        let today: NaiveDate = Local::now().naive_local().date();
-        Self(today.pred_opt().unwrap_or(today))
+    pub fn prev_day(self) -> Self {
+        Self(self.0.pred_opt().unwrap_or(self.0))
     }
 
-    pub fn tomorrow() -> Self {
-        let today: NaiveDate = Local::now().naive_local().date();
-        Self(today.succ_opt().unwrap_or(today))
+    pub fn next_day(self) -> Self {
+        Self(self.0.succ_opt().unwrap_or(self.0))
     }
 
     pub fn into_inner(self) -> NaiveDate {
