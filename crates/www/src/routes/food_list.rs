@@ -22,6 +22,7 @@ use error::Fallible;
 use maud::Markup;
 use maud::html;
 
+use crate::routes::food_new::FoodNewHandler;
 use crate::ui::page;
 use crate::www::ServerState;
 
@@ -56,7 +57,7 @@ async fn handler(State(state): State<ServerState>) -> Fallible<(StatusCode, Html
             "Library"
         }
         p {
-            a href="/library/new" {
+            a href=(FoodNewHandler::url()) {
                 "Add New Food"
             }
         }
