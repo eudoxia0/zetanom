@@ -23,7 +23,7 @@ use crate::www::ServerState;
 
 pub struct AssetHandler {}
 
-pub const URL_CSS: &'static str = "/static/style.css";
+pub const URL_CSS: &str = "/static/style.css";
 
 impl AssetHandler {
     pub fn route(router: Router<ServerState>) -> Router<ServerState> {
