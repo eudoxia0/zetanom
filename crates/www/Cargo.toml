@@ -5,9 +5,9 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
-error.workspace = true
 axum.workspace = true
-tokio.workspace = true
-maud.workspace = true
 chrono = "0.4.42"
+error.workspace = true
+maud = "0.27.0"
 serde = { version = "1.0.228", features = ["derive"] }
+tokio.workspace = true
