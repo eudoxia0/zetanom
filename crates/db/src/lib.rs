@@ -271,7 +271,39 @@ impl Db {
     }
 
     pub fn edit_food(&self, input: EditFoodInput) -> Fallible<()> {
-        todo!()
+        let sql = "
+            update foods
+            set name = ?1,
+                brand = ?2,
+                serving_unit = ?3,
+                energy = ?4,
+                protein = ?5,
+                fat = ?6,
+                fat_saturated = ?7,
+                carbs = ?8,
+                carbs_sugars = ?9,
+                fibre = ?10,
+                sodium = ?11
+            where food_id = ?12;
+        ";
+        self.conn.execute(
+            sql,
+            params![
+                input.name,
+                input.brand,
+                input.serving_unit.as_str(),
+                input.energy,
+                input.protein,
+                input.fat,
+                input.fat_saturated,
+                input.carbs,
+                input.carbs_sugars,
+                input.fibre,
+                input.sodium,
+                input.food_id,
+            ],
+        )?;
+        Ok(())
     }
 
     pub fn create_serving(&self, input: ServingInput) -> Fallible<ServingId> {
