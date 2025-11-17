@@ -23,9 +23,11 @@ use crate::www::ServerState;
 
 pub struct AssetHandler {}
 
+pub const URL_CSS: &'static str = "/static/style.css";
+
 impl AssetHandler {
     pub fn route(router: Router<ServerState>) -> Router<ServerState> {
-        let router = router.route("/static/style.css", get(css_handler));
+        let router = router.route(URL_CSS, get(css_handler));
         router.route("/favicon.ico", get(favicon_handler))
     }
 }

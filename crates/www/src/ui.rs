@@ -16,6 +16,8 @@ use maud::DOCTYPE;
 use maud::Markup;
 use maud::html;
 
+use crate::routes::assets::URL_CSS;
+
 /// Page template.
 pub fn page(title: &str, body: Markup) -> Markup {
     html! {
@@ -24,7 +26,7 @@ pub fn page(title: &str, body: Markup) -> Markup {
             head {
                 meta charset="utf-8";
                 meta name="viewport" content="width=device-width, initial-scale=1";
-                link rel="stylesheet" href="/static/style.css";
+                link rel="stylesheet" href=(URL_CSS);
                 title { (title) }
             }
             body {
