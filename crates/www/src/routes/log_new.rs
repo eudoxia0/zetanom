@@ -49,6 +49,16 @@ impl LogNewHandler {
         );
         router.route("/log/{date}/new/food/{food_id}", post(post_handler))
     }
+
+    pub fn url(date: NaiveDate) -> String {
+        let date = date.format("%Y-%m-%d");
+        format!("/log/{date}/new")
+    }
+
+    pub fn url_with_food_id(date: NaiveDate, food_id: FoodId) -> String {
+        let date = date.format("%Y-%m-%d");
+        format!("/log/{date}/new/food/{food_id}")
+    }
 }
 
 async fn get_handler(
@@ -57,13 +67,15 @@ async fn get_handler(
 ) -> Fallible<(StatusCode, Html<String>)> {
     let db = state.db.try_lock()?;
     let foods = db.list_foods()?;
+    let date = NaiveDate::parse_from_str(&date, "%Y-%m-%d")
+        .map_err(|_| AppError::new(format!("Failed to parse date: '{date}'.")))?;
 
     let body: Markup = html! {
         h2 { "Add Food Entry for " (date) }
         ul {
             @for food in &foods {
                 li {
-                    a href={(format!("/log/{}/new/food/{}", date, food.food_id))} {
+                    a href=(LogNewHandler::url_with_food_id(date, food.food_id)) {
                         (food.name) " — " (food.brand)
                     }
                 }
@@ -82,10 +94,12 @@ async fn get_handler_with_food_id(
     let db = state.db.try_lock()?;
     let food = db.get_food(food_id)?;
     let servings = db.list_servings(food_id)?;
+    let date = NaiveDate::parse_from_str(&date, "%Y-%m-%d")
+        .map_err(|_| AppError::new(format!("Failed to parse date: '{date}'.")))?;
 
     let body: Markup = html! {
         h2 { "Log: " (food.name) " — " (food.brand) }
-        form method="post" action={(format!("/log/{}/new/food/{}", date, food_id))} {
+        form method="post" action=(LogNewHandler::url_with_food_id(date, food_id)){
             input type="hidden" name="food_id" value={(food_id.to_string())};
 
             (label("serving_id", "Serving"));
