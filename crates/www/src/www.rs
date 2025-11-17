@@ -33,6 +33,9 @@ use chrono::NaiveDate;
 use chrono::Utc;
 use db::CreateFoodInput;
 use db::Db;
+use db::FoodEntry;
+use db::FoodId;
+use db::FoodListEntry;
 use db::ServingUnit;
 use error::AppError;
 use error::Fallible;
@@ -62,6 +65,7 @@ pub async fn start_server() -> Fallible<()> {
     let app = app.route("/", get(index_handler));
     let app = app.route("/favicon.ico", get(favicon_handler));
     let app = app.route("/library", get(library_handler));
+    let app = app.route("/library/{food_id}", get(library_view_handler));
     let app = app.route("/library/new", get(library_new_handler));
     let app = app.route("/library/new", post(library_new_post_handler));
     let app = app.route("/log/{date}", get(date_handler));
@@ -110,7 +114,11 @@ async fn favicon_handler() -> (StatusCode, [(HeaderName, &'static str); 2], &'st
     )
 }
 
-async fn library_handler() -> Fallible<(StatusCode, Html<String>)> {
+async fn library_handler(State(state): State<ServerState>) -> Fallible<(StatusCode, Html<String>)> {
+    let db = state.db.try_lock()?;
+    let foods: Vec<FoodListEntry> = db.list_foods()?;
+    // TODO: display the list of foods, with links to each food item.
+    let list: Markup = todo!();
     let body: Markup = html! {
         p {
             h1 {
@@ -120,6 +128,15 @@ async fn library_handler() -> Fallible<(StatusCode, Html<String>)> {
     };
     let html: Markup = page("zetanom", body);
     Ok((StatusCode::OK, Html(html.into_string())))
+}
+
+async fn library_view_handler(
+    State(state): State<ServerState>,
+    Path(food_id): Path<FoodId>,
+) -> Fallible<(StatusCode, Html<String>)> {
+    let db = state.db.try_lock()?;
+    let food: FoodEntry = db.get_food(food_id)?;
+    todo!()
 }
 
 async fn library_new_handler() -> Fallible<(StatusCode, Html<String>)> {

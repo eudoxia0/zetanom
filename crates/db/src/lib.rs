@@ -106,6 +106,23 @@ pub struct FoodListEntry {
     brand: BrandName,
 }
 
+/// A food entry.
+pub struct FoodEntry {
+    pub food_id: FoodId,
+    pub name: FoodName,
+    pub brand: BrandName,
+    pub serving_unit: ServingUnit,
+    pub energy: Energy,
+    pub protein: Protein,
+    pub fat: Fat,
+    pub fat_saturated: SaturatedFat,
+    pub carbs: Carbs,
+    pub carbs_sugars: Sugars,
+    pub fibre: Fibre,
+    pub sodium: Sodium,
+    pub created_at: DateTime<Utc>,
+}
+
 impl Db {
     pub fn new() -> Fallible<Self> {
         let mut conn = Connection::open_in_memory()?;
@@ -153,6 +170,12 @@ impl Db {
 
     /// Return summary information for all foods in the database.
     pub fn list_foods(&self) -> Fallible<Vec<FoodListEntry>> {
+        // TODO: implement the query
+        todo!()
+    }
+
+    /// Return data for a food.
+    pub fn get_food(&self, food_id: FoodId) -> Fallible<FoodEntry> {
         todo!()
     }
 }
