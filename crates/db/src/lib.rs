@@ -101,9 +101,9 @@ pub struct CreateFoodInput {
 
 /// Summary information for a food entry.
 pub struct FoodListEntry {
-    food_id: FoodId,
-    name: FoodName,
-    brand: BrandName,
+    pub food_id: FoodId,
+    pub name: FoodName,
+    pub brand: BrandName,
 }
 
 /// A food entry.
@@ -170,12 +170,49 @@ impl Db {
 
     /// Return summary information for all foods in the database.
     pub fn list_foods(&self) -> Fallible<Vec<FoodListEntry>> {
-        // TODO: implement the query
-        todo!()
+        let sql = "select food_id, name, brand from foods order by name;";
+        let mut stmt = self.conn.prepare(sql)?;
+        let rows = stmt.query_map([], |row| {
+            Ok(FoodListEntry {
+                food_id: row.get(0)?,
+                name: row.get(1)?,
+                brand: row.get(2)?,
+            })
+        })?;
+        let mut foods = Vec::new();
+        for food in rows {
+            foods.push(food?);
+        }
+        Ok(foods)
     }
 
     /// Return data for a food.
     pub fn get_food(&self, food_id: FoodId) -> Fallible<FoodEntry> {
-        todo!()
+        let sql = "
+            select food_id, name, brand, serving_unit, energy, protein, fat, fat_saturated, carbs, carbs_sugars, fibre, sodium, created_at
+            from foods
+            where food_id = ?1;
+        ";
+        let entry = self.conn.query_row(sql, params![food_id], |row| {
+            let serving_unit_str: String = row.get(3)?;
+            let serving_unit = ServingUnit::try_from(serving_unit_str.as_str())
+                .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?;
+            Ok(FoodEntry {
+                food_id: row.get(0)?,
+                name: row.get(1)?,
+                brand: row.get(2)?,
+                serving_unit,
+                energy: row.get(4)?,
+                protein: row.get(5)?,
+                fat: row.get(6)?,
+                fat_saturated: row.get(7)?,
+                carbs: row.get(8)?,
+                carbs_sugars: row.get(9)?,
+                fibre: row.get(10)?,
+                sodium: row.get(11)?,
+                created_at: row.get(12)?,
+            })
+        })?;
+        Ok(entry)
     }
 }
