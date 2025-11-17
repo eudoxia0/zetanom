@@ -18,8 +18,6 @@ use axum::extract::State;
 use axum::http::StatusCode;
 use axum::response::Html;
 use axum::routing::get;
-use chrono::NaiveDate;
-use error::AppError;
 use error::Fallible;
 use maud::html;
 use shared::date::Date;

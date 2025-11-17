@@ -17,9 +17,7 @@ use axum::extract::Path;
 use axum::extract::State;
 use axum::response::Redirect;
 use axum::routing::post;
-use chrono::NaiveDate;
 use db::EntryId;
-use error::AppError;
 use error::Fallible;
 use shared::date::Date;
 
