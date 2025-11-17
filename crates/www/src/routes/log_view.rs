@@ -22,6 +22,7 @@ use chrono::NaiveDate;
 use error::AppError;
 use error::Fallible;
 use maud::html;
+use shared::date::Date;
 
 use crate::routes::food_view::FoodViewHandler;
 use crate::routes::log_delete::LogDeleteHandler;
@@ -36,8 +37,7 @@ impl LogViewHandler {
         router.route("/log/{date}", get(handler))
     }
 
-    pub fn url(date: NaiveDate) -> String {
-        let date = date.format("%Y-%m-%d");
+    pub fn url(date: Date) -> String {
         format!("/log/{date}")
     }
 }
@@ -46,8 +46,7 @@ async fn handler(
     State(state): State<ServerState>,
     Path(date): Path<String>,
 ) -> Fallible<(StatusCode, Html<String>)> {
-    let date: NaiveDate = NaiveDate::parse_from_str(&date, "%Y-%m-%d")
-        .map_err(|_| AppError::new(format!("Failed to parse date: '{date}'.")))?;
+    let date: Date = Date::try_from(date)?;
 
     let nav = default_nav("today");
 
@@ -56,7 +55,7 @@ async fn handler(
     let entries = db.list_entries(date)?;
 
     // Format the date nicely
-    let formatted_date = date.format("%A, %d %B %Y").to_string();
+    let formatted_date = date.humanize();
 
     // Build table of logged foods
     let table_content = if entries.is_empty() {

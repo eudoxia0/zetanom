@@ -21,6 +21,7 @@ use chrono::NaiveDate;
 use db::EntryId;
 use error::AppError;
 use error::Fallible;
+use shared::date::Date;
 
 use crate::routes::log_view::LogViewHandler;
 use crate::www::ServerState;
@@ -32,8 +33,7 @@ impl LogDeleteHandler {
         router.route("/log/{date}/entry/{entry_id}/delete", post(post_handler))
     }
 
-    pub fn url(date: NaiveDate, entry_id: EntryId) -> String {
-        let date = date.format("%Y-%m-%d");
+    pub fn url(date: Date, entry_id: EntryId) -> String {
         format!("/log/{date}/entry/{entry_id}/delete")
     }
 }
@@ -42,8 +42,7 @@ async fn post_handler(
     State(state): State<ServerState>,
     Path((date, entry_id)): Path<(String, EntryId)>,
 ) -> Fallible<Redirect> {
-    let date = NaiveDate::parse_from_str(&date, "%Y-%m-%d")
-        .map_err(|_| AppError::new(format!("Failed to parse date: '{date}'.")))?;
+    let date = Date::try_from(date)?;
     let db = state.db.try_lock()?;
     db.delete_entry(entry_id)?;
     Ok(Redirect::to(&LogViewHandler::url(date)))

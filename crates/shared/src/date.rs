@@ -25,6 +25,7 @@ use rusqlite::types::FromSqlResult;
 use rusqlite::types::ToSqlOutput;
 use rusqlite::types::ValueRef;
 
+#[derive(Clone, Copy)]
 pub struct Date(NaiveDate);
 
 impl Date {
@@ -38,6 +39,10 @@ impl Date {
 
     pub fn into_inner(self) -> NaiveDate {
         self.0
+    }
+
+    pub fn humanize(&self) -> String {
+        self.0.format("%A, %d %B %Y").to_string()
     }
 }
 

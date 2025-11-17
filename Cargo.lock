@@ -231,6 +231,7 @@ dependencies = [
  "chrono",
  "error",
  "rusqlite",
+ "shared",
 ]
 
 [[package]]

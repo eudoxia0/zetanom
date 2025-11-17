@@ -30,6 +30,7 @@ use error::AppError;
 use error::Fallible;
 use maud::html;
 use serde::Deserialize;
+use shared::date::Date;
 
 use crate::routes::log_view::LogViewHandler;
 use crate::ui::*;
@@ -47,13 +48,11 @@ impl LogNewHandler {
         router.route("/log/{date}/new/food/{food_id}", post(post_handler))
     }
 
-    pub fn url(date: NaiveDate) -> String {
-        let date = date.format("%Y-%m-%d");
+    pub fn url(date: Date) -> String {
         format!("/log/{date}/new")
     }
 
-    pub fn url_with_food_id(date: NaiveDate, food_id: FoodId) -> String {
-        let date = date.format("%Y-%m-%d");
+    pub fn url_with_food_id(date: Date, food_id: FoodId) -> String {
         format!("/log/{date}/new/food/{food_id}")
     }
 }
@@ -66,10 +65,9 @@ async fn get_handler(
 
     let db = state.db.try_lock()?;
     let foods = db.list_foods()?;
-    let date = NaiveDate::parse_from_str(&date, "%Y-%m-%d")
-        .map_err(|_| AppError::new(format!("Failed to parse date: '{date}'.")))?;
+    let date = Date::try_from(date)?;
 
-    let formatted_date = date.format("%A, %d %B %Y").to_string();
+    let formatted_date = date.humanize();
 
     let table_content = if foods.is_empty() {
         empty_state("No foods in library. Add foods to the library first.")
@@ -136,8 +134,7 @@ async fn get_handler_with_food_id(
     let db = state.db.try_lock()?;
     let food = db.get_food(food_id)?;
     let servings = db.list_servings(food_id)?;
-    let date = NaiveDate::parse_from_str(&date, "%Y-%m-%d")
-        .map_err(|_| AppError::new(format!("Failed to parse date: '{date}'.")))?;
+    let date = Date::try_from(date)?;
 
     let food_title = if food.brand.is_empty() {
         food.name.clone()
@@ -200,8 +197,7 @@ async fn post_handler(
     Path((date, _food_id)): Path<(String, FoodId)>,
     Form(form): Form<LogFoodForm>,
 ) -> Fallible<Redirect> {
-    let date = NaiveDate::parse_from_str(&date, "%Y-%m-%d")
-        .map_err(|_| AppError::new(format!("Failed to parse date: '{date}'.")))?;
+    let date = Date::try_from(date)?;
 
     let serving_id = if form.serving_id.is_empty() {
         None

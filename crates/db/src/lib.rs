@@ -15,13 +15,13 @@
 use std::path::Path;
 
 use chrono::DateTime;
-use chrono::NaiveDate;
 use chrono::Utc;
 use error::AppError;
 use error::Fallible;
 use rusqlite::Connection;
 use rusqlite::config::DbConfig;
 use rusqlite::params;
+use shared::date::Date;
 
 pub struct Db {
     conn: Connection,
@@ -166,7 +166,7 @@ pub struct Serving {
 pub type EntryId = i64;
 
 pub struct CreateEntryInput {
-    pub date: NaiveDate,
+    pub date: Date,
     pub food_id: FoodId,
     pub serving_id: Option<ServingId>,
     pub amount: f64,
@@ -175,7 +175,7 @@ pub struct CreateEntryInput {
 
 pub struct Entry {
     pub entry_id: EntryId,
-    pub date: NaiveDate,
+    pub date: Date,
     pub food_id: FoodId,
     pub serving_id: Option<ServingId>,
     pub amount: f64,
@@ -397,7 +397,7 @@ impl Db {
         let entry_id: i64 = self.conn.query_row(
             sql,
             params![
-                input.date.format("%Y-%m-%d").to_string(),
+                input.date,
                 input.food_id,
                 input.serving_id,
                 input.amount,
@@ -414,7 +414,7 @@ impl Db {
         Ok(())
     }
 
-    pub fn list_entries(&self, date: NaiveDate) -> Fallible<Vec<Entry>> {
+    pub fn list_entries(&self, date: Date) -> Fallible<Vec<Entry>> {
         let sql = "
             select
                 entry_id, date, food_id, serving_id, amount, created_at
@@ -426,11 +426,10 @@ impl Db {
                 created_at;
         ";
         let mut stmt = self.conn.prepare(sql)?;
-        let rows = stmt.query_map(params![date.format("%Y-%m-%d").to_string()], |row| {
+        let rows = stmt.query_map(params![date], |row| {
             Ok(Entry {
                 entry_id: row.get(0)?,
-                date: NaiveDate::parse_from_str(&row.get::<_, String>(1)?, "%Y-%m-%d")
-                    .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
+                date: row.get(1)?,
                 food_id: row.get(2)?,
                 serving_id: row.get(3)?,
                 amount: row.get(4)?,

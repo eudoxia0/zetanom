@@ -15,8 +15,7 @@
 use axum::Router;
 use axum::response::Redirect;
 use axum::routing::get;
-use chrono::Local;
-use chrono::NaiveDate;
+use shared::date::Date;
 
 use crate::routes::log_view::LogViewHandler;
 use crate::www::ServerState;
@@ -34,6 +33,6 @@ impl RootHandler {
 }
 
 async fn handler() -> Redirect {
-    let today: NaiveDate = Local::now().naive_local().date();
+    let today = Date::today();
     Redirect::to(&LogViewHandler::url(today))
 }
