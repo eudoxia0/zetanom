@@ -24,6 +24,7 @@ use error::Fallible;
 use maud::Markup;
 use maud::html;
 
+use crate::routes::log_delete::LogDeleteHandler;
 use crate::routes::log_new::LogNewHandler;
 use crate::ui::page;
 use crate::www::ServerState;
@@ -72,6 +73,7 @@ async fn handler(
                         th { "Protein (g)" }
                         th { "Fat (g)" }
                         th { "Carbs (g)" }
+                        th { "Delete" }
                     }
                 }
                 tbody {
@@ -101,6 +103,11 @@ async fn handler(
                                 td { (format!("{:.1}", food.protein * entry.amount * multiplier)) }
                                 td { (format!("{:.1}", food.fat * entry.amount * multiplier)) }
                                 td { (format!("{:.1}", food.carbs * entry.amount * multiplier)) }
+                                td {
+                                    a href=(LogDeleteHandler::url(date, entry.entry_id)) {
+                                        "Delete"
+                                    }
+                                }
                             }
                         }
                     }

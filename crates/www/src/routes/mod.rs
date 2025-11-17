@@ -17,6 +17,7 @@ pub mod food_edit;
 pub mod food_list;
 pub mod food_new;
 pub mod food_view;
+pub mod log_delete;
 pub mod log_new;
 pub mod log_view;
 pub mod root;
