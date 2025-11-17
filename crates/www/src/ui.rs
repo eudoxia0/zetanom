@@ -214,7 +214,7 @@ pub fn label_with_hint(for_id: &str, text: &str, hint: &str) -> Markup {
 /// Text input
 pub fn text_input(id: &str, name: &str, placeholder: &str) -> Markup {
     html! {
-        input type="text" id=(id) name=(name) placeholder=(placeholder);
+        input type="text" id=(id) name=(name) placeholder=(placeholder) autocomplete="off";
     }
 }
 
