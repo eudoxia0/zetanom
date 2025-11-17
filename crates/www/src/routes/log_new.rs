@@ -194,7 +194,7 @@ async fn get_handler(
 #[derive(Deserialize)]
 struct LogFoodForm {
     food_id: FoodId,
-    serving_id: Option<ServingId>,
+    serving_id: String,
     amount: f64,
 }
 
@@ -211,6 +211,11 @@ async fn post_handler(
         serving_id,
         amount,
     } = form;
+
+    let serving_id: Option<ServingId> = match serving_id.as_ref() {
+        "" => None,
+        s => Some(s.parse()?),
+    };
 
     let created_at = Utc::now();
     let input = CreateEntryInput {

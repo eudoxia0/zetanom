@@ -15,6 +15,7 @@
 use std::error::Error;
 use std::fmt::Display;
 use std::fmt::Formatter;
+use std::num::ParseIntError;
 use std::sync::TryLockError;
 
 use axum::http::StatusCode;
@@ -68,6 +69,14 @@ impl<T> From<TryLockError<T>> for AppError {
     fn from(_: TryLockError<T>) -> Self {
         AppError {
             message: "Failed to acquire lock on the database.".to_string(),
+        }
+    }
+}
+
+impl From<ParseIntError> for AppError {
+    fn from(_: ParseIntError) -> Self {
+        AppError {
+            message: format!("failed to parse integer."),
         }
     }
 }
