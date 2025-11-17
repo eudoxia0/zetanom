@@ -124,6 +124,22 @@ pub struct FoodEntry {
     pub created_at: DateTime<Utc>,
 }
 
+/// Data needed to edit an existing food.
+pub struct EditFoodInput {
+    pub food_id: FoodId,
+    pub name: FoodName,
+    pub brand: BrandName,
+    pub serving_unit: ServingUnit,
+    pub energy: Energy,
+    pub protein: Protein,
+    pub fat: Fat,
+    pub fat_saturated: SaturatedFat,
+    pub carbs: Carbs,
+    pub carbs_sugars: Sugars,
+    pub fibre: Fibre,
+    pub sodium: Sodium,
+}
+
 pub type ServingId = i64;
 pub type ServingName = String;
 
@@ -252,6 +268,10 @@ impl Db {
             })
         })?;
         Ok(entry)
+    }
+
+    pub fn edit_food(&self, input: EditFoodInput) -> Fallible<()> {
+        todo!()
     }
 
     pub fn create_serving(&self, input: ServingInput) -> Fallible<ServingId> {
