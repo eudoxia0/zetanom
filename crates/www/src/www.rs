@@ -17,7 +17,6 @@ use std::sync::Mutex;
 
 use axum::Router;
 use axum::routing::IntoMakeService;
-use axum::routing::get;
 use db::Db;
 use error::Fallible;
 use tokio::net::TcpListener;
