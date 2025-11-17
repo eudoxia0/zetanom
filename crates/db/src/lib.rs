@@ -197,8 +197,10 @@ impl Db {
     /// Create a new food.
     pub fn create_food(&self, input: CreateFoodInput) -> Fallible<FoodId> {
         let sql = "
-            insert into foods (name, brand, serving_unit, energy, protein, fat, fat_saturated, carbs, carbs_sugars, fibre, sodium, created_at)
-            values (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)
+            insert into foods
+                (name, brand, serving_unit, energy, protein, fat, fat_saturated, carbs, carbs_sugars, fibre, sodium, created_at)
+            values
+                (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)
             returning food_id;
         ";
         let food_id: i64 = self.conn.query_row(
@@ -243,9 +245,12 @@ impl Db {
     /// Return data for a food.
     pub fn get_food(&self, food_id: FoodId) -> Fallible<FoodEntry> {
         let sql = "
-            select food_id, name, brand, serving_unit, energy, protein, fat, fat_saturated, carbs, carbs_sugars, fibre, sodium, created_at
-            from foods
-            where food_id = ?1;
+            select
+                food_id, name, brand, serving_unit, energy, protein, fat, fat_saturated, carbs, carbs_sugars, fibre, sodium, created_at
+            from
+                foods
+            where
+                food_id = ?1;
         ";
         let entry = self.conn.query_row(sql, params![food_id], |row| {
             let serving_unit_str: String = row.get(3)?;
@@ -273,7 +278,8 @@ impl Db {
     pub fn edit_food(&self, input: EditFoodInput) -> Fallible<()> {
         let sql = "
             update foods
-            set name = ?1,
+            set
+                name = ?1,
                 brand = ?2,
                 serving_unit = ?3,
                 energy = ?4,
@@ -284,7 +290,8 @@ impl Db {
                 carbs_sugars = ?9,
                 fibre = ?10,
                 sodium = ?11
-            where food_id = ?12;
+            where
+                food_id = ?12;
         ";
         self.conn.execute(
             sql,
@@ -308,8 +315,10 @@ impl Db {
 
     pub fn create_serving(&self, input: ServingInput) -> Fallible<ServingId> {
         let sql = "
-            insert into serving_sizes (food_id, serving_name, serving_amount, created_at)
-            values (?1, ?2, ?3, ?4)
+            insert into serving_sizes
+                (food_id, serving_name, serving_amount, created_at)
+            values
+                (?1, ?2, ?3, ?4)
             returning serving_id;
         ";
         let serving_id: i64 = self.conn.query_row(
@@ -333,10 +342,14 @@ impl Db {
 
     pub fn list_servings(&self, food_id: FoodId) -> Fallible<Vec<Serving>> {
         let sql = "
-            select serving_id, food_id, serving_name, serving_amount, created_at
-            from serving_sizes
-            where food_id = ?1
-            order by serving_name;
+            select
+                serving_id, food_id, serving_name, serving_amount, created_at
+            from
+                serving_sizes
+            where
+                food_id = ?1
+            order by
+                serving_name;
         ";
         let mut stmt = self.conn.prepare(sql)?;
         let rows = stmt.query_map(params![food_id], |row| {
@@ -357,8 +370,10 @@ impl Db {
 
     pub fn create_entry(&self, input: CreateEntryInput) -> Fallible<EntryId> {
         let sql = "
-            insert into entries (date, food_id, serving_id, amount, created_at)
-            values (?1, ?2, ?3, ?4, ?5)
+            insert into entries
+                (date, food_id, serving_id, amount, created_at)
+            values
+                (?1, ?2, ?3, ?4, ?5)
             returning entry_id;
         ";
         let entry_id: i64 = self.conn.query_row(
@@ -383,10 +398,14 @@ impl Db {
 
     pub fn list_entries(&self, date: NaiveDate) -> Fallible<Vec<Entry>> {
         let sql = "
-            select entry_id, date, food_id, serving_id, amount, created_at
-            from entries
-            where date = ?1
-            order by created_at;
+            select
+                entry_id, date, food_id, serving_id, amount, created_at
+            from
+                entries
+            where
+                date = ?1
+            order by
+                created_at;
         ";
         let mut stmt = self.conn.prepare(sql)?;
         let rows = stmt.query_map(params![date.format("%Y-%m-%d").to_string()], |row| {
