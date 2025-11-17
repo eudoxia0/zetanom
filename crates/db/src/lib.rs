@@ -105,6 +105,9 @@ pub struct FoodListEntry {
     pub food_id: FoodId,
     pub name: FoodName,
     pub brand: BrandName,
+    pub serving_unit: ServingUnit,
+    pub energy: Energy,
+    pub protein: Protein,
 }
 
 /// A food entry.
@@ -226,13 +229,19 @@ impl Db {
 
     /// Return summary information for all foods in the database.
     pub fn list_foods(&self) -> Fallible<Vec<FoodListEntry>> {
-        let sql = "select food_id, name, brand from foods order by name;";
+        let sql = "select food_id, name, brand, serving_unit, energy, protein from foods order by name;";
         let mut stmt = self.conn.prepare(sql)?;
         let rows = stmt.query_map([], |row| {
+            let serving_unit_str: String = row.get(3)?;
+            let serving_unit = ServingUnit::try_from(serving_unit_str.as_str())
+                .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?;
             Ok(FoodListEntry {
                 food_id: row.get(0)?,
                 name: row.get(1)?,
                 brand: row.get(2)?,
+                serving_unit,
+                energy: row.get(4)?,
+                protein: row.get(5)?,
             })
         })?;
         let mut foods = Vec::new();

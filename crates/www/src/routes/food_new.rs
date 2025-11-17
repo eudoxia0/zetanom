@@ -25,15 +25,11 @@ use db::CreateFoodInput;
 use db::FoodId;
 use db::ServingUnit;
 use error::Fallible;
-use maud::Markup;
 use maud::html;
 use serde::Deserialize;
 
 use crate::routes::food_view::FoodViewHandler;
-use crate::ui::label;
-use crate::ui::number_input;
-use crate::ui::page;
-use crate::ui::text_input;
+use crate::ui::*;
 use crate::www::ServerState;
 
 pub struct FoodNewHandler {}
@@ -50,54 +46,81 @@ impl FoodNewHandler {
 }
 
 async fn get_handler() -> Fallible<(StatusCode, Html<String>)> {
-    let body: Markup = html! {
-        p {
-            h1 {
-                "Library: New Food"
-            }
-            form method="post" action=(FoodNewHandler::url()) {
-                (label("name", "Name"));
-                (text_input("name"));
-                br;
-                (label("brand", "Brand"));
-                (text_input("brand"));
-                br;
-                (label("serving_unit", "Serving Unit"));
-                select id="serving_unit" name="serving_unit" {
-                    option value="g" { "g" }
-                    option value="ml" { "ml" }
-                }
-                br;
-                (label("energy", "Energy (kcal)"));
-                (number_input("energy"));
-                br;
-                (label("protein", "Protein (g)"));
-                (number_input("protein"));
-                br;
-                (label("fat", "Fat (g)"));
-                (number_input("fat"));
-                br;
-                (label("fat_saturated", "Fat — Saturated (g)"));
-                (number_input("fat_saturated"));
-                br;
-                (label("carbs", "Carbohydrate (g)"));
-                (number_input("carbs"));
-                br;
-                (label("carbs_sugars", "Carbohydrate — Sugars (g)"));
-                (number_input("carbs_sugars"));
-                br;
-                (label("fibre", "Fibre (g)"));
-                (number_input("fibre"));
-                br;
-                (label("sodium", "Sodium (mg)"));
-                (number_input("sodium"));
-                br;
-                input type="submit" value="Save";
-            }
+    let nav = default_nav("food_new");
+
+    let form_content = html! {
+        form method="post" action=(FoodNewHandler::url()) {
+            // Basic Information Section
+            (form_section("Basic Information", html! {
+                (form_row(html! {
+                    (form_group(html! {
+                        (label_required("name", "Food Name"))
+                        (text_input("name", "name", "e.g., Rolled Oats"))
+                    }))
+                }))
+                (form_row(html! {
+                    (form_group_half(html! {
+                        (label_with_hint("brand", "Brand", "(optional, leave blank for generic foods)"))
+                        (text_input("brand", "brand", "e.g., Uncle Tobys"))
+                    }))
+                    (form_group_half(html! {
+                        (label_required("serving_unit", "Base Unit"))
+                        (select("serving_unit", "serving_unit", vec![
+                            ("g".to_string(), "Grams (g)".to_string()),
+                            ("ml".to_string(), "Milliliters (ml)".to_string()),
+                        ]))
+                    }))
+                }))
+            }))
+
+            // Nutrition Information Section
+            (form_section("Nutrition Information (per 100g or 100ml)", html! {
+                (nutrition_table(html! {
+                    (nutrition_row("Energy *", "energy", "energy", "kcal", 0))
+                    (nutrition_row("Protein *", "protein", "protein", "g", 0))
+                    (nutrition_row("Fat, Total *", "fat", "fat", "g", 0))
+                    (nutrition_row("Saturated *", "fat_saturated", "fat_saturated", "g", 1))
+                    (nutrition_row("Carbohydrate *", "carbs", "carbs", "g", 0))
+                    (nutrition_row("Sugars *", "carbs_sugars", "carbs_sugars", "g", 1))
+                    (nutrition_row("Dietary Fibre *", "fibre", "fibre", "g", 0))
+                    (nutrition_row("Sodium *", "sodium", "sodium", "mg", 0))
+                }))
+            }))
+
+            // Action Buttons
+            (button_bar(html! {
+                (submit_button_primary("Save Food"))
+                (button("Cancel"))
+            }))
         }
     };
-    let html: Markup = page("zetanom", body);
-    Ok((StatusCode::OK, Html(html.into_string())))
+
+    let help_content = html! {
+        p {
+            strong { "Where to find nutrition information:" }
+            br;
+            "Look at the nutrition information panel on the back of food packaging. In Australia, all values are shown per 100g or per 100ml."
+        }
+        p {
+            strong { "Carbohydrate vs. Sugars:" }
+            br;
+            "\"Carbohydrate\" refers to available carbohydrate (excluding fiber). \"Sugars\" is a subset of carbohydrate and should be indented underneath it on labels."
+        }
+    };
+
+    let content = html! {
+        (panel("Add New Food", html! {
+            (info_box(html! {
+                strong { "Note:" }
+                "All nutrition information should be entered per 100g or per 100ml as shown on the Australian nutrition label."
+            }))
+            (form_content)
+        }))
+        (panel("Help", help_content))
+    };
+
+    let html_page = page("Add New Food — zetanom", nav, content);
+    Ok((StatusCode::OK, Html(html_page.into_string())))
 }
 
 #[derive(Deserialize)]

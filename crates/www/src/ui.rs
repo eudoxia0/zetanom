@@ -21,8 +21,21 @@ use crate::routes::food_list::FoodListHandler;
 use crate::routes::food_new::FoodNewHandler;
 use crate::routes::root::RootHandler;
 
-/// Page template.
-pub fn page(title: &str, body: Markup) -> Markup {
+/// Navigation section item
+pub struct NavItem {
+    pub label: String,
+    pub url: String,
+    pub active: bool,
+}
+
+/// Navigation section
+pub struct NavSection {
+    pub title: String,
+    pub items: Vec<NavItem>,
+}
+
+/// Page template with sidebar navigation
+pub fn page(title: &str, nav_sections: Vec<NavSection>, body: Markup) -> Markup {
     html! {
         (DOCTYPE)
         html lang="en" {
@@ -34,34 +47,8 @@ pub fn page(title: &str, body: Markup) -> Markup {
             }
             body {
                 div .Root {
-                    div.NavPane {
-                        h1 {
-                            "Navigation"
-                        }
-                        nav {
-                            ul {
-                                li {
-                                    a href=(RootHandler::url()) {
-                                        "Today"
-                                    }
-                                }
-                                li {
-                                    a href=(FoodListHandler::url()) {
-                                        "List Foods"
-                                    }
-                                }
-                                li {
-                                    a href=(FoodNewHandler::url()) {
-                                        "Create Food"
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    (sidebar(nav_sections))
                     div.ContentPane {
-                        h1 {
-                            "Content"
-                        }
                         (body)
                     }
                 }
@@ -70,23 +57,388 @@ pub fn page(title: &str, body: Markup) -> Markup {
     }
 }
 
-/// Form label.
-pub fn label(id: &str, text: &str) -> Markup {
+/// Sidebar navigation component
+fn sidebar(sections: Vec<NavSection>) -> Markup {
     html! {
-        label for=(id) { (text) };
+        div.NavPane {
+            div.app-title {
+                "DIET TRACKER"
+            }
+            @for section in sections {
+                div.nav-section {
+                    div."nav-section-title" {
+                        (section.title)
+                    }
+                    @for item in section.items {
+                        @if item.active {
+                            a.nav-item.active href=(item.url) {
+                                (item.label)
+                            }
+                        } @else {
+                            a.nav-item href=(item.url) {
+                                (item.label)
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
-/// Text input.
-pub fn text_input(id: &str) -> Markup {
+/// Create default navigation sections for a page
+pub fn default_nav(active_page: &str) -> Vec<NavSection> {
+    vec![
+        NavSection {
+            title: "Views".to_string(),
+            items: vec![
+                NavItem {
+                    label: "Today".to_string(),
+                    url: RootHandler::url().to_string(),
+                    active: active_page == "today",
+                },
+            ],
+        },
+        NavSection {
+            title: "Library".to_string(),
+            items: vec![
+                NavItem {
+                    label: "All Foods".to_string(),
+                    url: FoodListHandler::url().to_string(),
+                    active: active_page == "food_list",
+                },
+                NavItem {
+                    label: "Add New Food".to_string(),
+                    url: FoodNewHandler::url().to_string(),
+                    active: active_page == "food_new",
+                },
+            ],
+        },
+    ]
+}
+
+/// Panel component with header
+pub fn panel(header: &str, content: Markup) -> Markup {
     html! {
-        input type="text" name=(id) id=(id);
+        div.panel {
+            div."panel-header" {
+                (header)
+            }
+            div."panel-content" {
+                (content)
+            }
+        }
     }
 }
 
-/// Numeric input.
-pub fn number_input(id: &str) -> Markup {
+/// Info box (yellow background for tips/notes)
+pub fn info_box(content: Markup) -> Markup {
     html! {
-        input type="number" name=(id) id=(id);
+        div."info-box" {
+            (content)
+        }
+    }
+}
+
+/// Form section with title
+pub fn form_section(title: &str, content: Markup) -> Markup {
+    html! {
+        div."form-section" {
+            div."form-section-title" {
+                (title)
+            }
+            (content)
+        }
+    }
+}
+
+/// Form row (horizontal layout)
+pub fn form_row(content: Markup) -> Markup {
+    html! {
+        div."form-row" {
+            (content)
+        }
+    }
+}
+
+/// Form group (label + input container)
+pub fn form_group(content: Markup) -> Markup {
+    html! {
+        div."form-group" {
+            (content)
+        }
+    }
+}
+
+/// Form group with half width
+pub fn form_group_half(content: Markup) -> Markup {
+    html! {
+        div."form-group"."half" {
+            (content)
+        }
+    }
+}
+
+/// Form group with third width
+pub fn form_group_third(content: Markup) -> Markup {
+    html! {
+        div."form-group"."third" {
+            (content)
+        }
+    }
+}
+
+/// Label (plain)
+pub fn label(for_id: &str, text: &str) -> Markup {
+    html! {
+        label for=(for_id) { (text) }
+    }
+}
+
+/// Label with required indicator (*)
+pub fn label_required(for_id: &str, text: &str) -> Markup {
+    html! {
+        label."label-required" for=(for_id) { (text) }
+    }
+}
+
+/// Label with hint text
+pub fn label_with_hint(for_id: &str, text: &str, hint: &str) -> Markup {
+    html! {
+        label for=(for_id) {
+            (text)
+            " "
+            span."label-hint" { (hint) }
+        }
+    }
+}
+
+/// Text input
+pub fn text_input(id: &str, name: &str, placeholder: &str) -> Markup {
+    html! {
+        input type="text" id=(id) name=(name) placeholder=(placeholder);
+    }
+}
+
+/// Text input with value
+pub fn text_input_value(id: &str, name: &str, value: &str, placeholder: &str) -> Markup {
+    html! {
+        input type="text" id=(id) name=(name) value=(value) placeholder=(placeholder);
+    }
+}
+
+/// Number input
+pub fn number_input(id: &str, name: &str, step: &str, placeholder: &str) -> Markup {
+    html! {
+        input type="number" id=(id) name=(name) step=(step) placeholder=(placeholder);
+    }
+}
+
+/// Number input with value
+pub fn number_input_value(id: &str, name: &str, value: &str, step: &str, placeholder: &str) -> Markup {
+    html! {
+        input type="number" id=(id) name=(name) value=(value) step=(step) placeholder=(placeholder);
+    }
+}
+
+/// Time input
+pub fn time_input(id: &str, name: &str) -> Markup {
+    html! {
+        input type="time" id=(id) name=(name);
+    }
+}
+
+/// Select dropdown
+pub fn select(id: &str, name: &str, options: Vec<(String, String)>) -> Markup {
+    html! {
+        select id=(id) name=(name) {
+            @for (value, label) in options {
+                option value=(value) { (label) }
+            }
+        }
+    }
+}
+
+/// Select dropdown with selected value
+pub fn select_with_selected(id: &str, name: &str, options: Vec<(String, String)>, selected: &str) -> Markup {
+    html! {
+        select id=(id) name=(name) {
+            @for (value, label) in options {
+                @if value == selected {
+                    option value=(value) selected { (label) }
+                } @else {
+                    option value=(value) { (label) }
+                }
+            }
+        }
+    }
+}
+
+/// Button
+pub fn button(text: &str) -> Markup {
+    html! {
+        button type="button" { (text) }
+    }
+}
+
+/// Submit button
+pub fn submit_button(text: &str) -> Markup {
+    html! {
+        button type="submit" { (text) }
+    }
+}
+
+/// Primary submit button
+pub fn submit_button_primary(text: &str) -> Markup {
+    html! {
+        button."primary" type="submit" { (text) }
+    }
+}
+
+/// Button as link
+pub fn button_link(text: &str, href: &str) -> Markup {
+    html! {
+        a.button href=(href) { (text) }
+    }
+}
+
+/// Primary button as link
+pub fn button_link_primary(text: &str, href: &str) -> Markup {
+    html! {
+        a.button.primary href=(href) { (text) }
+    }
+}
+
+/// Button bar (horizontal button container)
+pub fn button_bar(content: Markup) -> Markup {
+    html! {
+        div."button-bar" {
+            (content)
+        }
+    }
+}
+
+/// Spacer element (flex: 1)
+pub fn spacer() -> Markup {
+    html! {
+        span.spacer {}
+    }
+}
+
+/// Nutrition table row (for form input)
+pub fn nutrition_row(label_text: &str, input_id: &str, input_name: &str, unit: &str, indent: u8) -> Markup {
+    let class = match indent {
+        1 => "nutrition-row indent-1",
+        2 => "nutrition-row indent-2",
+        _ => "nutrition-row",
+    };
+    let label_class = if indent > 0 {
+        "nutrition-label sub"
+    } else {
+        "nutrition-label"
+    };
+    html! {
+        div.(class) {
+            div.(label_class) {
+                (label_text)
+            }
+            div."nutrition-input" {
+                input type="number" id=(input_id) name=(input_name) step="0.1" placeholder="0.0";
+                span."nutrition-unit" { (unit) }
+            }
+        }
+    }
+}
+
+/// Nutrition table row with value (for editing)
+pub fn nutrition_row_with_value(label_text: &str, input_id: &str, input_name: &str, unit: &str, value: &str, indent: u8) -> Markup {
+    let class = match indent {
+        1 => "nutrition-row indent-1",
+        2 => "nutrition-row indent-2",
+        _ => "nutrition-row",
+    };
+    let label_class = if indent > 0 {
+        "nutrition-label sub"
+    } else {
+        "nutrition-label"
+    };
+    html! {
+        div.(class) {
+            div.(label_class) {
+                (label_text)
+            }
+            div."nutrition-input" {
+                input type="number" id=(input_id) name=(input_name) value=(value) step="0.1" placeholder="0.0";
+                span."nutrition-unit" { (unit) }
+            }
+        }
+    }
+}
+
+/// Nutrition table container
+pub fn nutrition_table(rows: Markup) -> Markup {
+    html! {
+        div."nutrition-table" {
+            (rows)
+        }
+    }
+}
+
+/// Data table component
+pub struct TableColumn {
+    pub header: String,
+    pub numeric: bool,
+}
+
+pub fn data_table(columns: Vec<TableColumn>, rows: Markup) -> Markup {
+    html! {
+        table {
+            thead {
+                tr {
+                    @for col in columns {
+                        @if col.numeric {
+                            th.numeric { (col.header) }
+                        } @else {
+                            th { (col.header) }
+                        }
+                    }
+                }
+            }
+            tbody {
+                (rows)
+            }
+        }
+    }
+}
+
+/// Summary box (for displaying totals)
+pub fn summary_box(header: &str, content: Markup) -> Markup {
+    html! {
+        div."summary-box" {
+            div."panel-header" {
+                (header)
+            }
+            div."summary-content" {
+                (content)
+            }
+        }
+    }
+}
+
+/// Summary table (borderless table for totals)
+pub fn summary_table(rows: Markup) -> Markup {
+    html! {
+        table."summary-table" {
+            (rows)
+        }
+    }
+}
+
+/// Empty state message
+pub fn empty_state(message: &str) -> Markup {
+    html! {
+        div."text-center"."text-muted" style="padding: 20px;" {
+            (message)
+        }
     }
 }

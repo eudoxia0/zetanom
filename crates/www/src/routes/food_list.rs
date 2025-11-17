@@ -19,12 +19,11 @@ use axum::response::Html;
 use axum::routing::get;
 use db::FoodListEntry;
 use error::Fallible;
-use maud::Markup;
 use maud::html;
 
 use crate::routes::food_new::FoodNewHandler;
 use crate::routes::food_view::FoodViewHandler;
-use crate::ui::page;
+use crate::ui::*;
 use crate::www::ServerState;
 
 pub struct FoodListHandler {}
@@ -40,30 +39,78 @@ impl FoodListHandler {
 }
 
 async fn handler(State(state): State<ServerState>) -> Fallible<(StatusCode, Html<String>)> {
+    let nav = default_nav("food_list");
+
     let db = state.db.try_lock()?;
     let foods: Vec<FoodListEntry> = db.list_foods()?;
-    let list: Markup = html! {
-        ul {
+
+    let table_content = if foods.is_empty() {
+        empty_state("No foods in library yet.")
+    } else {
+        let columns = vec![
+            TableColumn {
+                header: "Name".to_string(),
+                numeric: false,
+            },
+            TableColumn {
+                header: "Brand".to_string(),
+                numeric: false,
+            },
+            TableColumn {
+                header: "Unit".to_string(),
+                numeric: false,
+            },
+            TableColumn {
+                header: "Energy (kcal)".to_string(),
+                numeric: true,
+            },
+            TableColumn {
+                header: "Protein (g)".to_string(),
+                numeric: true,
+            },
+            TableColumn {
+                header: "".to_string(),
+                numeric: false,
+            },
+        ];
+
+        let rows = html! {
             @for food in &foods {
-                li {
-                    a href=(FoodViewHandler::url(food.food_id)) {
-                        (food.name) " — " (food.brand)
+                tr {
+                    td {
+                        a href=(FoodViewHandler::url(food.food_id)) {
+                            (food.name)
+                        }
+                    }
+                    td {
+                        @if food.brand.is_empty() {
+                            "—"
+                        } @else {
+                            (food.brand)
+                        }
+                    }
+                    td { (food.serving_unit.as_str()) }
+                    td.numeric { (format!("{:.1}", food.energy)) }
+                    td.numeric { (format!("{:.1}", food.protein)) }
+                    td {
+                        (button_link("View", &FoodViewHandler::url(food.food_id)))
                     }
                 }
             }
-        }
+        };
+
+        data_table(columns, rows)
     };
-    let body: Markup = html! {
-        h1 {
-            "Library"
-        }
-        p {
-            a href=(FoodNewHandler::url()) {
-                "Add New Food"
-            }
-        }
-        (list)
+
+    let content = html! {
+        (panel("Food Library", html! {
+            (button_bar(html! {
+                (button_link_primary("Add New Food", FoodNewHandler::url()))
+            }))
+            (table_content)
+        }))
     };
-    let html: Markup = page("zetanom", body);
-    Ok((StatusCode::OK, Html(html.into_string())))
+
+    let html_page = page("Food Library — zetanom", nav, content);
+    Ok((StatusCode::OK, Html(html_page.into_string())))
 }

@@ -26,13 +26,11 @@ use db::FoodEntry;
 use db::FoodId;
 use db::ServingUnit;
 use error::Fallible;
-use maud::Markup;
 use maud::html;
 use serde::Deserialize;
 
 use crate::routes::food_view::FoodViewHandler;
-use crate::ui::label;
-use crate::ui::page;
+use crate::ui::*;
 use crate::www::ServerState;
 
 pub struct FoodEditHandler {}
@@ -52,60 +50,64 @@ async fn get_handler(
     State(state): State<ServerState>,
     Path(food_id): Path<FoodId>,
 ) -> Fallible<(StatusCode, Html<String>)> {
+    let nav = default_nav("food_list");
+
     let db = state.db.try_lock()?;
     let food: FoodEntry = db.get_food(food_id)?;
-    let body: Markup = html! {
-        p {
-            h1 {
-                "Edit Food: " (food.name)
-            }
-            form method="post" action=(FoodEditHandler::url(food_id)) {
-                (label("name", "Name"));
-                input type="text" name="name" id="name" value=(food.name);
-                br;
-                (label("brand", "Brand"));
-                input type="text" name="brand" id="brand" value=(food.brand);
-                br;
-                (label("serving_unit", "Serving Unit"));
-                select id="serving_unit" name="serving_unit" {
-                    option value="g" selected[food.serving_unit.as_str() == "g"] { "g" }
-                    option value="ml" selected[food.serving_unit.as_str() == "ml"] { "ml" }
-                }
-                br;
-                (label("energy", "Energy (kcal)"));
-                input type="number" name="energy" id="energy" value=(food.energy) step="0.01";
-                br;
-                (label("protein", "Protein (g)"));
-                input type="number" name="protein" id="protein" value=(food.protein) step="0.01";
-                br;
-                (label("fat", "Fat (g)"));
-                input type="number" name="fat" id="fat" value=(food.fat) step="0.01";
-                br;
-                (label("fat_saturated", "Fat — Saturated (g)"));
-                input type="number" name="fat_saturated" id="fat_saturated" value=(food.fat_saturated) step="0.01";
-                br;
-                (label("carbs", "Carbohydrate (g)"));
-                input type="number" name="carbs" id="carbs" value=(food.carbs) step="0.01";
-                br;
-                (label("carbs_sugars", "Carbohydrate — Sugars (g)"));
-                input type="number" name="carbs_sugars" id="carbs_sugars" value=(food.carbs_sugars) step="0.01";
-                br;
-                (label("fibre", "Fibre (g)"));
-                input type="number" name="fibre" id="fibre" value=(food.fibre) step="0.01";
-                br;
-                (label("sodium", "Sodium (mg)"));
-                input type="number" name="sodium" id="sodium" value=(food.sodium) step="0.01";
-                br;
-                input type="submit" value="Save";
-                " "
-                a href=(FoodViewHandler::url(food_id)) {
-                    "Cancel"
-                }
-            }
+
+    let form_content = html! {
+        form method="post" action=(FoodEditHandler::url(food_id)) {
+            // Basic Information Section
+            (form_section("Basic Information", html! {
+                (form_row(html! {
+                    (form_group(html! {
+                        (label_required("name", "Food Name"))
+                        (text_input_value("name", "name", &food.name, "e.g., Rolled Oats"))
+                    }))
+                }))
+                (form_row(html! {
+                    (form_group_half(html! {
+                        (label_with_hint("brand", "Brand", "(optional, leave blank for generic foods)"))
+                        (text_input_value("brand", "brand", &food.brand, "e.g., Uncle Tobys"))
+                    }))
+                    (form_group_half(html! {
+                        (label_required("serving_unit", "Base Unit"))
+                        (select_with_selected("serving_unit", "serving_unit", vec![
+                            ("g".to_string(), "Grams (g)".to_string()),
+                            ("ml".to_string(), "Milliliters (ml)".to_string()),
+                        ], food.serving_unit.as_str()))
+                    }))
+                }))
+            }))
+
+            // Nutrition Information Section
+            (form_section("Nutrition Information (per 100g or 100ml)", html! {
+                (nutrition_table(html! {
+                    (nutrition_row_with_value("Energy *", "energy", "energy", "kcal", &format!("{:.1}", food.energy), 0))
+                    (nutrition_row_with_value("Protein *", "protein", "protein", "g", &format!("{:.1}", food.protein), 0))
+                    (nutrition_row_with_value("Fat, Total *", "fat", "fat", "g", &format!("{:.1}", food.fat), 0))
+                    (nutrition_row_with_value("Saturated *", "fat_saturated", "fat_saturated", "g", &format!("{:.1}", food.fat_saturated), 1))
+                    (nutrition_row_with_value("Carbohydrate *", "carbs", "carbs", "g", &format!("{:.1}", food.carbs), 0))
+                    (nutrition_row_with_value("Sugars *", "carbs_sugars", "carbs_sugars", "g", &format!("{:.1}", food.carbs_sugars), 1))
+                    (nutrition_row_with_value("Dietary Fibre *", "fibre", "fibre", "g", &format!("{:.1}", food.fibre), 0))
+                    (nutrition_row_with_value("Sodium *", "sodium", "sodium", "mg", &format!("{:.0}", food.sodium), 0))
+                }))
+            }))
+
+            // Action Buttons
+            (button_bar(html! {
+                (submit_button_primary("Save Changes"))
+                (button_link("Cancel", &FoodViewHandler::url(food_id)))
+            }))
         }
     };
-    let html: Markup = page("zetanom", body);
-    Ok((StatusCode::OK, Html(html.into_string())))
+
+    let content = html! {
+        (panel(&format!("Edit Food: {}", food.name), form_content))
+    };
+
+    let html_page = page(&format!("Edit {} — zetanom", food.name), nav, content);
+    Ok((StatusCode::OK, Html(html_page.into_string())))
 }
 
 #[derive(Deserialize)]

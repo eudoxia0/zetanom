@@ -22,17 +22,13 @@ use db::FoodEntry;
 use db::FoodId;
 use db::Serving;
 use error::Fallible;
-use maud::Markup;
 use maud::html;
 
 use crate::routes::food_edit::FoodEditHandler;
 use crate::routes::food_list::FoodListHandler;
 use crate::routes::serving_delete::ServingDeleteHandler;
 use crate::routes::serving_new::ServingNewHandler;
-use crate::ui::label;
-use crate::ui::number_input;
-use crate::ui::page;
-use crate::ui::text_input;
+use crate::ui::*;
 use crate::www::ServerState;
 
 pub struct FoodViewHandler {}
@@ -51,98 +47,116 @@ async fn handler(
     State(state): State<ServerState>,
     Path(food_id): Path<FoodId>,
 ) -> Fallible<(StatusCode, Html<String>)> {
+    let nav = default_nav("food_list");
+
     let db = state.db.try_lock()?;
     let food: FoodEntry = db.get_food(food_id)?;
     let servings: Vec<Serving> = db.list_servings(food_id)?;
-    let body: Markup = html! {
-        h1 {
-            (food.name)
-        }
-        h2 {
-            (food.brand)
-        }
-        p {
-            "Serving size: 100" (food.serving_unit.as_str())
-        }
+
+    let food_title = if food.brand.is_empty() {
+        food.name.clone()
+    } else {
+        format!("{} — {}", food.name, food.brand)
+    };
+
+    // Nutrition table
+    let nutrition_table = html! {
         table {
-            tr {
-                th { "Nutrient" }
-                th { "Amount" }
+            thead {
+                tr {
+                    th { "Nutrient" }
+                    th.numeric { "Per 100" (food.serving_unit.as_str()) }
+                }
             }
-            tr {
-                td { "Energy" }
-                td { (food.energy) " kcal" }
-            }
-            tr {
-                td { "Protein" }
-                td { (food.protein) " g" }
-            }
-            tr {
-                td { "Fat" }
-                td { (food.fat) " g" }
-            }
-            tr {
-                td { "— Saturated Fat" }
-                td { (food.fat_saturated) " g" }
-            }
-            tr {
-                td { "Carbohydrate" }
-                td { (food.carbs) " g" }
-            }
-            tr {
-                td { "— Sugars" }
-                td { (food.carbs_sugars) " g" }
-            }
-            tr {
-                td { "Fibre" }
-                td { (food.fibre) " g" }
-            }
-            tr {
-                td { "Sodium" }
-                td { (food.sodium) " mg" }
+            tbody {
+                tr {
+                    td { "Energy" }
+                    td.numeric { (format!("{:.1} kcal", food.energy)) }
+                }
+                tr {
+                    td { "Protein" }
+                    td.numeric { (format!("{:.1} g", food.protein)) }
+                }
+                tr {
+                    td { "Fat, Total" }
+                    td.numeric { (format!("{:.1} g", food.fat)) }
+                }
+                tr style="background: #f8f8f8;" {
+                    td { "— Saturated" }
+                    td.numeric { (format!("{:.1} g", food.fat_saturated)) }
+                }
+                tr {
+                    td { "Carbohydrate" }
+                    td.numeric { (format!("{:.1} g", food.carbs)) }
+                }
+                tr style="background: #f8f8f8;" {
+                    td { "— Sugars" }
+                    td.numeric { (format!("{:.1} g", food.carbs_sugars)) }
+                }
+                tr {
+                    td { "Dietary Fibre" }
+                    td.numeric { (format!("{:.1} g", food.fibre)) }
+                }
+                tr {
+                    td { "Sodium" }
+                    td.numeric { (format!("{:.0} mg", food.sodium)) }
+                }
             }
         }
-        h2 {
-            "Serving Sizes"
-        }
-        @if servings.is_empty() {
-            p {
-                "No custom serving sizes defined."
-            }
-        } @else {
-            ul {
+    };
+
+    // Servings section
+    let servings_list = if servings.is_empty() {
+        empty_state("No custom serving sizes defined.")
+    } else {
+        html! {
+            div."serving-list" {
                 @for serving in &servings {
-                    li {
-                        (serving.serving_name) ": " (serving.serving_amount) (food.serving_unit.as_str())
-                        " "
+                    div."serving-item" {
+                        span {
+                            (serving.serving_name) ": " (serving.serving_amount) (food.serving_unit.as_str())
+                        }
                         form method="post" action=(ServingDeleteHandler::url(food_id, serving.serving_id)) style="display: inline;" {
-                            input type="submit" value="Delete";
+                            button type="submit" { "Delete" }
                         }
                     }
                 }
             }
         }
-        h3 {
-            "Add Serving Size"
-        }
+    };
+
+    let add_serving_form = html! {
         form method="post" action=(ServingNewHandler::url(food_id)) {
-            (label("serving_name", "Name (e.g., cup, slice, package)"));
-            (text_input("serving_name"));
-            br;
-            (label("serving_amount", &format!("Amount ({})", food.serving_unit.as_str())));
-            (number_input("serving_amount"));
-            br;
-            input type="submit" value="Add Serving Size";
-        }
-        p {
-            a href=(FoodEditHandler::url(food_id)) {
-                "Edit"
-            }
-            a href=(FoodListHandler::url()) {
-                "Back to Library"
-            }
+            (form_section("Add Custom Serving Size", html! {
+                div."add-serving-row" {
+                    (form_group(html! {
+                        (label("serving_name", "Serving Name"))
+                        (text_input("serving_name", "serving_name", "e.g., cup, slice, package"))
+                    }))
+                    (form_group(html! {
+                        (label("serving_amount", &format!("Amount ({})", food.serving_unit.as_str())))
+                        (number_input("serving_amount", "serving_amount", "0.1", "e.g., 250"))
+                    }))
+                    (submit_button("Add Serving"))
+                }
+            }))
         }
     };
-    let html: Markup = page("zetanom", body);
-    Ok((StatusCode::OK, Html(html.into_string())))
+
+    let content = html! {
+        (panel(&food_title, html! {
+            (button_bar(html! {
+                (button_link("Edit Food", &FoodEditHandler::url(food_id)))
+                (button_link("Back to Library", FoodListHandler::url()))
+            }))
+            (nutrition_table)
+        }))
+        (panel("Custom Serving Sizes", html! {
+            (servings_list)
+            (add_serving_form)
+        }))
+    };
+
+    let html_page = page(&format!("{} — zetanom", food_title), nav, content);
+    Ok((StatusCode::OK, Html(html_page.into_string())))
 }
