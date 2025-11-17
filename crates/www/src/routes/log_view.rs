@@ -268,7 +268,7 @@ async fn handler(
     let content = html! {
         (panel(&format!("Daily Log — {}", formatted_date), html! {
             (button_bar(html! {
-                (button("← Previous Day"))
+                (button("← Yesterday"))
                 (button("Today"))
                 (button("Next Day →"))
                 (spacer())
