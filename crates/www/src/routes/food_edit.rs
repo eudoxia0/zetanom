@@ -61,8 +61,8 @@ async fn get_handler(
             (form_section("Basic Information", html! {
                 (form_row(html! {
                     (form_group(html! {
-                        (label_required("name", "Food Name"))
-                        (text_input_value("name", "name", &food.name, "e.g., Rolled Oats"))
+                        (label_required("food_name", "Food Name"))
+                        (text_input_value("food_name", "food_name", &food.name, "e.g., Rolled Oats"))
                     }))
                 }))
                 (form_row(html! {
@@ -112,7 +112,7 @@ async fn get_handler(
 
 #[derive(Deserialize)]
 struct EditFoodForm {
-    name: String,
+    food_name: String,
     brand: String,
     serving_unit: String,
     energy: f64,
@@ -131,7 +131,7 @@ async fn post_handler(
     Form(form): Form<EditFoodForm>,
 ) -> Fallible<Redirect> {
     let EditFoodForm {
-        name,
+        food_name,
         brand,
         serving_unit,
         energy,
@@ -145,7 +145,7 @@ async fn post_handler(
     } = form;
     let input = EditFoodInput {
         food_id,
-        name,
+        name: food_name,
         brand,
         serving_unit: ServingUnit::try_from(serving_unit.as_ref())?,
         energy,

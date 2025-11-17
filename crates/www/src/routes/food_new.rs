@@ -54,8 +54,8 @@ async fn get_handler() -> Fallible<(StatusCode, Html<String>)> {
             (form_section("Basic Information", html! {
                 (form_row(html! {
                     (form_group(html! {
-                        (label_required("name", "Food Name"))
-                        (text_input("name", "name", "e.g., Rolled Oats"))
+                        (label_required("food_name", "Food Name"))
+                        (text_input("food_name", "food_name", "e.g., Rolled Oats"))
                     }))
                 }))
                 (form_row(html! {
@@ -125,7 +125,7 @@ async fn get_handler() -> Fallible<(StatusCode, Html<String>)> {
 
 #[derive(Deserialize)]
 struct CreateFoodForm {
-    name: String,
+    food_name: String,
     brand: String,
     serving_unit: String,
     energy: f64,
@@ -143,7 +143,7 @@ async fn post_handler(
     Form(form): Form<CreateFoodForm>,
 ) -> Fallible<Redirect> {
     let CreateFoodForm {
-        name,
+        food_name,
         brand,
         serving_unit,
         energy,
@@ -157,7 +157,7 @@ async fn post_handler(
     } = form;
     let created_at = Utc::now();
     let input = CreateFoodInput {
-        name,
+        name: food_name,
         brand,
         serving_unit: ServingUnit::try_from(serving_unit.as_ref())?,
         energy,
