@@ -127,6 +127,9 @@ async fn handler(
             input type="submit" value="Add Serving Size";
         }
         p {
+            a href=(format!("/library/{food_id}/edit")) {
+                "Edit"
+            }
             a href="/library" {
                 "Back to Library"
             }
