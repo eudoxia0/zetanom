@@ -23,6 +23,7 @@ use error::AppError;
 use error::Fallible;
 use maud::html;
 
+use crate::routes::food_view::FoodViewHandler;
 use crate::routes::log_delete::LogDeleteHandler;
 use crate::routes::log_new::LogNewHandler;
 use crate::ui::*;
@@ -182,7 +183,11 @@ async fn handler(
 
                     tr {
                         td { (entry.created_at.format("%H:%M").to_string()) }
-                        td { (food.name) }
+                        td {
+                            a href=(FoodViewHandler::url(food.food_id)) {
+                                (food.name)
+                            }
+                        }
                         td {
                             @if food.brand.is_empty() {
                                 "—"
