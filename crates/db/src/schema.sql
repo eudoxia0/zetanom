@@ -39,6 +39,9 @@ create table serving_sizes (
     -- Amount in the food's `serving_unit` (g or ml).
     serving_amount real not null,
 
+    -- Timestamp when this record was created.
+    created_at text not null,
+
     foreign key (food_id) references foods(food_id) on delete cascade,
     unique(food_id, serving_name)
 ) strict;

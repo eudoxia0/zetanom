@@ -123,6 +123,24 @@ pub struct FoodEntry {
     pub created_at: DateTime<Utc>,
 }
 
+pub type ServingId = i64;
+pub type ServingName = String;
+
+pub struct ServingInput {
+    pub food_id: FoodId,
+    pub serving_name: ServingName,
+    pub serving_amount: f64,
+    pub created_at: DateTime<Utc>,
+}
+
+pub struct Serving {
+    pub serving_id: ServingId,
+    pub food_id: FoodId,
+    pub serving_name: ServingName,
+    pub serving_amount: f64,
+    pub created_at: DateTime<Utc>,
+}
+
 impl Db {
     pub fn new() -> Fallible<Self> {
         let mut conn = Connection::open_in_memory()?;
@@ -214,5 +232,17 @@ impl Db {
             })
         })?;
         Ok(entry)
+    }
+
+    pub fn create_serving(&self, input: ServingInput) -> Fallible<ServingId> {
+        todo!()
+    }
+
+    pub fn delete_serving(&self, serving_id: ServingId) -> Fallible<()> {
+        todo!()
+    }
+
+    pub fn list_servings(&self, food_id: FoodId) -> Fallible<Serving> {
+        todo!()
     }
 }
