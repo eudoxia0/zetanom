@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::path::Path;
+
 use chrono::DateTime;
 use chrono::NaiveDate;
 use chrono::Utc;
@@ -178,8 +180,16 @@ pub struct Entry {
 }
 
 impl Db {
-    pub fn new() -> Fallible<Self> {
-        let mut conn = Connection::open_in_memory()?;
+    pub fn new(path: &Path) -> Fallible<Self> {
+        Self::new_inner(Connection::open(path)?)
+    }
+
+    pub fn new_in_memory() -> Fallible<Self> {
+        Self::new_inner(Connection::open_in_memory()?)
+    }
+
+    fn new_inner(conn: Connection) -> Fallible<Self> {
+        let mut conn = conn;
         conn.set_db_config(DbConfig::SQLITE_DBCONFIG_ENABLE_FKEY, true)?;
         let tx = conn.transaction()?;
         tx.execute_batch(include_str!("schema.sql"))?;

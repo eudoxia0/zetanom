@@ -21,9 +21,9 @@ use serde::Deserialize;
 
 pub struct Config {
     /// Absolute, canonicalized path to the SQLite3 database.
-    db_path: PathBuf,
+    pub db_path: PathBuf,
     /// Port in which to run the server.
-    port: u16,
+    pub port: u16,
 }
 
 #[derive(Deserialize)]

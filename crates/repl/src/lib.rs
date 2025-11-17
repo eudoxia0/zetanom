@@ -20,7 +20,7 @@ use db::Db;
 use error::Fallible;
 
 pub fn start_repl() -> Fallible<()> {
-    let db = Db::new()?;
+    let db = Db::new_in_memory()?;
     loop {
         print!("> ");
         flush()?;

@@ -21,6 +21,7 @@ use db::Db;
 use error::Fallible;
 use tokio::net::TcpListener;
 
+use crate::config::Config;
 use crate::routes::assets::AssetHandler;
 use crate::routes::food_edit::FoodEditHandler;
 use crate::routes::food_list::FoodListHandler;
@@ -33,15 +34,15 @@ use crate::routes::root::RootHandler;
 use crate::routes::serving_delete::ServingDeleteHandler;
 use crate::routes::serving_new::ServingNewHandler;
 
-const PORT: u16 = 12001;
-
 #[derive(Clone)]
 pub struct ServerState {
     pub db: Arc<Mutex<Db>>,
 }
 
 pub async fn start_server() -> Fallible<()> {
-    let db: Db = Db::new()?;
+    let config: Config = Config::load()?;
+    let port: u16 = config.port;
+    let db: Db = Db::new(&config.db_path)?;
     let state: ServerState = ServerState {
         db: Arc::new(Mutex::new(db)),
     };
@@ -58,7 +59,7 @@ pub async fn start_server() -> Fallible<()> {
     let app = ServingDeleteHandler::route(app);
     let app = ServingNewHandler::route(app);
     let app: IntoMakeService<Router> = app.with_state(state).into_make_service();
-    let bind: String = format!("0.0.0.0:{PORT}");
+    let bind: String = format!("0.0.0.0:{port}");
     println!("Started server on {bind}.");
     let listener: TcpListener = TcpListener::bind(bind).await?;
     axum::serve(listener, app).await?;
