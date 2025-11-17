@@ -24,7 +24,7 @@ use axum::routing::post;
 use db::EditFoodInput;
 use db::FoodEntry;
 use db::FoodId;
-use db::ServingUnit;
+use db::BasicUnit;
 use error::Fallible;
 use maud::html;
 use serde::Deserialize;
@@ -147,7 +147,7 @@ async fn post_handler(
         food_id,
         name: food_name,
         brand,
-        serving_unit: ServingUnit::try_from(serving_unit.as_ref())?,
+        serving_unit: BasicUnit::try_from(serving_unit.as_ref())?,
         energy,
         protein,
         fat,

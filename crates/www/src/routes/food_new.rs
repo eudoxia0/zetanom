@@ -23,7 +23,7 @@ use axum::routing::post;
 use chrono::Utc;
 use db::CreateFoodInput;
 use db::FoodId;
-use db::ServingUnit;
+use db::BasicUnit;
 use error::Fallible;
 use maud::html;
 use serde::Deserialize;
@@ -159,7 +159,7 @@ async fn post_handler(
     let input = CreateFoodInput {
         name: food_name,
         brand,
-        serving_unit: ServingUnit::try_from(serving_unit.as_ref())?,
+        serving_unit: BasicUnit::try_from(serving_unit.as_ref())?,
         energy,
         protein,
         fat,
