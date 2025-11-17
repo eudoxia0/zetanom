@@ -112,6 +112,7 @@ async fn handler(
             },
         ];
 
+        // Calculate daily totals
         let mut total_energy = 0.0;
         let mut total_protein = 0.0;
         let mut total_fat = 0.0;
@@ -120,6 +121,36 @@ async fn handler(
         let mut total_fibre = 0.0;
         let mut total_sodium = 0.0;
 
+        for entry in &entries {
+            if let Ok(food) = db.get_food(entry.food_id) {
+                let multiplier = if let Some(serving_id) = entry.serving_id {
+                    // If there's a serving, get its details
+                    if let Ok(servings) = db.list_servings(food.food_id) {
+                        if let Some(serving) = servings.iter().find(|s| s.serving_id == serving_id) {
+                            serving.serving_amount / 100.0
+                        } else {
+                            0.01
+                        }
+                    } else {
+                        0.01
+                    }
+                } else {
+                    // No serving, use base unit
+                    0.01
+                };
+
+                let factor = entry.amount * multiplier;
+                total_energy += food.energy * factor;
+                total_protein += food.protein * factor;
+                total_fat += food.fat * factor;
+                total_fat_saturated += food.fat_saturated * factor;
+                total_carbs += food.carbs * factor;
+                total_fibre += food.fibre * factor;
+                total_sodium += food.sodium * factor;
+            }
+        }
+
+        // Render table rows
         let rows = html! {
             @for entry in &entries {
                 @if let Ok(food) = db.get_food(entry.food_id) {
@@ -170,14 +201,6 @@ async fn handler(
                             (button_link("Delete", &LogDeleteHandler::url(date, entry.entry_id)))
                         }
                     }
-                    // Update totals
-                    @let _ = { total_energy += energy; };
-                    @let _ = { total_protein += protein; };
-                    @let _ = { total_fat += fat; };
-                    @let _ = { total_fat_saturated += fat_saturated; };
-                    @let _ = { total_carbs += carbs; };
-                    @let _ = { total_fibre += fibre; };
-                    @let _ = { total_sodium += sodium; };
                 }
             }
         };
