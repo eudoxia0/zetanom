@@ -56,22 +56,6 @@ async fn handler(State(state): State<ServerState>) -> Fallible<(StatusCode, Html
                 header: "Brand".to_string(),
                 numeric: false,
             },
-            TableColumn {
-                header: "Unit".to_string(),
-                numeric: false,
-            },
-            TableColumn {
-                header: "Energy (kcal)".to_string(),
-                numeric: true,
-            },
-            TableColumn {
-                header: "Protein (g)".to_string(),
-                numeric: true,
-            },
-            TableColumn {
-                header: "".to_string(),
-                numeric: false,
-            },
         ];
 
         let rows = html! {
@@ -88,12 +72,6 @@ async fn handler(State(state): State<ServerState>) -> Fallible<(StatusCode, Html
                         } @else {
                             (food.brand)
                         }
-                    }
-                    td { (food.serving_unit.as_str()) }
-                    td.numeric { (format!("{:.1}", food.energy)) }
-                    td.numeric { (format!("{:.1}", food.protein)) }
-                    td {
-                        (button_link("View", &FoodViewHandler::url(food.food_id)))
                     }
                 }
             }
