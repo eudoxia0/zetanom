@@ -41,6 +41,11 @@ async fn handler(Path(date): Path<String>) -> Fallible<(StatusCode, Html<String>
         p {
             (format!("Log: {date}"))
         }
+        p {
+            a href=(format!("/log/{date}/new")) {
+                "Log Food"
+            }
+        }
     };
     let html: Markup = page("zetanom", body);
     Ok((StatusCode::OK, Html(html.into_string())))
