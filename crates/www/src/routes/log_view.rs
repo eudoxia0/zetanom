@@ -37,6 +37,8 @@ impl LogViewHandler {
 async fn handler(Path(date): Path<String>) -> Fallible<(StatusCode, Html<String>)> {
     let date: NaiveDate = NaiveDate::parse_from_str(&date, "%Y-%m-%d")
         .map_err(|_| AppError::new(format!("Failed to parse date: '{date}'.")))?;
+    // TODO: Show a table of food the user logged today.
+    let table: Markup = todo!();
     let body: Markup = html! {
         p {
             (format!("Log: {date}"))
@@ -46,6 +48,7 @@ async fn handler(Path(date): Path<String>) -> Fallible<(StatusCode, Html<String>
                 "Log Food"
             }
         }
+        (table)
     };
     let html: Markup = page("zetanom", body);
     Ok((StatusCode::OK, Html(html.into_string())))
