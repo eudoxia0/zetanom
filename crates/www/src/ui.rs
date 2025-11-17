@@ -16,7 +16,8 @@ use maud::DOCTYPE;
 use maud::Markup;
 use maud::html;
 
-use crate::routes::assets::URL_CSS;
+use crate::routes::assets::CssHandler;
+use crate::routes::assets::CssResetHandler;
 use crate::routes::food_list::FoodListHandler;
 use crate::routes::food_new::FoodNewHandler;
 use crate::routes::root::RootHandler;
@@ -42,7 +43,8 @@ pub fn page(title: &str, nav_sections: Vec<NavSection>, body: Markup) -> Markup 
             head {
                 meta charset="utf-8";
                 meta name="viewport" content="width=device-width, initial-scale=1";
-                link rel="stylesheet" href=(URL_CSS);
+                link rel="stylesheet" href=(CssResetHandler::url());
+                link rel="stylesheet" href=(CssHandler::url());
                 title { (title) }
             }
             body {
