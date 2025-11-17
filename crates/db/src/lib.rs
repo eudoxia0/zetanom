@@ -161,20 +161,20 @@ pub struct Serving {
 pub type EntryId = i64;
 
 pub struct CreateEntryInput {
-    date: NaiveDate,
-    food_id: FoodId,
-    serving_id: Option<ServingId>,
-    amount: f64,
-    created_at: DateTime<Utc>,
+    pub date: NaiveDate,
+    pub food_id: FoodId,
+    pub serving_id: Option<ServingId>,
+    pub amount: f64,
+    pub created_at: DateTime<Utc>,
 }
 
 pub struct Entry {
-    entry_id: EntryId,
-    date: NaiveDate,
-    food_id: FoodId,
-    serving_id: Option<ServingId>,
-    amount: f64,
-    created_at: DateTime<Utc>,
+    pub entry_id: EntryId,
+    pub date: NaiveDate,
+    pub food_id: FoodId,
+    pub serving_id: Option<ServingId>,
+    pub amount: f64,
+    pub created_at: DateTime<Utc>,
 }
 
 impl Db {
@@ -356,14 +356,54 @@ impl Db {
     }
 
     pub fn create_entry(&self, input: CreateEntryInput) -> Fallible<EntryId> {
-        todo!()
+        let sql = "
+            insert into entries (date, food_id, serving_id, amount, created_at)
+            values (?1, ?2, ?3, ?4, ?5)
+            returning entry_id;
+        ";
+        let entry_id: i64 = self.conn.query_row(
+            sql,
+            params![
+                input.date.format("%Y-%m-%d").to_string(),
+                input.food_id,
+                input.serving_id,
+                input.amount,
+                input.created_at,
+            ],
+            |row| row.get(0),
+        )?;
+        Ok(entry_id)
     }
 
     pub fn delete_entry(&self, entry_id: EntryId) -> Fallible<()> {
-        todo!()
+        let sql = "delete from entries where entry_id = ?1;";
+        self.conn.execute(sql, params![entry_id])?;
+        Ok(())
     }
 
     pub fn list_entries(&self, date: NaiveDate) -> Fallible<Vec<Entry>> {
-        todo!()
+        let sql = "
+            select entry_id, date, food_id, serving_id, amount, created_at
+            from entries
+            where date = ?1
+            order by created_at;
+        ";
+        let mut stmt = self.conn.prepare(sql)?;
+        let rows = stmt.query_map(params![date.format("%Y-%m-%d").to_string()], |row| {
+            Ok(Entry {
+                entry_id: row.get(0)?,
+                date: NaiveDate::parse_from_str(&row.get::<_, String>(1)?, "%Y-%m-%d")
+                    .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
+                food_id: row.get(2)?,
+                serving_id: row.get(3)?,
+                amount: row.get(4)?,
+                created_at: row.get(5)?,
+            })
+        })?;
+        let mut entries = Vec::new();
+        for entry in rows {
+            entries.push(entry?);
+        }
+        Ok(entries)
     }
 }
