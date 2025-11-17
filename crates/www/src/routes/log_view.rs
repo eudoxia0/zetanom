@@ -126,7 +126,8 @@ async fn handler(
                 let multiplier = if let Some(serving_id) = entry.serving_id {
                     // If there's a serving, get its details
                     if let Ok(servings) = db.list_servings(food.food_id) {
-                        if let Some(serving) = servings.iter().find(|s| s.serving_id == serving_id) {
+                        if let Some(serving) = servings.iter().find(|s| s.serving_id == serving_id)
+                        {
                             serving.serving_amount / 100.0
                         } else {
                             0.01
