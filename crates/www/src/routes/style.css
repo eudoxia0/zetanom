@@ -25,6 +25,7 @@ body {
     height: 100vh;
     font-size: 11px;
     font-family: Verdana, Arial, sans-serif;
+    font-variant-emoji: text;
     margin: 0;
     padding: 0;
     background: #e0e0e0;
