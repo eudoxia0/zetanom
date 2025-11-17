@@ -13,6 +13,7 @@
 // limitations under the License.
 
 pub mod assets;
+pub mod food_edit;
 pub mod food_list;
 pub mod food_new;
 pub mod food_view;

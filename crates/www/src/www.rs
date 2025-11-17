@@ -23,6 +23,7 @@ use tokio::net::TcpListener;
 
 use crate::routes::assets::CssHandler;
 use crate::routes::assets::FaviconHandler;
+use crate::routes::food_edit::FoodEditHandler;
 use crate::routes::food_list::FoodListHandler;
 use crate::routes::food_new::FoodNewHandler;
 use crate::routes::food_view::FoodViewHandler;
@@ -46,6 +47,7 @@ pub async fn start_server() -> Fallible<()> {
     let app: Router<ServerState> = Router::new();
     let app = CssHandler::route(app);
     let app = FaviconHandler::route(app);
+    let app = FoodEditHandler::route(app);
     let app = FoodListHandler::route(app);
     let app = FoodNewHandler::route(app);
     let app = FoodViewHandler::route(app);
