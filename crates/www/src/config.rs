@@ -12,7 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod config;
-mod routes;
-mod ui;
-pub mod www;
+use std::path::PathBuf;
+
+use error::Fallible;
+
+pub struct Config {
+    /// Absolute, canonicalized path to the SQLite3 database.
+    db_path: PathBuf,
+    /// Port in which to run the server.
+    port: u16,
+}
+
+impl Config {
+    /// Load the configuration from `~/.config/zetanom/config.toml`.
+    pub fn load() -> Fallible<Self> {
+        todo!()
+    }
+}
