@@ -15,7 +15,8 @@
 use std::fs;
 use std::path::PathBuf;
 
-use error::{AppError, Fallible};
+use error::AppError;
+use error::Fallible;
 use serde::Deserialize;
 
 pub struct Config {
@@ -45,16 +46,26 @@ impl Config {
             .join("config.toml");
 
         // Read the config file
-        let contents = fs::read_to_string(&config_path)
-            .map_err(|e| AppError::new(format!("Failed to read config file at {}: {}", config_path.display(), e)))?;
+        let contents = fs::read_to_string(&config_path).map_err(|e| {
+            AppError::new(format!(
+                "Failed to read config file at {}: {}",
+                config_path.display(),
+                e
+            ))
+        })?;
 
         // Parse the TOML
         let config_file: ConfigFile = toml::from_str(&contents)
             .map_err(|e| AppError::new(format!("Failed to parse config file: {}", e)))?;
 
         // Canonicalize the database path
-        let db_path = fs::canonicalize(&config_file.db_path)
-            .map_err(|e| AppError::new(format!("Failed to canonicalize database path {}: {}", config_file.db_path.display(), e)))?;
+        let db_path = fs::canonicalize(&config_file.db_path).map_err(|e| {
+            AppError::new(format!(
+                "Failed to canonicalize database path {}: {}",
+                config_file.db_path.display(),
+                e
+            ))
+        })?;
 
         Ok(Config {
             db_path,
