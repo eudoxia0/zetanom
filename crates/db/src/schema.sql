@@ -45,3 +45,23 @@ create table serving_sizes (
     foreign key (food_id) references foods(food_id) on delete cascade,
     unique(food_id, serving_name)
 ) strict;
+
+create table entries (
+    entry_id integer primary key,
+
+    -- The date when the entry was created, in `YYYY-MM-DD` format.
+    date text not null,
+    -- The food that was logged.
+    food_id integer not null,
+    -- If the user selected a serving: the ID of the serving. Otherwise,
+    -- the unit used is the base unit of the referenced food.
+    serving_id integer,
+    -- The amount of food consumed.
+    amount real not null,
+
+    -- Timestamp when this record was created.
+    created_at text not null,
+
+    foreign key (food_id) references foods(food_id) on delete cascade,
+    foreign key (serving_id) references serving_sizes(serving_id) on delete cascade
+);

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 use chrono::DateTime;
+use chrono::NaiveDate;
 use chrono::Utc;
 use error::AppError;
 use error::Fallible;
@@ -139,6 +140,25 @@ pub struct Serving {
     pub serving_name: ServingName,
     pub serving_amount: f64,
     pub created_at: DateTime<Utc>,
+}
+
+pub type EntryId = i64;
+
+pub struct CreateEntryInput {
+    date: NaiveDate,
+    food_id: FoodId,
+    serving_id: Option<ServingId>,
+    amount: f64,
+    created_at: DateTime<Utc>,
+}
+
+pub struct Entry {
+    entry_id: EntryId,
+    date: NaiveDate,
+    food_id: FoodId,
+    serving_id: Option<ServingId>,
+    amount: f64,
+    created_at: DateTime<Utc>,
 }
 
 impl Db {
@@ -281,5 +301,17 @@ impl Db {
             servings.push(serving?);
         }
         Ok(servings)
+    }
+
+    pub fn create_entry(&self, input: CreateEntryInput) -> Fallible<EntryId> {
+        todo!()
+    }
+
+    pub fn delete_entry(&self, entry_id: EntryId) -> Fallible<()> {
+        todo!()
+    }
+
+    pub fn list_entries(&self, date: NaiveDate) -> Fallible<Vec<Entry>> {
+        todo!()
     }
 }

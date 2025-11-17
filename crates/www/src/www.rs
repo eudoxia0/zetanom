@@ -27,6 +27,7 @@ use crate::routes::food_edit::FoodEditHandler;
 use crate::routes::food_list::FoodListHandler;
 use crate::routes::food_new::FoodNewHandler;
 use crate::routes::food_view::FoodViewHandler;
+use crate::routes::log_new::LogNewHandler;
 use crate::routes::log_view::LogViewHandler;
 use crate::routes::root::RootHandler;
 use crate::routes::serving_delete::ServingDeleteHandler;
@@ -51,6 +52,7 @@ pub async fn start_server() -> Fallible<()> {
     let app = FoodListHandler::route(app);
     let app = FoodNewHandler::route(app);
     let app = FoodViewHandler::route(app);
+    let app = LogNewHandler::route(app);
     let app = LogViewHandler::route(app);
     let app = RootHandler::route(app);
     let app = ServingDeleteHandler::route(app);
