@@ -15,6 +15,7 @@
 use std::error::Error;
 use std::fmt::Display;
 use std::fmt::Formatter;
+use std::sync::TryLockError;
 
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
@@ -59,6 +60,14 @@ impl From<std::io::Error> for AppError {
     fn from(value: std::io::Error) -> Self {
         AppError {
             message: format!("I/O error: {value:#?}"),
+        }
+    }
+}
+
+impl<T> From<TryLockError<T>> for AppError {
+    fn from(_: TryLockError<T>) -> Self {
+        AppError {
+            message: "Failed to acquire lock on the database.".to_string(),
         }
     }
 }

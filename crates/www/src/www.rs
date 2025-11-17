@@ -12,21 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::sync::Arc;
+use std::sync::Mutex;
+
 use axum::Form;
 use axum::Router;
 use axum::extract::Path;
+use axum::extract::State;
 use axum::http::HeaderName;
 use axum::http::StatusCode;
 use axum::http::header::CACHE_CONTROL;
 use axum::http::header::CONTENT_TYPE;
 use axum::response::Html;
 use axum::response::Redirect;
+use axum::routing::IntoMakeService;
 use axum::routing::get;
 use axum::routing::post;
 use chrono::Local;
 use chrono::NaiveDate;
 use chrono::Utc;
 use db::CreateFoodInput;
+use db::Db;
 use db::ServingUnit;
 use error::AppError;
 use error::Fallible;
@@ -42,18 +48,17 @@ use crate::ui::text_input;
 
 const PORT: u16 = 12001;
 
-pub async fn start_server() -> Fallible<()> {
-    let app: Router<()> = make_app();
-    let bind: String = format!("0.0.0.0:{PORT}");
-    println!("Started server on {bind}.");
-    let listener: TcpListener = TcpListener::bind(bind).await?;
-    axum::serve(listener, app).await?;
-    Ok(())
+#[derive(Clone)]
+pub struct ServerState {
+    pub db: Arc<Mutex<Db>>,
 }
 
-#[allow(clippy::let_and_return)]
-fn make_app() -> Router<()> {
-    let app = Router::new();
+pub async fn start_server() -> Fallible<()> {
+    let db: Db = Db::new()?;
+    let state: ServerState = ServerState {
+        db: Arc::new(Mutex::new(db)),
+    };
+    let app: Router<ServerState> = Router::new();
     let app = app.route("/", get(index_handler));
     let app = app.route("/favicon.ico", get(favicon_handler));
     let app = app.route("/library", get(library_handler));
@@ -61,7 +66,12 @@ fn make_app() -> Router<()> {
     let app = app.route("/library/new", post(library_new_post_handler));
     let app = app.route("/log/{date}", get(date_handler));
     let app = app.route("/static/style.css", get(css_handler));
-    app
+    let app: IntoMakeService<Router> = app.with_state(state).into_make_service();
+    let bind: String = format!("0.0.0.0:{PORT}");
+    println!("Started server on {bind}.");
+    let listener: TcpListener = TcpListener::bind(bind).await?;
+    axum::serve(listener, app).await?;
+    Ok(())
 }
 
 async fn index_handler() -> Redirect {
@@ -178,7 +188,10 @@ struct CreateFoodForm {
     sodium: f64,
 }
 
-async fn library_new_post_handler(Form(form): Form<CreateFoodForm>) -> Fallible<Redirect> {
+async fn library_new_post_handler(
+    State(state): State<ServerState>,
+    Form(form): Form<CreateFoodForm>,
+) -> Fallible<Redirect> {
     let CreateFoodForm {
         name,
         brand,
@@ -207,5 +220,7 @@ async fn library_new_post_handler(Form(form): Form<CreateFoodForm>) -> Fallible<
         sodium,
         created_at,
     };
+    let db = state.db.try_lock()?;
+    db.create_food(input)?;
     Ok(Redirect::to("/"))
 }
