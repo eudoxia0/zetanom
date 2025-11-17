@@ -24,6 +24,7 @@ use tokio::net::TcpListener;
 use crate::config::Config;
 use crate::routes::assets::CssHandler;
 use crate::routes::assets::CssResetHandler;
+use crate::routes::assets::FaviconHandler;
 use crate::routes::food_edit::FoodEditHandler;
 use crate::routes::food_list::FoodListHandler;
 use crate::routes::food_new::FoodNewHandler;
