@@ -14,6 +14,7 @@
 
 use chrono::DateTime;
 use chrono::Utc;
+use error::AppError;
 use error::Fallible;
 use rusqlite::Connection;
 use rusqlite::config::DbConfig;
@@ -25,9 +26,31 @@ pub struct Db {
 
 pub type FoodId = i64;
 
+#[derive(Clone, Copy)]
 pub enum ServingUnit {
     Grams,
     Milliliters,
+}
+
+impl ServingUnit {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Grams => "g",
+            Self::Milliliters => "ml",
+        }
+    }
+}
+
+impl TryFrom<&str> for ServingUnit {
+    type Error = AppError;
+
+    fn try_from(value: &str) -> Fallible<Self> {
+        match value {
+            "g" => Ok(Self::Grams),
+            "ml" => Ok(Self::Milliliters),
+            _ => Err(AppError::new("Invalid value for serving unit.")),
+        }
+    }
 }
 
 /// The name of a food.
@@ -95,22 +118,17 @@ impl Db {
 
     /// Create a new food.
     pub fn create_food(&self, input: CreateFoodInput) -> Fallible<FoodId> {
-        let serving_unit_str = match input.serving_unit {
-            ServingUnit::Grams => "g",
-            ServingUnit::Milliliters => "ml",
-        };
-
         let sql = "
             insert into foods (name, brand, serving_unit, energy, protein, fat, fat_saturated, carbs, carbs_sugars, fibre, sodium, created_at)
             values (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)
+            returning food_id;
         ";
-
-        self.conn.execute(
+        let food_id: i64 = self.conn.query_row(
             sql,
             params![
                 input.name,
                 input.brand,
-                serving_unit_str,
+                input.serving_unit.as_str(),
                 input.energy,
                 input.protein,
                 input.fat,
@@ -121,9 +139,8 @@ impl Db {
                 input.sodium,
                 input.created_at,
             ],
+            |row| row.get(0),
         )?;
-
-        let food_id = self.conn.last_insert_rowid();
         Ok(food_id)
     }
 }

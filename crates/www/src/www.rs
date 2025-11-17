@@ -25,6 +25,9 @@ use axum::routing::get;
 use axum::routing::post;
 use chrono::Local;
 use chrono::NaiveDate;
+use chrono::Utc;
+use db::CreateFoodInput;
+use db::ServingUnit;
 use error::AppError;
 use error::Fallible;
 use maud::Markup;
@@ -171,9 +174,38 @@ struct CreateFoodForm {
     fat_saturated: f64,
     carbs: f64,
     carbs_sugars: f64,
+    fibre: f64,
     sodium: f64,
 }
 
-async fn library_new_post_handler(Form(form): Form<CreateFoodForm>) -> Redirect {
-    todo!()
+async fn library_new_post_handler(Form(form): Form<CreateFoodForm>) -> Fallible<Redirect> {
+    let CreateFoodForm {
+        name,
+        brand,
+        serving_unit,
+        energy,
+        protein,
+        fat,
+        fat_saturated,
+        carbs,
+        carbs_sugars,
+        fibre,
+        sodium,
+    } = form;
+    let created_at = Utc::now();
+    let input = CreateFoodInput {
+        name,
+        brand,
+        serving_unit: ServingUnit::try_from(serving_unit.as_ref())?,
+        energy,
+        protein,
+        fat,
+        fat_saturated,
+        carbs,
+        carbs_sugars,
+        fibre,
+        sodium,
+        created_at,
+    };
+    Ok(Redirect::to("/"))
 }
