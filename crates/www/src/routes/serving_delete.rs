@@ -33,6 +33,10 @@ impl ServingDeleteHandler {
             post(handler),
         )
     }
+
+    pub fn url(food_id: FoodId, serving_id: ServingId) -> String {
+        format!("/library/{food_id}/servings/{serving_id}/delete")
+    }
 }
 
 async fn handler(

@@ -27,6 +27,7 @@ use maud::html;
 
 use crate::routes::food_edit::FoodEditHandler;
 use crate::routes::food_list::FoodListHandler;
+use crate::routes::serving_delete::ServingDeleteHandler;
 use crate::routes::serving_new::ServingNewHandler;
 use crate::ui::label;
 use crate::ui::number_input;
@@ -114,7 +115,7 @@ async fn handler(
                     li {
                         (serving.serving_name) ": " (serving.serving_amount) (food.serving_unit.as_str())
                         " "
-                        form method="post" action={(format!("/library/{}/servings/{}/delete", food_id, serving.serving_id))} style="display: inline;" {
+                        form method="post" action=(ServingDeleteHandler::url(food_id, serving.serving_id)) style="display: inline;" {
                             input type="submit" value="Delete";
                         }
                     }
