@@ -270,7 +270,7 @@ async fn handler(
             (button_bar(html! {
                 (button("← Yesterday"))
                 (button("Today"))
-                (button("Next Day →"))
+                (button("Tomorrow →"))
                 (spacer())
                 (button_link_primary("Log Food", &LogNewHandler::url(date)))
             }))
