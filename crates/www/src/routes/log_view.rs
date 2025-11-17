@@ -21,12 +21,11 @@ use axum::routing::get;
 use chrono::NaiveDate;
 use error::AppError;
 use error::Fallible;
-use maud::Markup;
 use maud::html;
 
 use crate::routes::log_delete::LogDeleteHandler;
 use crate::routes::log_new::LogNewHandler;
-use crate::ui::page;
+use crate::ui::*;
 use crate::www::ServerState;
 
 pub struct LogViewHandler {}
@@ -49,84 +48,168 @@ async fn handler(
     let date: NaiveDate = NaiveDate::parse_from_str(&date, "%Y-%m-%d")
         .map_err(|_| AppError::new(format!("Failed to parse date: '{date}'.")))?;
 
+    let nav = default_nav("today");
+
     // Get database lock and query entries for this date
     let db = state.db.try_lock()?;
     let entries = db.list_entries(date)?;
 
+    // Format the date nicely
+    let formatted_date = date.format("%A, %d %B %Y").to_string();
+
     // Build table of logged foods
-    let table: Markup = if entries.is_empty() {
-        html! {
-            p {
-                "No food logged for this date."
-            }
-        }
+    let table_content = if entries.is_empty() {
+        empty_state("No food logged for this date.")
     } else {
-        html! {
-            table {
-                thead {
-                    tr {
-                        th { "Food" }
-                        th { "Brand" }
-                        th { "Amount" }
-                        th { "Unit" }
-                        th { "Energy (kcal)" }
-                        th { "Protein (g)" }
-                        th { "Fat (g)" }
-                        th { "Carbs (g)" }
-                        th { "Delete" }
-                    }
-                }
-                tbody {
-                    @for entry in &entries {
-                        @if let Ok(food) = db.get_food(entry.food_id) {
-                            @let (unit, multiplier) = if let Some(serving_id) = entry.serving_id {
-                                // If there's a serving, get its details
-                                if let Ok(servings) = db.list_servings(food.food_id) {
-                                    if let Some(serving) = servings.iter().find(|s| s.serving_id == serving_id) {
-                                        (serving.serving_name.clone(), serving.serving_amount)
-                                    } else {
-                                        (food.serving_unit.as_str().to_string(), 1.0)
-                                    }
-                                } else {
-                                    (food.serving_unit.as_str().to_string(), 1.0)
-                                }
+        let columns = vec![
+            TableColumn { header: "Time".to_string(), numeric: false },
+            TableColumn { header: "Food".to_string(), numeric: false },
+            TableColumn { header: "Brand".to_string(), numeric: false },
+            TableColumn { header: "Amount".to_string(), numeric: false },
+            TableColumn { header: "Energy (kcal)".to_string(), numeric: true },
+            TableColumn { header: "Protein (g)".to_string(), numeric: true },
+            TableColumn { header: "Fat (g)".to_string(), numeric: true },
+            TableColumn { header: "Sat Fat (g)".to_string(), numeric: true },
+            TableColumn { header: "Carbs (g)".to_string(), numeric: true },
+            TableColumn { header: "Fiber (g)".to_string(), numeric: true },
+            TableColumn { header: "Sodium (mg)".to_string(), numeric: true },
+            TableColumn { header: "".to_string(), numeric: false },
+        ];
+
+        let mut total_energy = 0.0;
+        let mut total_protein = 0.0;
+        let mut total_fat = 0.0;
+        let mut total_fat_saturated = 0.0;
+        let mut total_carbs = 0.0;
+        let mut total_fibre = 0.0;
+        let mut total_sodium = 0.0;
+
+        let rows = html! {
+            @for entry in &entries {
+                @if let Ok(food) = db.get_food(entry.food_id) {
+                    @let (unit, multiplier) = if let Some(serving_id) = entry.serving_id {
+                        // If there's a serving, get its details
+                        if let Ok(servings) = db.list_servings(food.food_id) {
+                            if let Some(serving) = servings.iter().find(|s| s.serving_id == serving_id) {
+                                (serving.serving_name.clone(), serving.serving_amount / 100.0)
                             } else {
-                                // No serving, use base unit
-                                (food.serving_unit.as_str().to_string(), 1.0)
-                            };
-                            tr {
-                                td { (food.name) }
-                                td { (food.brand) }
-                                td { (format!("{:.1}", entry.amount)) }
-                                td { (unit) }
-                                td { (format!("{:.1}", food.energy * entry.amount * multiplier)) }
-                                td { (format!("{:.1}", food.protein * entry.amount * multiplier)) }
-                                td { (format!("{:.1}", food.fat * entry.amount * multiplier)) }
-                                td { (format!("{:.1}", food.carbs * entry.amount * multiplier)) }
-                                td {
-                                    a href=(LogDeleteHandler::url(date, entry.entry_id)) {
-                                        "Delete"
-                                    }
-                                }
+                                (food.serving_unit.as_str().to_string(), 0.01)
+                            }
+                        } else {
+                            (food.serving_unit.as_str().to_string(), 0.01)
+                        }
+                    } else {
+                        // No serving, use base unit
+                        (food.serving_unit.as_str().to_string(), 0.01)
+                    };
+
+                    @let factor = entry.amount * multiplier;
+                    @let energy = food.energy * factor;
+                    @let protein = food.protein * factor;
+                    @let fat = food.fat * factor;
+                    @let fat_saturated = food.fat_saturated * factor;
+                    @let carbs = food.carbs * factor;
+                    @let fibre = food.fibre * factor;
+                    @let sodium = food.sodium * factor;
+
+                    tr {
+                        td { (entry.created_at.format("%H:%M").to_string()) }
+                        td { (food.name) }
+                        td {
+                            @if food.brand.is_empty() {
+                                "—"
+                            } @else {
+                                (food.brand)
                             }
                         }
+                        td { (format!("{:.1}{}", entry.amount, unit)) }
+                        td.numeric { (format!("{:.0}", energy)) }
+                        td.numeric { (format!("{:.1}", protein)) }
+                        td.numeric { (format!("{:.1}", fat)) }
+                        td.numeric { (format!("{:.1}", fat_saturated)) }
+                        td.numeric { (format!("{:.1}", carbs)) }
+                        td.numeric { (format!("{:.1}", fibre)) }
+                        td.numeric { (format!("{:.0}", sodium)) }
+                        td {
+                            (button_link("Delete", &LogDeleteHandler::url(date, entry.entry_id)))
+                        }
                     }
+                    // Update totals
+                    @let _ = { total_energy += energy; };
+                    @let _ = { total_protein += protein; };
+                    @let _ = { total_fat += fat; };
+                    @let _ = { total_fat_saturated += fat_saturated; };
+                    @let _ = { total_carbs += carbs; };
+                    @let _ = { total_fibre += fibre; };
+                    @let _ = { total_sodium += sodium; };
                 }
             }
+        };
+
+        let totals_summary = summary_box("Daily Totals", html! {
+            (summary_table(html! {
+                tr {
+                    td { "Energy" }
+                    td.numeric { (format!("{:.0} kcal", total_energy)) }
+                    td.target-info { "Target: 2,000 kcal" }
+                }
+                tr {
+                    td { "Protein" }
+                    td.numeric { (format!("{:.1} g", total_protein)) }
+                    td {}
+                }
+                tr {
+                    td { "Fat" }
+                    td.numeric { (format!("{:.1} g", total_fat)) }
+                    td {}
+                }
+                tr {
+                    td { "Saturated Fat" }
+                    @if total_fat_saturated > 15.0 {
+                        td.numeric.over-limit { (format!("{:.1} g", total_fat_saturated)) }
+                        td.target-info.over-limit { "Limit: 15g (EXCEEDED)" }
+                    } @else {
+                        td.numeric { (format!("{:.1} g", total_fat_saturated)) }
+                        td.target-info { "Limit: 15g" }
+                    }
+                }
+                tr {
+                    td { "Carbohydrate" }
+                    td.numeric { (format!("{:.1} g", total_carbs)) }
+                    td {}
+                }
+                tr {
+                    td { "Fiber" }
+                    td.numeric { (format!("{:.1} g", total_fibre)) }
+                    td {}
+                }
+                tr {
+                    td { "Sodium" }
+                    td.numeric { (format!("{:.0} mg", total_sodium)) }
+                    td.target-info { "Limit: 2,300 mg" }
+                }
+            }))
+        });
+
+        html! {
+            (data_table(columns, rows))
+            (totals_summary)
         }
     };
 
-    let body: Markup = html! {
-        h2 {
-            (format!("Log: {date}"))
-        }
-        p {
-            a href=(LogNewHandler::url(date)) {
-                "Log Food"
-            }
-        }
-        (table)
+    let content = html! {
+        (panel(&format!("Daily Log — {}", formatted_date), html! {
+            (button_bar(html! {
+                (button("← Previous Day"))
+                (button("Today"))
+                (button("Next Day →"))
+                (spacer())
+                (button_link_primary("Log Food", &LogNewHandler::url(date)))
+            }))
+            (table_content)
+        }))
     };
-    let html: Markup = page("zetanom", body);
-    Ok((StatusCode::OK, Html(html.into_string())))
+
+    let html_page = page("Daily Log — zetanom", nav, content);
+    Ok((StatusCode::OK, Html(html_page.into_string())))
 }

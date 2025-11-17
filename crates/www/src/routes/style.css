@@ -20,15 +20,17 @@ li {
 /* Basic layout */
 
 html,
-body,
-.root {
+body {
     width: 100vw;
     height: 100vh;
-    font-size: 16px;
-    font-family: serif;
+    font-size: 11px;
+    font-family: Verdana, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #e0e0e0;
 }
 
-/* Component style */
+/* Root Layout */
 
 .Root {
     display: flex;
@@ -37,19 +39,437 @@ body,
     height: 100%;
 }
 
-.NavPane {
-    background: #f5f5f5;
-    width: 180px;
-    border-right: 1px solid #999;
-    padding: 16px;
+/* Sidebar Navigation */
 
-    a {
-        color: blue;
-        text-decoration: none;
-    }
+.NavPane {
+    width: 180px;
+    background: #f5f5f5;
+    border-right: 2px solid #999;
+    padding: 10px;
 }
+
+.app-title {
+    font-weight: bold;
+    font-size: 13px;
+    color: #003366;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #999;
+}
+
+.nav-section {
+    margin-bottom: 20px;
+}
+
+.nav-section-title {
+    font-size: 9px;
+    color: #666;
+    text-transform: uppercase;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.nav-item {
+    padding: 6px 8px;
+    margin-bottom: 2px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    background: #fff;
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.nav-item:hover {
+    background: #e8e8e8;
+    border: 1px solid #999;
+}
+
+.nav-item.active {
+    background: #336699;
+    color: white;
+    border: 1px solid #003366;
+    font-weight: bold;
+}
+
+/* Content Pane */
 
 .ContentPane {
     flex: 1;
-    padding: 16px;
+    overflow: auto;
+    padding: 15px;
+}
+
+/* Panel Component */
+
+.panel {
+    background: white;
+    border: 2px solid #666;
+    margin-bottom: 15px;
+}
+
+.panel-header {
+    background: linear-gradient(to bottom, #6699cc 0%, #336699 100%);
+    color: white;
+    padding: 8px 12px;
+    font-weight: bold;
+    border-bottom: 2px solid #003366;
+    font-size: 12px;
+}
+
+.panel-content {
+    padding: 12px;
+}
+
+/* Buttons */
+
+.button-bar {
+    margin-bottom: 12px;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+button,
+.button {
+    background: #f0f0f0;
+    border: 1px solid #999;
+    padding: 4px 12px;
+    font-size: 10px;
+    cursor: pointer;
+    font-family: Verdana, Arial, sans-serif;
+    font-weight: normal;
+    text-decoration: none;
+    color: inherit;
+    display: inline-block;
+}
+
+button:hover,
+.button:hover {
+    background: #e0e0e0;
+}
+
+button:active,
+.button:active {
+    background: #d0d0d0;
+}
+
+button.primary,
+.button.primary {
+    background: #336699;
+    color: white;
+    border: 1px solid #003366;
+    font-weight: bold;
+}
+
+button.primary:hover,
+.button.primary:hover {
+    background: #2a5580;
+}
+
+button.primary:active,
+.button.primary:active {
+    background: #1f4466;
+}
+
+/* Form Styles */
+
+.form-section {
+    margin-bottom: 25px;
+}
+
+.form-section-title {
+    font-size: 10px;
+    font-weight: bold;
+    color: #003366;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #ccc;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 12px;
+    align-items: flex-start;
+}
+
+.form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.half {
+    flex: 0 0 calc(50% - 7.5px);
+}
+
+.form-group.third {
+    flex: 0 0 calc(33.333% - 10px);
+}
+
+label {
+    font-size: 10px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 3px;
+    display: block;
+}
+
+.label-required::after {
+    content: " *";
+    color: #c00;
+}
+
+.label-hint {
+    font-size: 9px;
+    color: #666;
+    font-weight: normal;
+    font-style: italic;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="time"],
+input[type="submit"],
+select {
+    border: 1px solid #999;
+    padding: 4px;
+    font-size: 11px;
+    font-family: Verdana, Arial, sans-serif;
+    background: white;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="time"]:focus,
+select:focus {
+    outline: none;
+    border: 1px solid #336699;
+    background: #fffff0;
+}
+
+input[type="number"] {
+    text-align: right;
+}
+
+input[type="submit"] {
+    background: #f0f0f0;
+    cursor: pointer;
+    padding: 4px 12px;
+}
+
+input[type="submit"]:hover {
+    background: #e0e0e0;
+}
+
+/* Tables */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border: 1px solid #999;
+}
+
+th {
+    background: #cccccc;
+    padding: 4px 8px;
+    text-align: left;
+    border: 1px solid #999;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+td {
+    padding: 4px 8px;
+    border: 1px solid #ddd;
+    font-size: 11px;
+}
+
+.numeric {
+    text-align: right;
+}
+
+/* Nutrition Table */
+
+.nutrition-table {
+    width: 100%;
+    border: 1px solid #999;
+    background: white;
+}
+
+.nutrition-row {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding: 6px 8px;
+}
+
+.nutrition-row:last-child {
+    border-bottom: none;
+}
+
+.nutrition-row.indent-1 {
+    padding-left: 28px;
+    background: #f8f8f8;
+}
+
+.nutrition-row.indent-2 {
+    padding-left: 48px;
+    background: #f0f0f0;
+}
+
+.nutrition-label {
+    flex: 1;
+    font-size: 10px;
+    font-weight: bold;
+    color: #333;
+}
+
+.nutrition-label.sub {
+    font-weight: normal;
+    color: #555;
+}
+
+.nutrition-label.sub::before {
+    content: "— ";
+    color: #999;
+}
+
+.nutrition-input {
+    flex: 0 0 120px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.nutrition-input input {
+    width: 80px;
+}
+
+.nutrition-unit {
+    font-size: 9px;
+    color: #666;
+    width: 35px;
+}
+
+/* Summary Box */
+
+.summary-box {
+    background: white;
+    border: 2px solid #666;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.summary-content {
+    padding: 12px;
+}
+
+.summary-table {
+    width: 100%;
+    border: none;
+}
+
+.summary-table td {
+    border: none;
+    padding: 3px 8px;
+    background: #f8f8f8;
+    border-bottom: 1px solid #ddd;
+}
+
+.summary-table td:first-child {
+    font-weight: bold;
+    width: 200px;
+}
+
+.over-limit {
+    color: #cc0000;
+    font-weight: bold;
+}
+
+.target-info {
+    font-size: 9px;
+    color: #666;
+}
+
+/* Info Box */
+
+.info-box {
+    background: #ffffc0;
+    border: 1px solid #ccc;
+    padding: 10px;
+    font-size: 10px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.info-box strong {
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Serving List */
+
+.serving-list {
+    border: 1px solid #ccc;
+    background: #f8f8f8;
+    padding: 10px;
+    margin-bottom: 10px;
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.serving-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 6px;
+    background: white;
+    border: 1px solid #ddd;
+    margin-bottom: 4px;
+    font-size: 10px;
+}
+
+.serving-item:last-child {
+    margin-bottom: 0;
+}
+
+.add-serving-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+}
+
+.add-serving-row .form-group {
+    flex: 1;
+}
+
+.add-serving-row button {
+    flex: 0 0 auto;
+    padding: 5px 12px;
+}
+
+/* Utility Classes */
+
+.spacer {
+    flex: 1;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-muted {
+    color: #999;
+}
+
+/* Help text */
+
+p {
+    font-size: 10px;
+    line-height: 1.6;
+    margin: 0 0 10px 0;
 }
