@@ -87,6 +87,34 @@ impl Db {
 
     /// Create a new food.
     pub fn create_food(&self, input: CreateFoodInput) -> Fallible<FoodId> {
-        todo!()
+        let serving_unit_str = match input.serving_unit {
+            ServingUnit::Grams => "g",
+            ServingUnit::Milliliters => "ml",
+        };
+
+        let sql = "
+            insert into foods (name, brand, serving_unit, energy, protein, fat, fat_saturated, carbs, carbs_sugars, fibre, sodium, created_at)
+            values (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, datetime('now'))
+        ";
+
+        self.conn.execute(
+            sql,
+            rusqlite::params![
+                input.name,
+                input.brand,
+                serving_unit_str,
+                input.energy,
+                input.protein,
+                input.fat,
+                input.fat_saturated,
+                input.carbs,
+                input.carbs_sugars,
+                0.0, // fibre - default value since not in input
+                input.sodium,
+            ],
+        )?;
+
+        let food_id = self.conn.last_insert_rowid();
+        Ok(food_id)
     }
 }
