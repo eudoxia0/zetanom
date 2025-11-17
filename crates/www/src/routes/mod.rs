@@ -16,4 +16,7 @@ pub mod assets;
 pub mod food_list;
 pub mod food_new;
 pub mod food_view;
+pub mod log_view;
 pub mod root;
+pub mod serving_delete;
+pub mod serving_new;
