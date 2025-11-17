@@ -1146,6 +1146,7 @@ dependencies = [
  "error",
  "maud",
  "serde",
+ "shared",
  "tokio",
  "toml",
 ]

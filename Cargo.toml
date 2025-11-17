@@ -12,6 +12,7 @@ db = { path = "./crates/db" }
 error = { path = "./crates/error" }
 repl = { path = "./crates/repl" }
 www = { path = "./crates/www" }
+shared = { path = "./crates/shared" }
 # external
 axum = { version = "0.8.6", features = ["form"] }
 clap = { version = "4.5.51", features = ["derive"] }
