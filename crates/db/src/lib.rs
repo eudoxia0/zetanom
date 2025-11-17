@@ -99,6 +99,13 @@ pub struct CreateFoodInput {
     pub created_at: DateTime<Utc>,
 }
 
+/// Summary information for a food entry.
+pub struct FoodListEntry {
+    food_id: FoodId,
+    name: FoodName,
+    brand: BrandName,
+}
+
 impl Db {
     pub fn new() -> Fallible<Self> {
         let mut conn = Connection::open_in_memory()?;
@@ -142,5 +149,10 @@ impl Db {
             |row| row.get(0),
         )?;
         Ok(food_id)
+    }
+
+    /// Return summary information for all foods in the database.
+    pub fn list_foods(&self) -> Fallible<Vec<FoodListEntry>> {
+        todo!()
     }
 }
