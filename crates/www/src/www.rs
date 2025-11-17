@@ -117,14 +117,27 @@ async fn favicon_handler() -> (StatusCode, [(HeaderName, &'static str); 2], &'st
 async fn library_handler(State(state): State<ServerState>) -> Fallible<(StatusCode, Html<String>)> {
     let db = state.db.try_lock()?;
     let foods: Vec<FoodListEntry> = db.list_foods()?;
-    // TODO: display the list of foods, with links to each food item.
-    let list: Markup = todo!();
-    let body: Markup = html! {
-        p {
-            h1 {
-                "Library"
+    let list: Markup = html! {
+        ul {
+            @for food in &foods {
+                li {
+                    a href={(format!("/library/{}", food.food_id))} {
+                        (food.name) " — " (food.brand)
+                    }
+                }
             }
         }
+    };
+    let body: Markup = html! {
+        h1 {
+            "Library"
+        }
+        p {
+            a href="/library/new" {
+                "Add New Food"
+            }
+        }
+        (list)
     };
     let html: Markup = page("zetanom", body);
     Ok((StatusCode::OK, Html(html.into_string())))
@@ -136,7 +149,62 @@ async fn library_view_handler(
 ) -> Fallible<(StatusCode, Html<String>)> {
     let db = state.db.try_lock()?;
     let food: FoodEntry = db.get_food(food_id)?;
-    todo!()
+    let body: Markup = html! {
+        h1 {
+            (food.name)
+        }
+        h2 {
+            (food.brand)
+        }
+        p {
+            "Serving size: 100" (food.serving_unit.as_str())
+        }
+        table {
+            tr {
+                th { "Nutrient" }
+                th { "Amount" }
+            }
+            tr {
+                td { "Energy" }
+                td { (food.energy) " kcal" }
+            }
+            tr {
+                td { "Protein" }
+                td { (food.protein) " g" }
+            }
+            tr {
+                td { "Fat" }
+                td { (food.fat) " g" }
+            }
+            tr {
+                td { "— Saturated Fat" }
+                td { (food.fat_saturated) " g" }
+            }
+            tr {
+                td { "Carbohydrate" }
+                td { (food.carbs) " g" }
+            }
+            tr {
+                td { "— Sugars" }
+                td { (food.carbs_sugars) " g" }
+            }
+            tr {
+                td { "Fibre" }
+                td { (food.fibre) " g" }
+            }
+            tr {
+                td { "Sodium" }
+                td { (food.sodium) " mg" }
+            }
+        }
+        p {
+            a href="/library" {
+                "Back to Library"
+            }
+        }
+    };
+    let html: Markup = page("zetanom", body);
+    Ok((StatusCode::OK, Html(html.into_string())))
 }
 
 async fn library_new_handler() -> Fallible<(StatusCode, Html<String>)> {
