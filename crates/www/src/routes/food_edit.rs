@@ -42,6 +42,10 @@ impl FoodEditHandler {
         let router = router.route("/library/{food_id}/edit", get(get_handler));
         router.route("/library/{food_id}/edit", post(post_handler))
     }
+
+    pub fn url(food_id: FoodId) -> String {
+        format!("/library/{food_id}/edit")
+    }
 }
 
 async fn get_handler(
@@ -55,7 +59,7 @@ async fn get_handler(
             h1 {
                 "Edit Food: " (food.name)
             }
-            form method="post" action={(format!("/library/{}/edit", food_id))} {
+            form method="post" action=(FoodEditHandler::url(food_id)) {
                 (label("name", "Name"));
                 input type="text" name="name" id="name" value=(food.name);
                 br;

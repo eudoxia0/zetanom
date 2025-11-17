@@ -25,6 +25,7 @@ use error::Fallible;
 use maud::Markup;
 use maud::html;
 
+use crate::routes::food_edit::FoodEditHandler;
 use crate::routes::food_list::FoodListHandler;
 use crate::ui::label;
 use crate::ui::number_input;
@@ -132,7 +133,7 @@ async fn handler(
             input type="submit" value="Add Serving Size";
         }
         p {
-            a href=(format!("/library/{food_id}/edit")) {
+            a href=(FoodEditHandler::url(food_id)) {
                 "Edit"
             }
             a href=(FoodListHandler::url()) {
