@@ -29,7 +29,7 @@ pub struct FoodListHandler {}
 
 impl FoodListHandler {
     pub fn route(router: Router<ServerState>) -> Router<ServerState> {
-        router.route("/library", get(handler))
+        router.route(Self::url(), get(handler))
     }
 
     pub fn url() -> &'static str {
