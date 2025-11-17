@@ -21,8 +21,7 @@ use db::Db;
 use error::Fallible;
 use tokio::net::TcpListener;
 
-use crate::routes::assets::CssHandler;
-use crate::routes::assets::FaviconHandler;
+use crate::routes::assets::AssetHandler;
 use crate::routes::food_edit::FoodEditHandler;
 use crate::routes::food_list::FoodListHandler;
 use crate::routes::food_new::FoodNewHandler;
@@ -46,8 +45,7 @@ pub async fn start_server() -> Fallible<()> {
         db: Arc::new(Mutex::new(db)),
     };
     let app: Router<ServerState> = Router::new();
-    let app = CssHandler::route(app);
-    let app = FaviconHandler::route(app);
+    let app = AssetHandler::route(app);
     let app = FoodEditHandler::route(app);
     let app = FoodListHandler::route(app);
     let app = FoodNewHandler::route(app);

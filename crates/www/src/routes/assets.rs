@@ -21,17 +21,11 @@ use axum::routing::get;
 
 use crate::www::ServerState;
 
-pub struct CssHandler {}
-pub struct FaviconHandler {}
+pub struct AssetHandler {}
 
-impl CssHandler {
+impl AssetHandler {
     pub fn route(router: Router<ServerState>) -> Router<ServerState> {
-        router.route("/static/style.css", get(css_handler))
-    }
-}
-
-impl FaviconHandler {
-    pub fn route(router: Router<ServerState>) -> Router<ServerState> {
+        let router = router.route("/static/style.css", get(css_handler));
         router.route("/favicon.ico", get(favicon_handler))
     }
 }
