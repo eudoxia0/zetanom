@@ -36,6 +36,9 @@ use db::Db;
 use db::FoodEntry;
 use db::FoodId;
 use db::FoodListEntry;
+use db::Serving;
+use db::ServingId;
+use db::ServingInput;
 use db::ServingUnit;
 use error::AppError;
 use error::Fallible;
@@ -68,6 +71,11 @@ pub async fn start_server() -> Fallible<()> {
     let app = app.route("/library/{food_id}", get(library_view_handler));
     let app = app.route("/library/new", get(library_new_handler));
     let app = app.route("/library/new", post(library_new_post_handler));
+    let app = app.route("/library/{food_id}/servings", post(create_serving_handler));
+    let app = app.route(
+        "/library/{food_id}/servings/{serving_id}/delete",
+        post(delete_serving_handler),
+    );
     let app = app.route("/log/{date}", get(date_handler));
     let app = app.route("/static/style.css", get(css_handler));
     let app: IntoMakeService<Router> = app.with_state(state).into_make_service();
@@ -149,6 +157,7 @@ async fn library_view_handler(
 ) -> Fallible<(StatusCode, Html<String>)> {
     let db = state.db.try_lock()?;
     let food: FoodEntry = db.get_food(food_id)?;
+    let servings: Vec<Serving> = db.list_servings(food_id)?;
     let body: Markup = html! {
         h1 {
             (food.name)
@@ -196,6 +205,38 @@ async fn library_view_handler(
                 td { "Sodium" }
                 td { (food.sodium) " mg" }
             }
+        }
+        h2 {
+            "Serving Sizes"
+        }
+        @if servings.is_empty() {
+            p {
+                "No custom serving sizes defined."
+            }
+        } @else {
+            ul {
+                @for serving in &servings {
+                    li {
+                        (serving.serving_name) ": " (serving.serving_amount) (food.serving_unit.as_str())
+                        " "
+                        form method="post" action={(format!("/library/{}/servings/{}/delete", food_id, serving.serving_id))} style="display: inline;" {
+                            input type="submit" value="Delete";
+                        }
+                    }
+                }
+            }
+        }
+        h3 {
+            "Add Serving Size"
+        }
+        form method="post" action={(format!("/library/{}/servings", food_id))} {
+            (label("serving_name", "Name (e.g., cup, slice, package)"));
+            (text_input("serving_name"));
+            br;
+            (label("serving_amount", &format!("Amount ({})", food.serving_unit.as_str())));
+            (number_input("serving_amount"));
+            br;
+            input type="submit" value="Add Serving Size";
         }
         p {
             a href="/library" {
@@ -307,5 +348,41 @@ async fn library_new_post_handler(
     };
     let db = state.db.try_lock()?;
     let food_id: FoodId = db.create_food(input)?;
+    Ok(Redirect::to(&format!("/library/{food_id}")))
+}
+
+#[derive(Deserialize)]
+struct CreateServingForm {
+    serving_name: String,
+    serving_amount: f64,
+}
+
+async fn create_serving_handler(
+    State(state): State<ServerState>,
+    Path(food_id): Path<FoodId>,
+    Form(form): Form<CreateServingForm>,
+) -> Fallible<Redirect> {
+    let CreateServingForm {
+        serving_name,
+        serving_amount,
+    } = form;
+    let created_at = Utc::now();
+    let input = ServingInput {
+        food_id,
+        serving_name,
+        serving_amount,
+        created_at,
+    };
+    let db = state.db.try_lock()?;
+    db.create_serving(input)?;
+    Ok(Redirect::to(&format!("/library/{food_id}")))
+}
+
+async fn delete_serving_handler(
+    State(state): State<ServerState>,
+    Path((food_id, serving_id)): Path<(FoodId, ServingId)>,
+) -> Fallible<Redirect> {
+    let db = state.db.try_lock()?;
+    db.delete_serving(serving_id)?;
     Ok(Redirect::to(&format!("/library/{food_id}")))
 }
