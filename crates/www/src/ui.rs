@@ -177,15 +177,6 @@ pub fn form_group_half(content: Markup) -> Markup {
     }
 }
 
-/// Form group with third width
-pub fn form_group_third(content: Markup) -> Markup {
-    html! {
-        div."form-group"."third" {
-            (content)
-        }
-    }
-}
-
 /// Label (plain)
 pub fn label(for_id: &str, text: &str) -> Markup {
     html! {
@@ -229,26 +220,6 @@ pub fn text_input_value(id: &str, name: &str, value: &str, placeholder: &str) ->
 pub fn number_input(id: &str, name: &str, step: &str, placeholder: &str) -> Markup {
     html! {
         input type="number" id=(id) name=(name) step=(step) placeholder=(placeholder);
-    }
-}
-
-/// Number input with value
-pub fn number_input_value(
-    id: &str,
-    name: &str,
-    value: &str,
-    step: &str,
-    placeholder: &str,
-) -> Markup {
-    html! {
-        input type="number" id=(id) name=(name) value=(value) step=(step) placeholder=(placeholder);
-    }
-}
-
-/// Time input
-pub fn time_input(id: &str, name: &str) -> Markup {
-    html! {
-        input type="time" id=(id) name=(name);
     }
 }
 
