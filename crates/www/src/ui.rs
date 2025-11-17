@@ -19,7 +19,7 @@ use maud::html;
 use crate::routes::assets::URL_CSS;
 use crate::routes::food_list::FoodListHandler;
 use crate::routes::food_new::FoodNewHandler;
-use crate::routes::root::URL_TODAY;
+use crate::routes::root::RootHandler;
 
 /// Page template.
 pub fn page(title: &str, body: Markup) -> Markup {
@@ -41,7 +41,7 @@ pub fn page(title: &str, body: Markup) -> Markup {
                         nav {
                             ul {
                                 li {
-                                    a href=(URL_TODAY) {
+                                    a href=(RootHandler::url()) {
                                         "Today"
                                     }
                                 }
