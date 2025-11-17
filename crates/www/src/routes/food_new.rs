@@ -39,8 +39,12 @@ pub struct FoodNewHandler {}
 
 impl FoodNewHandler {
     pub fn route(router: Router<ServerState>) -> Router<ServerState> {
-        let router = router.route("/library/new", get(get_handler));
-        router.route("/library/new", post(post_handler))
+        let router = router.route(Self::url(), get(get_handler));
+        router.route(Self::url(), post(post_handler))
+    }
+
+    pub fn url() -> &'static str {
+        "/library/new"
     }
 }
 
@@ -50,7 +54,7 @@ async fn get_handler() -> Fallible<(StatusCode, Html<String>)> {
             h1 {
                 "Library: New Food"
             }
-            form method="post" action="/library/new" {
+            form method="post" action=(FoodNewHandler::url()) {
                 (label("name", "Name"));
                 (text_input("name"));
                 br;
