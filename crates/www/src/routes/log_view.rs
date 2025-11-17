@@ -62,18 +62,54 @@ async fn handler(
         empty_state("No food logged for this date.")
     } else {
         let columns = vec![
-            TableColumn { header: "Time".to_string(), numeric: false },
-            TableColumn { header: "Food".to_string(), numeric: false },
-            TableColumn { header: "Brand".to_string(), numeric: false },
-            TableColumn { header: "Amount".to_string(), numeric: false },
-            TableColumn { header: "Energy (kcal)".to_string(), numeric: true },
-            TableColumn { header: "Protein (g)".to_string(), numeric: true },
-            TableColumn { header: "Fat (g)".to_string(), numeric: true },
-            TableColumn { header: "Sat Fat (g)".to_string(), numeric: true },
-            TableColumn { header: "Carbs (g)".to_string(), numeric: true },
-            TableColumn { header: "Fiber (g)".to_string(), numeric: true },
-            TableColumn { header: "Sodium (mg)".to_string(), numeric: true },
-            TableColumn { header: "".to_string(), numeric: false },
+            TableColumn {
+                header: "Time".to_string(),
+                numeric: false,
+            },
+            TableColumn {
+                header: "Food".to_string(),
+                numeric: false,
+            },
+            TableColumn {
+                header: "Brand".to_string(),
+                numeric: false,
+            },
+            TableColumn {
+                header: "Amount".to_string(),
+                numeric: false,
+            },
+            TableColumn {
+                header: "Energy (kcal)".to_string(),
+                numeric: true,
+            },
+            TableColumn {
+                header: "Protein (g)".to_string(),
+                numeric: true,
+            },
+            TableColumn {
+                header: "Fat (g)".to_string(),
+                numeric: true,
+            },
+            TableColumn {
+                header: "Sat Fat (g)".to_string(),
+                numeric: true,
+            },
+            TableColumn {
+                header: "Carbs (g)".to_string(),
+                numeric: true,
+            },
+            TableColumn {
+                header: "Fiber (g)".to_string(),
+                numeric: true,
+            },
+            TableColumn {
+                header: "Sodium (mg)".to_string(),
+                numeric: true,
+            },
+            TableColumn {
+                header: "".to_string(),
+                numeric: false,
+            },
         ];
 
         let mut total_energy = 0.0;
@@ -146,50 +182,53 @@ async fn handler(
             }
         };
 
-        let totals_summary = summary_box("Daily Totals", html! {
-            (summary_table(html! {
-                tr {
-                    td { "Energy" }
-                    td.numeric { (format!("{:.0} kcal", total_energy)) }
-                    td.target-info { "Target: 2,000 kcal" }
-                }
-                tr {
-                    td { "Protein" }
-                    td.numeric { (format!("{:.1} g", total_protein)) }
-                    td {}
-                }
-                tr {
-                    td { "Fat" }
-                    td.numeric { (format!("{:.1} g", total_fat)) }
-                    td {}
-                }
-                tr {
-                    td { "Saturated Fat" }
-                    @if total_fat_saturated > 15.0 {
-                        td.numeric.over-limit { (format!("{:.1} g", total_fat_saturated)) }
-                        td.target-info.over-limit { "Limit: 15g (EXCEEDED)" }
-                    } @else {
-                        td.numeric { (format!("{:.1} g", total_fat_saturated)) }
-                        td.target-info { "Limit: 15g" }
+        let totals_summary = summary_box(
+            "Daily Totals",
+            html! {
+                (summary_table(html! {
+                    tr {
+                        td { "Energy" }
+                        td.numeric { (format!("{:.0} kcal", total_energy)) }
+                        td.target-info { "Target: 2,000 kcal" }
                     }
-                }
-                tr {
-                    td { "Carbohydrate" }
-                    td.numeric { (format!("{:.1} g", total_carbs)) }
-                    td {}
-                }
-                tr {
-                    td { "Fiber" }
-                    td.numeric { (format!("{:.1} g", total_fibre)) }
-                    td {}
-                }
-                tr {
-                    td { "Sodium" }
-                    td.numeric { (format!("{:.0} mg", total_sodium)) }
-                    td.target-info { "Limit: 2,300 mg" }
-                }
-            }))
-        });
+                    tr {
+                        td { "Protein" }
+                        td.numeric { (format!("{:.1} g", total_protein)) }
+                        td {}
+                    }
+                    tr {
+                        td { "Fat" }
+                        td.numeric { (format!("{:.1} g", total_fat)) }
+                        td {}
+                    }
+                    tr {
+                        td { "Saturated Fat" }
+                        @if total_fat_saturated > 15.0 {
+                            td.numeric.over-limit { (format!("{:.1} g", total_fat_saturated)) }
+                            td.target-info.over-limit { "Limit: 15g (EXCEEDED)" }
+                        } @else {
+                            td.numeric { (format!("{:.1} g", total_fat_saturated)) }
+                            td.target-info { "Limit: 15g" }
+                        }
+                    }
+                    tr {
+                        td { "Carbohydrate" }
+                        td.numeric { (format!("{:.1} g", total_carbs)) }
+                        td {}
+                    }
+                    tr {
+                        td { "Fiber" }
+                        td.numeric { (format!("{:.1} g", total_fibre)) }
+                        td {}
+                    }
+                    tr {
+                        td { "Sodium" }
+                        td.numeric { (format!("{:.0} mg", total_sodium)) }
+                        td.target-info { "Limit: 2,300 mg" }
+                    }
+                }))
+            },
+        );
 
         html! {
             (data_table(columns, rows))

@@ -91,13 +91,11 @@ pub fn default_nav(active_page: &str) -> Vec<NavSection> {
     vec![
         NavSection {
             title: "Views".to_string(),
-            items: vec![
-                NavItem {
-                    label: "Today".to_string(),
-                    url: RootHandler::url().to_string(),
-                    active: active_page == "today",
-                },
-            ],
+            items: vec![NavItem {
+                label: "Today".to_string(),
+                url: RootHandler::url().to_string(),
+                active: active_page == "today",
+            }],
         },
         NavSection {
             title: "Library".to_string(),
@@ -235,7 +233,13 @@ pub fn number_input(id: &str, name: &str, step: &str, placeholder: &str) -> Mark
 }
 
 /// Number input with value
-pub fn number_input_value(id: &str, name: &str, value: &str, step: &str, placeholder: &str) -> Markup {
+pub fn number_input_value(
+    id: &str,
+    name: &str,
+    value: &str,
+    step: &str,
+    placeholder: &str,
+) -> Markup {
     html! {
         input type="number" id=(id) name=(name) value=(value) step=(step) placeholder=(placeholder);
     }
@@ -260,7 +264,12 @@ pub fn select(id: &str, name: &str, options: Vec<(String, String)>) -> Markup {
 }
 
 /// Select dropdown with selected value
-pub fn select_with_selected(id: &str, name: &str, options: Vec<(String, String)>, selected: &str) -> Markup {
+pub fn select_with_selected(
+    id: &str,
+    name: &str,
+    options: Vec<(String, String)>,
+    selected: &str,
+) -> Markup {
     html! {
         select id=(id) name=(name) {
             @for (value, label) in options {
@@ -326,7 +335,13 @@ pub fn spacer() -> Markup {
 }
 
 /// Nutrition table row (for form input)
-pub fn nutrition_row(label_text: &str, input_id: &str, input_name: &str, unit: &str, indent: u8) -> Markup {
+pub fn nutrition_row(
+    label_text: &str,
+    input_id: &str,
+    input_name: &str,
+    unit: &str,
+    indent: u8,
+) -> Markup {
     let class = match indent {
         1 => "nutrition-row indent-1",
         2 => "nutrition-row indent-2",
@@ -351,7 +366,14 @@ pub fn nutrition_row(label_text: &str, input_id: &str, input_name: &str, unit: &
 }
 
 /// Nutrition table row with value (for editing)
-pub fn nutrition_row_with_value(label_text: &str, input_id: &str, input_name: &str, unit: &str, value: &str, indent: u8) -> Markup {
+pub fn nutrition_row_with_value(
+    label_text: &str,
+    input_id: &str,
+    input_name: &str,
+    unit: &str,
+    value: &str,
+    indent: u8,
+) -> Markup {
     let class = match indent {
         1 => "nutrition-row indent-1",
         2 => "nutrition-row indent-2",

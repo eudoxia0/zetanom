@@ -237,7 +237,8 @@ impl Db {
 
     /// Return summary information for all foods in the database.
     pub fn list_foods(&self) -> Fallible<Vec<FoodListEntry>> {
-        let sql = "select food_id, name, brand, serving_unit, energy, protein from foods order by name;";
+        let sql =
+            "select food_id, name, brand, serving_unit, energy, protein from foods order by name;";
         let mut stmt = self.conn.prepare(sql)?;
         let rows = stmt.query_map([], |row| {
             let serving_unit_str: String = row.get(3)?;
