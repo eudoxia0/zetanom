@@ -76,7 +76,7 @@ impl<T> From<TryLockError<T>> for AppError {
 impl From<ParseIntError> for AppError {
     fn from(_: ParseIntError) -> Self {
         AppError {
-            message: format!("failed to parse integer."),
+            message: "failed to parse integer.".to_string(),
         }
     }
 }
