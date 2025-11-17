@@ -31,6 +31,10 @@ impl FoodListHandler {
     pub fn route(router: Router<ServerState>) -> Router<ServerState> {
         router.route("/library", get(handler))
     }
+
+    pub fn url() -> &'static str {
+        "/library"
+    }
 }
 
 async fn handler(State(state): State<ServerState>) -> Fallible<(StatusCode, Html<String>)> {

@@ -17,6 +17,7 @@ use maud::Markup;
 use maud::html;
 
 use crate::routes::assets::URL_CSS;
+use crate::routes::food_list::FoodListHandler;
 use crate::routes::root::URL_TODAY;
 
 /// Page template.
@@ -44,7 +45,7 @@ pub fn page(title: &str, body: Markup) -> Markup {
                                     }
                                 }
                                 li {
-                                    a href="/library" {
+                                    a href=(FoodListHandler::url()) {
                                         "List Foods"
                                     }
                                 }
