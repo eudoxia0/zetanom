@@ -30,6 +30,7 @@ use maud::Markup;
 use maud::html;
 use serde::Deserialize;
 
+use crate::routes::food_view::FoodViewHandler;
 use crate::ui::label;
 use crate::ui::page;
 use crate::www::ServerState;
@@ -93,7 +94,7 @@ async fn get_handler(
                 br;
                 input type="submit" value="Save";
                 " "
-                a href={(format!("/library/{}", food_id))} {
+                a href=(FoodViewHandler::url(food_id)) {
                     "Cancel"
                 }
             }
@@ -152,5 +153,5 @@ async fn post_handler(
     };
     let db = state.db.try_lock()?;
     db.edit_food(input)?;
-    Ok(Redirect::to(&format!("/library/{food_id}")))
+    Ok(Redirect::to(&FoodViewHandler::url(food_id)))
 }

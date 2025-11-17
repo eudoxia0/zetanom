@@ -58,5 +58,5 @@ async fn handler(
     };
     let db = state.db.try_lock()?;
     db.create_serving(input)?;
-    Ok(Redirect::to(&format!("/library/{food_id}")))
+    Ok(Redirect::to(&FoodViewHandler::url(food_id)))
 }

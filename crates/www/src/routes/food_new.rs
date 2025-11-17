@@ -29,6 +29,7 @@ use maud::Markup;
 use maud::html;
 use serde::Deserialize;
 
+use crate::routes::food_view::FoodViewHandler;
 use crate::ui::label;
 use crate::ui::number_input;
 use crate::ui::page;
@@ -148,5 +149,5 @@ async fn post_handler(
     };
     let db = state.db.try_lock()?;
     let food_id: FoodId = db.create_food(input)?;
-    Ok(Redirect::to(&format!("/library/{food_id}")))
+    Ok(Redirect::to(&FoodViewHandler::url(food_id)))
 }

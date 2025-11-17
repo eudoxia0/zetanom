@@ -23,6 +23,7 @@ use maud::Markup;
 use maud::html;
 
 use crate::routes::food_new::FoodNewHandler;
+use crate::routes::food_view::FoodViewHandler;
 use crate::ui::page;
 use crate::www::ServerState;
 
@@ -45,7 +46,7 @@ async fn handler(State(state): State<ServerState>) -> Fallible<(StatusCode, Html
         ul {
             @for food in &foods {
                 li {
-                    a href={(format!("/library/{}", food.food_id))} {
+                    a href=(FoodViewHandler::url(food.food_id)) {
                         (food.name) " — " (food.brand)
                     }
                 }

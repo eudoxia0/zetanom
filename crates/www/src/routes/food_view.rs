@@ -38,6 +38,10 @@ impl FoodViewHandler {
     pub fn route(router: Router<ServerState>) -> Router<ServerState> {
         router.route("/library/{food_id}", get(handler))
     }
+
+    pub fn url(food_id: FoodId) -> String {
+        format!("/library/{food_id}")
+    }
 }
 
 async fn handler(
