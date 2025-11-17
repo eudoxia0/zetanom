@@ -7,3 +7,4 @@ license.workspace = true
 [dependencies]
 error.workspace = true
 rusqlite.workspace = true
+chrono.workspace = true

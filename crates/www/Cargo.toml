@@ -6,7 +6,7 @@ license.workspace = true
 
 [dependencies]
 axum.workspace = true
-chrono = "0.4.42"
+chrono.workspace = true
 error.workspace = true
 maud = "0.27.0"
 serde = { version = "1.0.228", features = ["derive"] }

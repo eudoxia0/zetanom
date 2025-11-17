@@ -12,9 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use chrono::DateTime;
+use chrono::Utc;
 use error::Fallible;
 use rusqlite::Connection;
 use rusqlite::config::DbConfig;
+use rusqlite::params;
 
 pub struct Db {
     conn: Connection,
@@ -51,6 +54,9 @@ pub type Carbs = f64;
 /// An amount of sugar in grams.
 pub type Sugars = f64;
 
+/// An amount of fibre in grams.
+pub type Fibre = f64;
+
 /// An amount of sodium in milligrams.
 pub type Sodium = f64;
 
@@ -65,7 +71,9 @@ pub struct CreateFoodInput {
     pub fat_saturated: SaturatedFat,
     pub carbs: Carbs,
     pub carbs_sugars: Sugars,
+    pub fibre: Fibre,
     pub sodium: Sodium,
+    pub created_at: DateTime<Utc>,
 }
 
 impl Db {
@@ -94,12 +102,12 @@ impl Db {
 
         let sql = "
             insert into foods (name, brand, serving_unit, energy, protein, fat, fat_saturated, carbs, carbs_sugars, fibre, sodium, created_at)
-            values (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, datetime('now'))
+            values (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)
         ";
 
         self.conn.execute(
             sql,
-            rusqlite::params![
+            params![
                 input.name,
                 input.brand,
                 serving_unit_str,
@@ -109,7 +117,7 @@ impl Db {
                 input.fat_saturated,
                 input.carbs,
                 input.carbs_sugars,
-                0.0, // fibre - default value since not in input
+                input.fibre,
                 input.sodium,
             ],
         )?;
