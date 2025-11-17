@@ -25,6 +25,7 @@ use error::Fallible;
 use maud::Markup;
 use maud::html;
 
+use crate::routes::food_list::FoodListHandler;
 use crate::ui::label;
 use crate::ui::number_input;
 use crate::ui::page;
@@ -130,7 +131,7 @@ async fn handler(
             a href=(format!("/library/{food_id}/edit")) {
                 "Edit"
             }
-            a href="/library" {
+            a href=(FoodListHandler::url()) {
                 "Back to Library"
             }
         }
