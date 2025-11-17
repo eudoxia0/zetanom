@@ -25,7 +25,6 @@ use chrono::NaiveDate;
 use chrono::Utc;
 use db::CreateEntryInput;
 use db::FoodId;
-use db::FoodListEntry;
 use db::ServingId;
 use error::AppError;
 use error::Fallible;
@@ -55,17 +54,60 @@ async fn get_handler(
     State(state): State<ServerState>,
     Path(date): Path<String>,
 ) -> Fallible<(StatusCode, Html<String>)> {
-    // TODO: show the user a list of foods. Clicking on a food sends them to the next page.
-    todo!()
+    let db = state.db.try_lock()?;
+    let foods = db.list_foods()?;
+
+    let body: Markup = html! {
+        h2 { "Add Food Entry for " (date) }
+        ul {
+            @for food in &foods {
+                li {
+                    a href={(format!("/log/{}/new/food/{}", date, food.food_id))} {
+                        (food.name) " — " (food.brand)
+                    }
+                }
+            }
+        }
+    };
+
+    let html = page("Add Food Entry", body);
+    Ok((StatusCode::OK, Html(html.into_string())))
 }
 
 async fn get_handler_with_food_id(
     State(state): State<ServerState>,
-    Path(date): Path<String>,
-    Path(food_id): Path<FoodId>,
+    Path((date, food_id)): Path<(String, FoodId)>,
 ) -> Fallible<(StatusCode, Html<String>)> {
-    // TODO: show the user a form to log the selected food.
-    todo!()
+    let db = state.db.try_lock()?;
+    let food = db.get_food(food_id)?;
+    let servings = db.list_servings(food_id)?;
+
+    let body: Markup = html! {
+        h2 { "Log: " (food.name) " — " (food.brand) }
+        form method="post" action={(format!("/log/{}/new/food/{}", date, food_id))} {
+            input type="hidden" name="food_id" value={(food_id.to_string())};
+
+            (label("serving_id", "Serving"));
+            select id="serving_id" name="serving_id" {
+                option value="" { "Base serving (" (food.serving_unit.as_str()) ")" }
+                @for serving in &servings {
+                    option value={(serving.serving_id.to_string())} {
+                        (serving.serving_name) " (" (serving.serving_amount) " " (food.serving_unit.as_str()) ")"
+                    }
+                }
+            }
+            br;
+
+            (label("amount", "Amount"));
+            (number_input("amount"));
+            br;
+
+            input type="submit" value="Log Food";
+        }
+    };
+
+    let html = page("Log Food", body);
+    Ok((StatusCode::OK, Html(html.into_string())))
 }
 
 #[derive(Deserialize)]
@@ -77,9 +119,28 @@ struct LogFoodForm {
 
 async fn post_handler(
     State(state): State<ServerState>,
-    Path(date): Path<String>,
-    Path(food_id): Path<FoodId>,
+    Path((date, _food_id)): Path<(String, FoodId)>,
     Form(form): Form<LogFoodForm>,
 ) -> Fallible<Redirect> {
-    todo!()
+    let date = NaiveDate::parse_from_str(&date, "%Y-%m-%d")
+        .map_err(|_| AppError::new(format!("Failed to parse date: '{date}'.")))?;
+
+    let serving_id = if form.serving_id.is_empty() {
+        None
+    } else {
+        Some(form.serving_id.parse::<ServingId>()?)
+    };
+
+    let input = CreateEntryInput {
+        date,
+        food_id: form.food_id,
+        serving_id,
+        amount: form.amount,
+        created_at: Utc::now(),
+    };
+
+    let db = state.db.try_lock()?;
+    db.create_entry(input)?;
+
+    Ok(Redirect::to(&format!("/log/{}", date.format("%Y-%m-%d"))))
 }
