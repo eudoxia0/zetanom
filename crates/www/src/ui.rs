@@ -282,6 +282,15 @@ pub fn button_link(text: &str, href: &str) -> Markup {
     }
 }
 
+/// Form button.
+pub fn form_button(text: &str, href: &str) -> Markup {
+    html! {
+        form method="POST" action=(href) {
+            input type="submit" value=(text);
+        }
+    }
+}
+
 /// Primary button as link
 pub fn button_link_primary(text: &str, href: &str) -> Markup {
     html! {

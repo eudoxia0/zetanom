@@ -199,7 +199,7 @@ async fn handler(
                         td.numeric { (format!("{:.1}", fibre)) }
                         td.numeric { (format!("{:.0}", sodium)) }
                         td {
-                            (button_link("Delete", &LogDeleteHandler::url(date, entry.entry_id)))
+                            (form_button("Delete", &LogDeleteHandler::url(date, entry.entry_id)))
                         }
                     }
                 }

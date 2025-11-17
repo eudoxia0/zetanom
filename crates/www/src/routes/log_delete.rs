@@ -40,8 +40,7 @@ impl LogDeleteHandler {
 
 async fn post_handler(
     State(state): State<ServerState>,
-    Path(date): Path<String>,
-    Path(entry_id): Path<EntryId>,
+    Path((date, entry_id)): Path<(String, EntryId)>,
 ) -> Fallible<Redirect> {
     let date = NaiveDate::parse_from_str(&date, "%Y-%m-%d")
         .map_err(|_| AppError::new(format!("Failed to parse date: '{date}'.")))?;
