@@ -20,6 +20,54 @@ pub struct Db {
     conn: Connection,
 }
 
+pub type FoodId = i64;
+
+pub enum ServingUnit {
+    Grams,
+    Milliliters,
+}
+
+/// The name of a food.
+pub type FoodName = String;
+
+/// The name of a brand.
+pub type BrandName = String;
+
+/// An amount of energy in kcal.
+pub type Energy = f64;
+
+/// An amount of protein in grams.
+pub type Protein = f64;
+
+/// An amount of fat in grams.
+pub type Fat = f64;
+
+/// An amount of saturated fat in grams.
+pub type SaturatedFat = f64;
+
+/// An amount of carbohydrate in grams.
+pub type Carbs = f64;
+
+/// An amount of sugar in grams.
+pub type Sugars = f64;
+
+/// An amount of sodium in milligrams.
+pub type Sodium = f64;
+
+/// Data needed to create a new food.
+pub struct CreateFoodInput {
+    pub name: FoodName,
+    pub brand: BrandName,
+    pub serving_unit: ServingUnit,
+    pub energy: Energy,
+    pub protein: Protein,
+    pub fat: Fat,
+    pub fat_saturated: SaturatedFat,
+    pub carbs: Carbs,
+    pub carbs_sugars: Sugars,
+    pub sodium: Sodium,
+}
+
 impl Db {
     pub fn new() -> Fallible<Self> {
         let mut conn = Connection::open_in_memory()?;
@@ -35,5 +83,10 @@ impl Db {
         let sql = "select count(*) from foods;";
         let count: i64 = self.conn.query_row(sql, [], |row| row.get(0))?;
         Ok(count as usize)
+    }
+
+    /// Create a new food.
+    pub fn create_food(&self, input: CreateFoodInput) -> Fallible<FoodId> {
+        todo!()
     }
 }
