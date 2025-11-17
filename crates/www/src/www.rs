@@ -28,7 +28,6 @@ use axum::response::Redirect;
 use axum::routing::IntoMakeService;
 use axum::routing::get;
 use axum::routing::post;
-use chrono::Local;
 use chrono::NaiveDate;
 use chrono::Utc;
 use db::CreateFoodInput;
@@ -47,6 +46,7 @@ use maud::html;
 use serde::Deserialize;
 use tokio::net::TcpListener;
 
+use crate::routes::root::RootHandler;
 use crate::ui::label;
 use crate::ui::number_input;
 use crate::ui::page;
@@ -65,7 +65,7 @@ pub async fn start_server() -> Fallible<()> {
         db: Arc::new(Mutex::new(db)),
     };
     let app: Router<ServerState> = Router::new();
-    let app = app.route("/", get(index_handler));
+    let app = RootHandler::route(app);
     let app = app.route("/favicon.ico", get(favicon_handler));
     let app = app.route("/library", get(library_handler));
     let app = app.route("/library/{food_id}", get(library_view_handler));
@@ -84,12 +84,6 @@ pub async fn start_server() -> Fallible<()> {
     let listener: TcpListener = TcpListener::bind(bind).await?;
     axum::serve(listener, app).await?;
     Ok(())
-}
-
-async fn index_handler() -> Redirect {
-    let today: NaiveDate = Local::now().naive_local().date();
-    let url: String = format!("/log/{}", today.format("%Y-%m-%d"));
-    Redirect::to(&url)
 }
 
 async fn date_handler(Path(date): Path<String>) -> Fallible<(StatusCode, Html<String>)> {

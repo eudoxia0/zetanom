@@ -12,6 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod routes;
-mod ui;
-pub mod www;
+use axum::Router;
+use axum::response::Redirect;
+use axum::routing::get;
+use chrono::Local;
+use chrono::NaiveDate;
+
+pub struct RootHandler {}
+
+impl RootHandler {
+    pub fn route<T: Clone + Send + Sync + 'static>(router: Router<T>) -> Router<T> {
+        router.route("/", get(handler))
+    }
+}
+
+async fn handler() -> Redirect {
+    let today: NaiveDate = Local::now().naive_local().date();
+    let url: String = format!("/log/{}", today.format("%Y-%m-%d"));
+    Redirect::to(&url)
+}
