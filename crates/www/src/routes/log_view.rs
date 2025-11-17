@@ -266,7 +266,7 @@ async fn handler(
         (panel(&format!("Daily Log — {}", formatted_date), html! {
             (button_bar(html! {
                 (button_link("← Yesterday", &LogViewHandler::url(date.prev_day())))
-                (button_link("Today", &LogViewHandler::url(date)))
+                (button_link("Today", &LogViewHandler::url(Date::today())))
                 (button_link("Tomorrow →", &LogViewHandler::url(date.next_day())))
                 (spacer())
                 (button_link_primary("Log Food", &LogNewHandler::url(date)))
