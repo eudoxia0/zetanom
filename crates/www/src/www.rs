@@ -19,10 +19,7 @@ use axum::Form;
 use axum::Router;
 use axum::extract::Path;
 use axum::extract::State;
-use axum::http::HeaderName;
 use axum::http::StatusCode;
-use axum::http::header::CACHE_CONTROL;
-use axum::http::header::CONTENT_TYPE;
 use axum::response::Html;
 use axum::response::Redirect;
 use axum::routing::IntoMakeService;
@@ -30,15 +27,10 @@ use axum::routing::get;
 use axum::routing::post;
 use chrono::NaiveDate;
 use chrono::Utc;
-use db::CreateFoodInput;
 use db::Db;
-use db::FoodEntry;
 use db::FoodId;
-use db::FoodListEntry;
-use db::Serving;
 use db::ServingId;
 use db::ServingInput;
-use db::ServingUnit;
 use error::AppError;
 use error::Fallible;
 use maud::Markup;
@@ -46,11 +38,13 @@ use maud::html;
 use serde::Deserialize;
 use tokio::net::TcpListener;
 
+use crate::routes::assets::CssHandler;
+use crate::routes::assets::FaviconHandler;
+use crate::routes::food_list::FoodListHandler;
+use crate::routes::food_new::FoodNewHandler;
+use crate::routes::food_view::FoodViewHandler;
 use crate::routes::root::RootHandler;
-use crate::ui::label;
-use crate::ui::number_input;
 use crate::ui::page;
-use crate::ui::text_input;
 
 const PORT: u16 = 12001;
 
@@ -66,18 +60,17 @@ pub async fn start_server() -> Fallible<()> {
     };
     let app: Router<ServerState> = Router::new();
     let app = RootHandler::route(app);
-    let app = app.route("/favicon.ico", get(favicon_handler));
-    let app = app.route("/library", get(library_handler));
-    let app = app.route("/library/{food_id}", get(library_view_handler));
-    let app = app.route("/library/new", get(library_new_handler));
-    let app = app.route("/library/new", post(library_new_post_handler));
+    let app = FaviconHandler::route(app);
+    let app = FoodListHandler::route(app);
+    let app = FoodViewHandler::route(app);
+    let app = FoodNewHandler::route(app);
     let app = app.route("/library/{food_id}/servings", post(create_serving_handler));
     let app = app.route(
         "/library/{food_id}/servings/{serving_id}/delete",
         post(delete_serving_handler),
     );
     let app = app.route("/log/{date}", get(date_handler));
-    let app = app.route("/static/style.css", get(css_handler));
+    let app = CssHandler::route(app);
     let app: IntoMakeService<Router> = app.with_state(state).into_make_service();
     let bind: String = format!("0.0.0.0:{PORT}");
     println!("Started server on {bind}.");
@@ -96,253 +89,6 @@ async fn date_handler(Path(date): Path<String>) -> Fallible<(StatusCode, Html<St
     };
     let html: Markup = page("zetanom", body);
     Ok((StatusCode::OK, Html(html.into_string())))
-}
-
-async fn css_handler() -> (StatusCode, [(HeaderName, &'static str); 2], &'static [u8]) {
-    let bytes = include_bytes!("style.css");
-    (
-        StatusCode::OK,
-        [(CONTENT_TYPE, "text/css"), (CACHE_CONTROL, "no-cache")],
-        bytes,
-    )
-}
-
-async fn favicon_handler() -> (StatusCode, [(HeaderName, &'static str); 2], &'static [u8]) {
-    let bytes = include_bytes!("favicon.png");
-    (
-        StatusCode::OK,
-        [(CONTENT_TYPE, "image/png"), (CACHE_CONTROL, "no-cache")],
-        bytes,
-    )
-}
-
-async fn library_handler(State(state): State<ServerState>) -> Fallible<(StatusCode, Html<String>)> {
-    let db = state.db.try_lock()?;
-    let foods: Vec<FoodListEntry> = db.list_foods()?;
-    let list: Markup = html! {
-        ul {
-            @for food in &foods {
-                li {
-                    a href={(format!("/library/{}", food.food_id))} {
-                        (food.name) " — " (food.brand)
-                    }
-                }
-            }
-        }
-    };
-    let body: Markup = html! {
-        h1 {
-            "Library"
-        }
-        p {
-            a href="/library/new" {
-                "Add New Food"
-            }
-        }
-        (list)
-    };
-    let html: Markup = page("zetanom", body);
-    Ok((StatusCode::OK, Html(html.into_string())))
-}
-
-async fn library_view_handler(
-    State(state): State<ServerState>,
-    Path(food_id): Path<FoodId>,
-) -> Fallible<(StatusCode, Html<String>)> {
-    let db = state.db.try_lock()?;
-    let food: FoodEntry = db.get_food(food_id)?;
-    let servings: Vec<Serving> = db.list_servings(food_id)?;
-    let body: Markup = html! {
-        h1 {
-            (food.name)
-        }
-        h2 {
-            (food.brand)
-        }
-        p {
-            "Serving size: 100" (food.serving_unit.as_str())
-        }
-        table {
-            tr {
-                th { "Nutrient" }
-                th { "Amount" }
-            }
-            tr {
-                td { "Energy" }
-                td { (food.energy) " kcal" }
-            }
-            tr {
-                td { "Protein" }
-                td { (food.protein) " g" }
-            }
-            tr {
-                td { "Fat" }
-                td { (food.fat) " g" }
-            }
-            tr {
-                td { "— Saturated Fat" }
-                td { (food.fat_saturated) " g" }
-            }
-            tr {
-                td { "Carbohydrate" }
-                td { (food.carbs) " g" }
-            }
-            tr {
-                td { "— Sugars" }
-                td { (food.carbs_sugars) " g" }
-            }
-            tr {
-                td { "Fibre" }
-                td { (food.fibre) " g" }
-            }
-            tr {
-                td { "Sodium" }
-                td { (food.sodium) " mg" }
-            }
-        }
-        h2 {
-            "Serving Sizes"
-        }
-        @if servings.is_empty() {
-            p {
-                "No custom serving sizes defined."
-            }
-        } @else {
-            ul {
-                @for serving in &servings {
-                    li {
-                        (serving.serving_name) ": " (serving.serving_amount) (food.serving_unit.as_str())
-                        " "
-                        form method="post" action={(format!("/library/{}/servings/{}/delete", food_id, serving.serving_id))} style="display: inline;" {
-                            input type="submit" value="Delete";
-                        }
-                    }
-                }
-            }
-        }
-        h3 {
-            "Add Serving Size"
-        }
-        form method="post" action={(format!("/library/{}/servings", food_id))} {
-            (label("serving_name", "Name (e.g., cup, slice, package)"));
-            (text_input("serving_name"));
-            br;
-            (label("serving_amount", &format!("Amount ({})", food.serving_unit.as_str())));
-            (number_input("serving_amount"));
-            br;
-            input type="submit" value="Add Serving Size";
-        }
-        p {
-            a href="/library" {
-                "Back to Library"
-            }
-        }
-    };
-    let html: Markup = page("zetanom", body);
-    Ok((StatusCode::OK, Html(html.into_string())))
-}
-
-async fn library_new_handler() -> Fallible<(StatusCode, Html<String>)> {
-    let body: Markup = html! {
-        p {
-            h1 {
-                "Library: New Food"
-            }
-            form method="post" action="/library/new" {
-                (label("name", "Name"));
-                (text_input("name"));
-                br;
-                (label("brand", "Brand"));
-                (text_input("brand"));
-                br;
-                (label("serving_unit", "Serving Unit"));
-                select id="serving_unit" name="serving_unit" {
-                    option value="g" { "g" }
-                    option value="ml" { "ml" }
-                }
-                br;
-                (label("energy", "Energy (kcal)"));
-                (number_input("energy"));
-                br;
-                (label("protein", "Protein (g)"));
-                (number_input("protein"));
-                br;
-                (label("fat", "Fat (g)"));
-                (number_input("fat"));
-                br;
-                (label("fat_saturated", "Fat — Saturated (g)"));
-                (number_input("fat_saturated"));
-                br;
-                (label("carbs", "Carbohydrate (g)"));
-                (number_input("carbs"));
-                br;
-                (label("carbs_sugars", "Carbohydrate — Sugars (g)"));
-                (number_input("carbs_sugars"));
-                br;
-                (label("fibre", "Fibre (g)"));
-                (number_input("fibre"));
-                br;
-                (label("sodium", "Sodium (mg)"));
-                (number_input("sodium"));
-                br;
-                input type="submit" value="Save";
-            }
-        }
-    };
-    let html: Markup = page("zetanom", body);
-    Ok((StatusCode::OK, Html(html.into_string())))
-}
-
-#[derive(Deserialize)]
-struct CreateFoodForm {
-    name: String,
-    brand: String,
-    serving_unit: String,
-    energy: f64,
-    protein: f64,
-    fat: f64,
-    fat_saturated: f64,
-    carbs: f64,
-    carbs_sugars: f64,
-    fibre: f64,
-    sodium: f64,
-}
-
-async fn library_new_post_handler(
-    State(state): State<ServerState>,
-    Form(form): Form<CreateFoodForm>,
-) -> Fallible<Redirect> {
-    let CreateFoodForm {
-        name,
-        brand,
-        serving_unit,
-        energy,
-        protein,
-        fat,
-        fat_saturated,
-        carbs,
-        carbs_sugars,
-        fibre,
-        sodium,
-    } = form;
-    let created_at = Utc::now();
-    let input = CreateFoodInput {
-        name,
-        brand,
-        serving_unit: ServingUnit::try_from(serving_unit.as_ref())?,
-        energy,
-        protein,
-        fat,
-        fat_saturated,
-        carbs,
-        carbs_sugars,
-        fibre,
-        sodium,
-        created_at,
-    };
-    let db = state.db.try_lock()?;
-    let food_id: FoodId = db.create_food(input)?;
-    Ok(Redirect::to(&format!("/library/{food_id}")))
 }
 
 #[derive(Deserialize)]

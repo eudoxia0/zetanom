@@ -18,10 +18,12 @@ use axum::routing::get;
 use chrono::Local;
 use chrono::NaiveDate;
 
+use crate::www::ServerState;
+
 pub struct RootHandler {}
 
 impl RootHandler {
-    pub fn route<T: Clone + Send + Sync + 'static>(router: Router<T>) -> Router<T> {
+    pub fn route(router: Router<ServerState>) -> Router<ServerState> {
         router.route("/", get(handler))
     }
 }

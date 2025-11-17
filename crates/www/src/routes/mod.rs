@@ -12,4 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+pub mod assets;
+pub mod food_list;
+pub mod food_new;
+pub mod food_view;
 pub mod root;
