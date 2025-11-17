@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::fs;
 use std::path::PathBuf;
 
-use error::Fallible;
+use error::{AppError, Fallible};
+use serde::Deserialize;
 
 pub struct Config {
     /// Absolute, canonicalized path to the SQLite3 database.
@@ -23,9 +25,40 @@ pub struct Config {
     port: u16,
 }
 
+#[derive(Deserialize)]
+struct ConfigFile {
+    db_path: PathBuf,
+    port: u16,
+}
+
 impl Config {
     /// Load the configuration from `~/.config/zetanom/config.toml`.
     pub fn load() -> Fallible<Self> {
-        todo!()
+        // Get the home directory
+        let home = std::env::var("HOME")
+            .map_err(|_| AppError::new("HOME environment variable not set"))?;
+
+        // Construct the config file path
+        let config_path = PathBuf::from(home)
+            .join(".config")
+            .join("zetanom")
+            .join("config.toml");
+
+        // Read the config file
+        let contents = fs::read_to_string(&config_path)
+            .map_err(|e| AppError::new(format!("Failed to read config file at {}: {}", config_path.display(), e)))?;
+
+        // Parse the TOML
+        let config_file: ConfigFile = toml::from_str(&contents)
+            .map_err(|e| AppError::new(format!("Failed to parse config file: {}", e)))?;
+
+        // Canonicalize the database path
+        let db_path = fs::canonicalize(&config_file.db_path)
+            .map_err(|e| AppError::new(format!("Failed to canonicalize database path {}: {}", config_file.db_path.display(), e)))?;
+
+        Ok(Config {
+            db_path,
+            port: config_file.port,
+        })
     }
 }
