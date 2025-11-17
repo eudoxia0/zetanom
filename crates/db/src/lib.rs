@@ -119,6 +119,7 @@ impl Db {
                 input.carbs_sugars,
                 input.fibre,
                 input.sodium,
+                input.created_at,
             ],
         )?;
 
