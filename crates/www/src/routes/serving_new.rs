@@ -33,6 +33,10 @@ impl ServingNewHandler {
     pub fn route(router: Router<ServerState>) -> Router<ServerState> {
         router.route("/library/{food_id}/servings", post(handler))
     }
+
+    pub fn url(food_id: FoodId) -> String {
+        format!("/library/{food_id}/servings")
+    }
 }
 
 #[derive(Deserialize)]

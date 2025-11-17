@@ -27,6 +27,7 @@ use maud::html;
 
 use crate::routes::food_edit::FoodEditHandler;
 use crate::routes::food_list::FoodListHandler;
+use crate::routes::serving_new::ServingNewHandler;
 use crate::ui::label;
 use crate::ui::number_input;
 use crate::ui::page;
@@ -123,7 +124,7 @@ async fn handler(
         h3 {
             "Add Serving Size"
         }
-        form method="post" action={(format!("/library/{}/servings", food_id))} {
+        form method="post" action=(ServingNewHandler::url(food_id)) {
             (label("serving_name", "Name (e.g., cup, slice, package)"));
             (text_input("serving_name"));
             br;
