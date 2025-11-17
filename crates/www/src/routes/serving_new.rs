@@ -24,6 +24,7 @@ use db::ServingInput;
 use error::Fallible;
 use serde::Deserialize;
 
+use crate::routes::food_view::FoodViewHandler;
 use crate::www::ServerState;
 
 pub struct ServingNewHandler {}
