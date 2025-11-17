@@ -19,7 +19,7 @@ use axum::response::Redirect;
 use axum::routing::post;
 use db::EntryId;
 use error::Fallible;
-use shared::date::Date;
+use shared::Date;
 
 use crate::routes::log_view::LogViewHandler;
 use crate::www::ServerState;

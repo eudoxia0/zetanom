@@ -15,7 +15,7 @@
 use axum::Router;
 use axum::response::Redirect;
 use axum::routing::get;
-use shared::date::Date;
+use shared::Date;
 
 use crate::routes::log_view::LogViewHandler;
 use crate::www::ServerState;

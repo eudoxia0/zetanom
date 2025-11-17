@@ -20,7 +20,7 @@ use axum::response::Html;
 use axum::routing::get;
 use error::Fallible;
 use maud::html;
-use shared::date::Date;
+use shared::Date;
 
 use crate::routes::food_view::FoodViewHandler;
 use crate::routes::log_delete::LogDeleteHandler;

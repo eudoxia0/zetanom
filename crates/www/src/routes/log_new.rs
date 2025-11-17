@@ -28,7 +28,7 @@ use db::ServingId;
 use error::Fallible;
 use maud::html;
 use serde::Deserialize;
-use shared::date::Date;
+use shared::Date;
 
 use crate::routes::log_view::LogViewHandler;
 use crate::ui::*;

@@ -20,8 +20,8 @@ use error::Fallible;
 use rusqlite::Connection;
 use rusqlite::config::DbConfig;
 use rusqlite::params;
-use shared::basic_unit::BasicUnit;
-use shared::date::Date;
+use shared::BasicUnit;
+use shared::Date;
 
 pub struct Db {
     conn: Connection,
