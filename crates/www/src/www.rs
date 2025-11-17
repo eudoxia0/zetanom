@@ -306,6 +306,6 @@ async fn library_new_post_handler(
         created_at,
     };
     let db = state.db.try_lock()?;
-    db.create_food(input)?;
-    Ok(Redirect::to("/"))
+    let food_id: FoodId = db.create_food(input)?;
+    Ok(Redirect::to(&format!("/library/{food_id}")))
 }
