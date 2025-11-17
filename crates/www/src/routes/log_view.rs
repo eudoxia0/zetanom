@@ -24,6 +24,7 @@ use error::Fallible;
 use maud::Markup;
 use maud::html;
 
+use crate::routes::log_new::LogNewHandler;
 use crate::ui::page;
 use crate::www::ServerState;
 
@@ -113,7 +114,7 @@ async fn handler(
             (format!("Log: {date}"))
         }
         p {
-            a href=(format!("/log/{date}/new")) {
+            a href=(LogNewHandler::url(date)) {
                 "Log Food"
             }
         }
