@@ -1,0 +1,10 @@
+[package]
+name = "shared"
+version = "0.0.0"
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+chrono.workspace = true
+error.workspace = true
+rusqlite.workspace = true
