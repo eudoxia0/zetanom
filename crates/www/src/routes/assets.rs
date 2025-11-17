@@ -21,15 +21,49 @@ use axum::routing::get;
 
 use crate::www::ServerState;
 
-pub struct AssetHandler {}
+pub struct CssResetHandler {}
 
-pub const URL_CSS: &str = "/static/style.css";
+pub struct CssHandler {}
 
-impl AssetHandler {
+pub struct FaviconHandler {}
+
+impl CssResetHandler {
     pub fn route(router: Router<ServerState>) -> Router<ServerState> {
-        let router = router.route(URL_CSS, get(css_handler));
-        router.route("/favicon.ico", get(favicon_handler))
+        router.route(Self::url(), get(css_reset_handler))
     }
+
+    pub fn url() -> &'static str {
+        "/static/reset.css"
+    }
+}
+
+impl CssHandler {
+    pub fn route(router: Router<ServerState>) -> Router<ServerState> {
+        router.route(Self::url(), get(css_handler))
+    }
+
+    pub fn url() -> &'static str {
+        "/static/style.css"
+    }
+}
+
+impl FaviconHandler {
+    pub fn route(router: Router<ServerState>) -> Router<ServerState> {
+        router.route(Self::url(), get(favicon_handler))
+    }
+
+    pub fn url() -> &'static str {
+        "/favicon.ico"
+    }
+}
+
+async fn css_reset_handler() -> (StatusCode, [(HeaderName, &'static str); 2], &'static [u8]) {
+    let bytes = include_bytes!("reset.css");
+    (
+        StatusCode::OK,
+        [(CONTENT_TYPE, "text/css"), (CACHE_CONTROL, "no-cache")],
+        bytes,
+    )
 }
 
 async fn css_handler() -> (StatusCode, [(HeaderName, &'static str); 2], &'static [u8]) {

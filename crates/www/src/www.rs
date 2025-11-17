@@ -22,7 +22,8 @@ use error::Fallible;
 use tokio::net::TcpListener;
 
 use crate::config::Config;
-use crate::routes::assets::AssetHandler;
+use crate::routes::assets::CssHandler;
+use crate::routes::assets::CssResetHandler;
 use crate::routes::food_edit::FoodEditHandler;
 use crate::routes::food_list::FoodListHandler;
 use crate::routes::food_new::FoodNewHandler;
@@ -48,7 +49,10 @@ pub async fn start_server() -> Fallible<()> {
         db: Arc::new(Mutex::new(db)),
     };
     let app: Router<ServerState> = Router::new();
-    let app = AssetHandler::route(app);
+
+    let app = CssHandler::route(app);
+    let app = CssResetHandler::route(app);
+    let app = FaviconHandler::route(app);
     let app = FoodEditHandler::route(app);
     let app = FoodListHandler::route(app);
     let app = FoodNewHandler::route(app);
@@ -59,6 +63,7 @@ pub async fn start_server() -> Fallible<()> {
     let app = RootHandler::route(app);
     let app = ServingDeleteHandler::route(app);
     let app = ServingNewHandler::route(app);
+
     let app: IntoMakeService<Router> = app.with_state(state).into_make_service();
     let bind: String = format!("0.0.0.0:{port}");
     println!("Started server on {bind}.");
