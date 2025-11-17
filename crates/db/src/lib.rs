@@ -30,12 +30,12 @@ pub struct Db {
 pub type FoodId = i64;
 
 #[derive(Clone, Copy)]
-pub enum ServingUnit {
+pub enum BasicUnit {
     Grams,
     Milliliters,
 }
 
-impl ServingUnit {
+impl BasicUnit {
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Grams => "g",
@@ -44,7 +44,7 @@ impl ServingUnit {
     }
 }
 
-impl TryFrom<&str> for ServingUnit {
+impl TryFrom<&str> for BasicUnit {
     type Error = AppError;
 
     fn try_from(value: &str) -> Fallible<Self> {
@@ -90,7 +90,7 @@ pub type Sodium = f64;
 pub struct CreateFoodInput {
     pub name: FoodName,
     pub brand: BrandName,
-    pub serving_unit: ServingUnit,
+    pub serving_unit: BasicUnit,
     pub energy: Energy,
     pub protein: Protein,
     pub fat: Fat,
@@ -107,7 +107,7 @@ pub struct FoodListEntry {
     pub food_id: FoodId,
     pub name: FoodName,
     pub brand: BrandName,
-    pub serving_unit: ServingUnit,
+    pub serving_unit: BasicUnit,
     pub energy: Energy,
     pub protein: Protein,
 }
@@ -117,7 +117,7 @@ pub struct FoodEntry {
     pub food_id: FoodId,
     pub name: FoodName,
     pub brand: BrandName,
-    pub serving_unit: ServingUnit,
+    pub serving_unit: BasicUnit,
     pub energy: Energy,
     pub protein: Protein,
     pub fat: Fat,
@@ -134,7 +134,7 @@ pub struct EditFoodInput {
     pub food_id: FoodId,
     pub name: FoodName,
     pub brand: BrandName,
-    pub serving_unit: ServingUnit,
+    pub serving_unit: BasicUnit,
     pub energy: Energy,
     pub protein: Protein,
     pub fat: Fat,
@@ -257,7 +257,7 @@ impl Db {
         let mut stmt = self.conn.prepare(sql)?;
         let rows = stmt.query_map([], |row| {
             let serving_unit_str: String = row.get(3)?;
-            let serving_unit = ServingUnit::try_from(serving_unit_str.as_str())
+            let serving_unit = BasicUnit::try_from(serving_unit_str.as_str())
                 .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?;
             Ok(FoodListEntry {
                 food_id: row.get(0)?,
@@ -299,7 +299,7 @@ impl Db {
         ";
         let entry = self.conn.query_row(sql, params![food_id], |row| {
             let serving_unit_str: String = row.get(3)?;
-            let serving_unit = ServingUnit::try_from(serving_unit_str.as_str())
+            let serving_unit = BasicUnit::try_from(serving_unit_str.as_str())
                 .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?;
             Ok(FoodEntry {
                 food_id: row.get(0)?,
