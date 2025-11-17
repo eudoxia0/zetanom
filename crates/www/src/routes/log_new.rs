@@ -32,6 +32,7 @@ use maud::Markup;
 use maud::html;
 use serde::Deserialize;
 
+use crate::routes::log_view::LogViewHandler;
 use crate::ui::label;
 use crate::ui::number_input;
 use crate::ui::page;
@@ -142,5 +143,5 @@ async fn post_handler(
     let db = state.db.try_lock()?;
     db.create_entry(input)?;
 
-    Ok(Redirect::to(&format!("/log/{}", date.format("%Y-%m-%d"))))
+    Ok(Redirect::to(&LogViewHandler::url(date)))
 }

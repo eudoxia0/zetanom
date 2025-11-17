@@ -32,6 +32,11 @@ impl LogViewHandler {
     pub fn route(router: Router<ServerState>) -> Router<ServerState> {
         router.route("/log/{date}", get(handler))
     }
+
+    pub fn url(date: NaiveDate) -> String {
+        let date = date.format("%Y-%m-%d");
+        format!("/log/{date}")
+    }
 }
 
 async fn handler(Path(date): Path<String>) -> Fallible<(StatusCode, Html<String>)> {
