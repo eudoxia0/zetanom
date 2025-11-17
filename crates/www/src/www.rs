@@ -41,6 +41,7 @@ pub struct ServerState {
 
 pub async fn start_server() -> Fallible<()> {
     let config: Config = Config::load()?;
+    println!("Database: {}", config.db_path.display());
     let port: u16 = config.port;
     let db: Db = Db::new(&config.db_path)?;
     let state: ServerState = ServerState {

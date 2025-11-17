@@ -28,7 +28,7 @@ pub struct Config {
 
 #[derive(Deserialize)]
 struct ConfigFile {
-    db_path: PathBuf,
+    database_path: PathBuf,
     port: u16,
 }
 
@@ -59,10 +59,10 @@ impl Config {
             .map_err(|e| AppError::new(format!("Failed to parse config file: {}", e)))?;
 
         // Canonicalize the database path
-        let db_path = fs::canonicalize(&config_file.db_path).map_err(|e| {
+        let db_path = fs::canonicalize(&config_file.database_path).map_err(|e| {
             AppError::new(format!(
                 "Failed to canonicalize database path {}: {}",
-                config_file.db_path.display(),
+                config_file.database_path.display(),
                 e
             ))
         })?;
