@@ -143,14 +143,14 @@ async fn handler(
             "Add Custom Serving Size"
         }
         form method="post" action=(ServingNewHandler::url(food_id)) {
-            (form_group(html! {
+            .form-group {
                 (label("serving_name", "Serving Name"))
                 (text_input("serving_name", "serving_name", "e.g., cup, slice, package"))
-            }))
-            (form_group(html! {
+            }
+            .form-group {
                 (label("serving_amount", &format!("Amount ({})", food.serving_unit.as_str())))
                 (number_input("serving_amount", "serving_amount", "0.1", "e.g., 250"))
-            }))
+            }
             input .button type="submit" value="Add Serving";
         }
     };

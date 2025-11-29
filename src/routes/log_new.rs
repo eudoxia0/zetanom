@@ -126,35 +126,29 @@ async fn get_handler_with_food_id(
     };
 
     let form_content = html! {
-        form method="post" action=(LogNewHandler::url_with_food_id(date, food_id)) {
+        form .main-form method="post" action=(LogNewHandler::url_with_food_id(date, food_id)) {
             input type="hidden" name="food_id" value={(food_id.to_string())};
-
-            (form_section("Log Food Entry", html! {
-                (form_row(html! {
-                    (form_group_half(html! {
-                        (label_required("serving_id", "Serving Size"))
-                        (select("serving_id", "serving_id", {
-                            let mut options = vec![
-                                ("".to_string(), format!("Base serving (100{})", food.serving_unit.as_str()))
-                            ];
-                            for serving in &servings {
-                                options.push((
-                                    serving.serving_id.to_string(),
-                                    format!("{} ({} {})", serving.serving_name, serving.serving_amount, food.serving_unit.as_str())
-                                ));
-                            }
-                            options
-                        }))
-                    }))
-                    (form_group_half(html! {
-                        (label_required("amount", "Amount"))
-                        (number_input("amount", "amount", "0.1", "e.g., 1.5"))
-                    }))
+            .form-group {
+                (label_required("amount", "Amount"))
+                (number_input("amount", "amount", "0.1", "e.g., 1.5"))
+            }
+            .form-group {
+                (label_required("serving_id", "Serving Size"))
+                (select("serving_id", "serving_id", {
+                    let mut options = vec![
+                        ("".to_string(), format!("Base serving (100{})", food.serving_unit.as_str()))
+                    ];
+                    for serving in &servings {
+                        options.push((
+                            serving.serving_id.to_string(),
+                            format!("{} ({} {})", serving.serving_name, serving.serving_amount, food.serving_unit.as_str())
+                        ));
+                    }
+                    options
                 }))
-            }))
-
+            }
             .button-bar {
-                input .button type="submit" { "Log Food" }
+                input .button type="submit" value="Log Entry";
             }
         }
     };
