@@ -95,7 +95,6 @@ async fn get_handler(
             // Action Buttons
             .button-bar {
                 input .button type="submit" { "Save" }
-                (button_link("Cancel", &FoodViewHandler::url(food_id)))
             }
         }
     };

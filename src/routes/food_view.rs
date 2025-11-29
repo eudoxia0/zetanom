@@ -142,7 +142,9 @@ async fn handler(
 
     let content = html! {
         .button-bar {
-            (button_link("Edit Food", &FoodEditHandler::url(food_id)))
+            a .button href=(FoodEditHandler::url(food_id)) {
+                "Edit Food"
+            }
         }
         (nutrition_table)
         h2 {

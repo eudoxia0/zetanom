@@ -183,13 +183,6 @@ pub fn select_with_selected(
     }
 }
 
-/// Button as link
-pub fn button_link(text: &str, href: &str) -> Markup {
-    html! {
-        a.button href=(href) { (text) }
-    }
-}
-
 /// Nutrition table row (for form input)
 pub fn nutrition_row(
     label_text: &str,
