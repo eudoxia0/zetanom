@@ -77,14 +77,14 @@ async fn get_handler() -> Fallible<(StatusCode, Html<String>)> {
                     "Nutrition Information (per 100g or 100ml)"
                 }
                 (nutrition_table(html! {
-                    (nutrition_row("Energy *", "energy", "energy", "kcal", 0))
-                    (nutrition_row("Protein *", "protein", "protein", "g", 0))
-                    (nutrition_row("Fat, Total *", "fat", "fat", "g", 0))
-                    (nutrition_row("Saturated *", "fat_saturated", "fat_saturated", "g", 1))
-                    (nutrition_row("Carbohydrate *", "carbs", "carbs", "g", 0))
-                    (nutrition_row("Sugars *", "carbs_sugars", "carbs_sugars", "g", 1))
-                    (nutrition_row("Dietary Fibre *", "fibre", "fibre", "g", 0))
-                    (nutrition_row("Sodium *", "sodium", "sodium", "mg", 0))
+                    (nutrition_row("Energy", "energy", "energy", "kcal", 0))
+                    (nutrition_row("Protein", "protein", "protein", "g", 0))
+                    (nutrition_row("Fat, Total", "fat", "fat", "g", 0))
+                    (nutrition_row("Saturated", "fat_saturated", "fat_saturated", "g", 1))
+                    (nutrition_row("Carbohydrate", "carbs", "carbs", "g", 0))
+                    (nutrition_row("Sugars", "carbs_sugars", "carbs_sugars", "g", 1))
+                    (nutrition_row("Dietary Fibre", "fibre", "fibre", "g", 0))
+                    (nutrition_row("Sodium", "sodium", "sodium", "mg", 0))
                 }))
             }
             .button-bar {

@@ -172,3 +172,63 @@ input[type="submit"]:hover {
 .main-form {
     margin: 16px 0;
 }
+
+.nutrition-table {
+    width: 100%;
+    border: 1px solid #999;
+    background: white;
+}
+
+.nutrition-row {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding: 6px 8px;
+}
+
+.nutrition-row:last-child {
+    border-bottom: none;
+}
+
+.nutrition-row.indent-1 {
+    padding-left: 28px;
+    background: #f8f8f8;
+}
+
+.nutrition-row.indent-2 {
+    padding-left: 48px;
+    background: #f0f0f0;
+}
+
+.nutrition-label {
+    flex: 1;
+    font-weight: bold;
+    color: #333;
+}
+
+.nutrition-label.sub {
+    font-weight: normal;
+    color: #555;
+}
+
+.nutrition-label.sub::before {
+    content: "— ";
+    color: #999;
+}
+
+.nutrition-input {
+    flex: 0 0 120px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.nutrition-input input {
+    width: 80px;
+}
+
+.nutrition-unit {
+    font-size: 9px;
+    color: #666;
+    width: 35px;
+}
