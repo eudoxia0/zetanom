@@ -78,7 +78,7 @@ async fn handler(
                     td { "Fat, Total" }
                     td.numeric { (format!("{:.1} g", food.fat)) }
                 }
-                tr style="background: #f8f8f8;" {
+                tr {
                     td { "— Saturated" }
                     td.numeric { (format!("{:.1} g", food.fat_saturated)) }
                 }
@@ -86,7 +86,7 @@ async fn handler(
                     td { "Carbohydrate" }
                     td.numeric { (format!("{:.1} g", food.carbs)) }
                 }
-                tr style="background: #f8f8f8;" {
+                tr {
                     td { "— Sugars" }
                     td.numeric { (format!("{:.1} g", food.carbs_sugars)) }
                 }
@@ -102,31 +102,46 @@ async fn handler(
         }
     };
 
-    // Servings section
-    let servings_list = if servings.is_empty() {
-        html! {
-            p {
-                "No custom serving sizes."
+    let content = html! {
+        .button-bar {
+            a .button href=(FoodEditHandler::url(food_id)) {
+                "Edit Food"
             }
         }
-    } else {
-        html! {
-            div."serving-list" {
+        (nutrition_table)
+        h2 {
+            "Custom Serving Sizes"
+        }
+        table {
+            thead {
+                tr {
+                    th { "Name" }
+                    th { "Equals" }
+                    th { "Delete" }
+                }
+            }
+            tbody {
                 @for serving in &servings {
-                    div."serving-item" {
-                        span {
-                            (serving.serving_name) ": " (serving.serving_amount) (food.serving_unit.as_str())
+                    tr {
+                        td {
+                            (serving.serving_name)
                         }
-                        form method="post" action=(ServingDeleteHandler::url(food_id, serving.serving_id)) style="display: inline;" {
-                            input .button type="submit" { "Delete" }
+                        td {
+                            (serving.serving_amount) (food.serving_unit.as_str())
+                        }
+                        td {
+                            form method="post" action=(ServingDeleteHandler::url(food_id, serving.serving_id)) {
+                                input .button type="submit" value="Delete";
+                            }
                         }
                     }
                 }
             }
         }
-    };
 
-    let add_serving_form = html! {
+        h2 {
+            "Add Custom Serving Size"
+        }
         form method="post" action=(ServingNewHandler::url(food_id)) {
             (form_group(html! {
                 (label("serving_name", "Serving Name"))
@@ -138,23 +153,6 @@ async fn handler(
             }))
             input .button type="submit" value="Add Serving";
         }
-    };
-
-    let content = html! {
-        .button-bar {
-            a .button href=(FoodEditHandler::url(food_id)) {
-                "Edit Food"
-            }
-        }
-        (nutrition_table)
-        h2 {
-            "Custom Serving Sizes"
-        }
-        (servings_list)
-        h2 {
-            "Add Custom Serving Size"
-        }
-        (add_serving_form)
     };
 
     let html_page = page(&format!("{}", food_title), content);
