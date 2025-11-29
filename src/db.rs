@@ -143,7 +143,6 @@ pub struct CreateEntryInput {
 
 pub struct Entry {
     pub entry_id: EntryId,
-    pub date: Date,
     pub food_id: FoodId,
     pub serving_id: Option<ServingId>,
     pub amount: f64,
@@ -386,7 +385,7 @@ impl Db {
     pub fn list_entries(&self, date: Date) -> Fallible<Vec<Entry>> {
         let sql = "
             select
-                entry_id, date, food_id, serving_id, amount, created_at
+                entry_id, food_id, serving_id, amount, created_at
             from
                 entries
             where
@@ -398,11 +397,10 @@ impl Db {
         let rows = stmt.query_map(params![date], |row| {
             Ok(Entry {
                 entry_id: row.get(0)?,
-                date: row.get(1)?,
-                food_id: row.get(2)?,
-                serving_id: row.get(3)?,
-                amount: row.get(4)?,
-                created_at: row.get(5)?,
+                food_id: row.get(1)?,
+                serving_id: row.get(2)?,
+                amount: row.get(3)?,
+                created_at: row.get(4)?,
             })
         })?;
         let mut entries = Vec::new();
