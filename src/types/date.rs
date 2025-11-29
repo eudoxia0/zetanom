@@ -17,13 +17,14 @@ use std::fmt::Formatter;
 
 use chrono::Local;
 use chrono::NaiveDate;
-use error::AppError;
 use rusqlite::ToSql;
 use rusqlite::types::FromSql;
 use rusqlite::types::FromSqlError;
 use rusqlite::types::FromSqlResult;
 use rusqlite::types::ToSqlOutput;
 use rusqlite::types::ValueRef;
+
+use crate::error::AppError;
 
 #[derive(Clone, Copy)]
 pub struct Date(NaiveDate);

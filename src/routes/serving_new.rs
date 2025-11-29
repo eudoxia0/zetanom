@@ -12,38 +12,56 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use axum::Form;
 use axum::Router;
 use axum::extract::Path;
 use axum::extract::State;
 use axum::response::Redirect;
 use axum::routing::post;
-use db::FoodId;
-use db::ServingId;
-use error::Fallible;
+use chrono::Utc;
+use serde::Deserialize;
 
+use crate::db::FoodId;
+use crate::db::ServingInput;
+use crate::error::Fallible;
 use crate::routes::food_view::FoodViewHandler;
 use crate::www::ServerState;
 
-pub struct ServingDeleteHandler {}
+pub struct ServingNewHandler {}
 
-impl ServingDeleteHandler {
+impl ServingNewHandler {
     pub fn route(router: Router<ServerState>) -> Router<ServerState> {
-        router.route(
-            "/library/{food_id}/servings/{serving_id}/delete",
-            post(handler),
-        )
+        router.route("/library/{food_id}/servings", post(handler))
     }
 
-    pub fn url(food_id: FoodId, serving_id: ServingId) -> String {
-        format!("/library/{food_id}/servings/{serving_id}/delete")
+    pub fn url(food_id: FoodId) -> String {
+        format!("/library/{food_id}/servings")
     }
+}
+
+#[derive(Deserialize)]
+struct CreateServingForm {
+    serving_name: String,
+    serving_amount: f64,
 }
 
 async fn handler(
     State(state): State<ServerState>,
-    Path((food_id, serving_id)): Path<(FoodId, ServingId)>,
+    Path(food_id): Path<FoodId>,
+    Form(form): Form<CreateServingForm>,
 ) -> Fallible<Redirect> {
+    let CreateServingForm {
+        serving_name,
+        serving_amount,
+    } = form;
+    let created_at = Utc::now();
+    let input = ServingInput {
+        food_id,
+        serving_name,
+        serving_amount,
+        created_at,
+    };
     let db = state.db.try_lock()?;
-    db.delete_serving(serving_id)?;
+    db.create_serving(input)?;
     Ok(Redirect::to(&FoodViewHandler::url(food_id)))
 }

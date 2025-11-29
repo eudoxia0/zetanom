@@ -18,12 +18,12 @@ use axum::extract::State;
 use axum::http::StatusCode;
 use axum::response::Html;
 use axum::routing::get;
-use db::FoodEntry;
-use db::FoodId;
-use db::Serving;
-use error::Fallible;
 use maud::html;
 
+use crate::db::FoodEntry;
+use crate::db::FoodId;
+use crate::db::Serving;
+use crate::error::Fallible;
 use crate::routes::food_edit::FoodEditHandler;
 use crate::routes::food_list::FoodListHandler;
 use crate::routes::serving_delete::ServingDeleteHandler;

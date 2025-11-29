@@ -1,9 +1,0 @@
-[package]
-name = "error"
-version = "0.0.0"
-edition.workspace = true
-license.workspace = true
-
-[dependencies]
-rusqlite.workspace = true
-axum.workspace = true

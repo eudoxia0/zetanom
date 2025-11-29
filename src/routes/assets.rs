@@ -58,7 +58,7 @@ impl FaviconHandler {
 }
 
 async fn css_reset_handler() -> (StatusCode, [(HeaderName, &'static str); 2], &'static [u8]) {
-    let bytes = include_bytes!("reset.css");
+    let bytes = include_bytes!("../../res/reset.css");
     (
         StatusCode::OK,
         [(CONTENT_TYPE, "text/css"), (CACHE_CONTROL, "no-cache")],
@@ -67,7 +67,7 @@ async fn css_reset_handler() -> (StatusCode, [(HeaderName, &'static str); 2], &'
 }
 
 async fn css_handler() -> (StatusCode, [(HeaderName, &'static str); 2], &'static [u8]) {
-    let bytes = include_bytes!("style.css");
+    let bytes = include_bytes!("../../res/style.css");
     (
         StatusCode::OK,
         [(CONTENT_TYPE, "text/css"), (CACHE_CONTROL, "no-cache")],
@@ -76,7 +76,7 @@ async fn css_handler() -> (StatusCode, [(HeaderName, &'static str); 2], &'static
 }
 
 async fn favicon_handler() -> (StatusCode, [(HeaderName, &'static str); 2], &'static [u8]) {
-    let bytes = include_bytes!("favicon.png");
+    let bytes = include_bytes!("../../res/favicon.png");
     (
         StatusCode::OK,
         [(CONTENT_TYPE, "image/png"), (CACHE_CONTROL, "no-cache")],

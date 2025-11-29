@@ -15,9 +15,10 @@
 use std::fs;
 use std::path::PathBuf;
 
-use error::AppError;
-use error::Fallible;
 use serde::Deserialize;
+
+use crate::error::AppError;
+use crate::error::Fallible;
 
 pub struct Config {
     /// Absolute, canonicalized path to the SQLite3 database.

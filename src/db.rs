@@ -16,12 +16,13 @@ use std::path::Path;
 
 use chrono::DateTime;
 use chrono::Utc;
-use error::Fallible;
 use rusqlite::Connection;
 use rusqlite::config::DbConfig;
 use rusqlite::params;
-use shared::BasicUnit;
-use shared::Date;
+
+use crate::error::Fallible;
+use crate::types::BasicUnit;
+use crate::types::Date;
 
 pub struct Db {
     conn: Connection,

@@ -17,31 +17,33 @@ use axum::extract::Path;
 use axum::extract::State;
 use axum::response::Redirect;
 use axum::routing::post;
-use db::EntryId;
-use error::Fallible;
-use shared::Date;
 
-use crate::routes::log_view::LogViewHandler;
+use crate::db::FoodId;
+use crate::db::ServingId;
+use crate::error::Fallible;
+use crate::routes::food_view::FoodViewHandler;
 use crate::www::ServerState;
 
-pub struct LogDeleteHandler {}
+pub struct ServingDeleteHandler {}
 
-impl LogDeleteHandler {
+impl ServingDeleteHandler {
     pub fn route(router: Router<ServerState>) -> Router<ServerState> {
-        router.route("/log/{date}/entry/{entry_id}/delete", post(post_handler))
+        router.route(
+            "/library/{food_id}/servings/{serving_id}/delete",
+            post(handler),
+        )
     }
 
-    pub fn url(date: Date, entry_id: EntryId) -> String {
-        format!("/log/{date}/entry/{entry_id}/delete")
+    pub fn url(food_id: FoodId, serving_id: ServingId) -> String {
+        format!("/library/{food_id}/servings/{serving_id}/delete")
     }
 }
 
-async fn post_handler(
+async fn handler(
     State(state): State<ServerState>,
-    Path((date, entry_id)): Path<(String, EntryId)>,
+    Path((food_id, serving_id)): Path<(FoodId, ServingId)>,
 ) -> Fallible<Redirect> {
-    let date = Date::try_from(date)?;
     let db = state.db.try_lock()?;
-    db.delete_entry(entry_id)?;
-    Ok(Redirect::to(&LogViewHandler::url(date)))
+    db.delete_serving(serving_id)?;
+    Ok(Redirect::to(&FoodViewHandler::url(food_id)))
 }

@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use error::AppError;
-use error::Fallible;
+use crate::error::AppError;
+use crate::error::Fallible;
 
 #[derive(Clone, Copy)]
 pub enum BasicUnit {

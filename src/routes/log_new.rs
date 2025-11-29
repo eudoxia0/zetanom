@@ -22,15 +22,15 @@ use axum::response::Redirect;
 use axum::routing::get;
 use axum::routing::post;
 use chrono::Utc;
-use db::CreateEntryInput;
-use db::FoodId;
-use db::ServingId;
-use error::Fallible;
 use maud::html;
 use serde::Deserialize;
-use shared::Date;
 
+use crate::db::CreateEntryInput;
+use crate::db::FoodId;
+use crate::db::ServingId;
+use crate::error::Fallible;
 use crate::routes::log_view::LogViewHandler;
+use crate::types::Date;
 use crate::ui::*;
 use crate::www::ServerState;
 

@@ -17,11 +17,11 @@ use std::sync::Mutex;
 
 use axum::Router;
 use axum::routing::IntoMakeService;
-use db::Db;
-use error::Fallible;
 use tokio::net::TcpListener;
 
 use crate::config::Config;
+use crate::db::Db;
+use crate::error::Fallible;
 use crate::routes::assets::CssHandler;
 use crate::routes::assets::CssResetHandler;
 use crate::routes::assets::FaviconHandler;

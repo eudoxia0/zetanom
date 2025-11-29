@@ -12,56 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use axum::Form;
 use axum::Router;
 use axum::extract::Path;
 use axum::extract::State;
 use axum::response::Redirect;
 use axum::routing::post;
-use chrono::Utc;
-use db::FoodId;
-use db::ServingInput;
-use error::Fallible;
-use serde::Deserialize;
 
-use crate::routes::food_view::FoodViewHandler;
+use crate::db::EntryId;
+use crate::error::Fallible;
+use crate::routes::log_view::LogViewHandler;
+use crate::types::Date;
 use crate::www::ServerState;
 
-pub struct ServingNewHandler {}
+pub struct LogDeleteHandler {}
 
-impl ServingNewHandler {
+impl LogDeleteHandler {
     pub fn route(router: Router<ServerState>) -> Router<ServerState> {
-        router.route("/library/{food_id}/servings", post(handler))
+        router.route("/log/{date}/entry/{entry_id}/delete", post(post_handler))
     }
 
-    pub fn url(food_id: FoodId) -> String {
-        format!("/library/{food_id}/servings")
+    pub fn url(date: Date, entry_id: EntryId) -> String {
+        format!("/log/{date}/entry/{entry_id}/delete")
     }
 }
 
-#[derive(Deserialize)]
-struct CreateServingForm {
-    serving_name: String,
-    serving_amount: f64,
-}
-
-async fn handler(
+async fn post_handler(
     State(state): State<ServerState>,
-    Path(food_id): Path<FoodId>,
-    Form(form): Form<CreateServingForm>,
+    Path((date, entry_id)): Path<(String, EntryId)>,
 ) -> Fallible<Redirect> {
-    let CreateServingForm {
-        serving_name,
-        serving_amount,
-    } = form;
-    let created_at = Utc::now();
-    let input = ServingInput {
-        food_id,
-        serving_name,
-        serving_amount,
-        created_at,
-    };
+    let date = Date::try_from(date)?;
     let db = state.db.try_lock()?;
-    db.create_serving(input)?;
-    Ok(Redirect::to(&FoodViewHandler::url(food_id)))
+    db.delete_entry(entry_id)?;
+    Ok(Redirect::to(&LogViewHandler::url(date)))
 }

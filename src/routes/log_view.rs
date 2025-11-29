@@ -18,13 +18,13 @@ use axum::extract::State;
 use axum::http::StatusCode;
 use axum::response::Html;
 use axum::routing::get;
-use error::Fallible;
 use maud::html;
-use shared::Date;
 
+use crate::error::Fallible;
 use crate::routes::food_view::FoodViewHandler;
 use crate::routes::log_delete::LogDeleteHandler;
 use crate::routes::log_new::LogNewHandler;
+use crate::types::Date;
 use crate::ui::*;
 use crate::www::ServerState;
 

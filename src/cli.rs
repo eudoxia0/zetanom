@@ -12,7 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod config;
-mod routes;
-mod ui;
-pub mod www;
+use std::process::ExitCode;
+
+use clap::Parser;
+
+use crate::www::start_server;
+
+#[derive(Parser)]
+#[command(version, about, long_about = None)]
+enum Command {
+    /// Start a server.
+    Serve,
+}
+
+pub async fn entrypoint() -> ExitCode {
+    let c: Command = Command::parse();
+    let res = match c {
+        Command::Serve => start_server().await,
+    };
+    match res {
+        Ok(_) => ExitCode::SUCCESS,
+        Err(e) => {
+            eprintln!("zetanom: {e}");
+            ExitCode::FAILURE
+        }
+    }
+}

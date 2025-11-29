@@ -14,31 +14,18 @@
 
 use std::process::ExitCode;
 
-use clap::Parser;
-use repl::start_repl;
-use www::www::start_server;
+use crate::cli::entrypoint;
 
-#[derive(Parser)]
-#[command(version, about, long_about = None)]
-enum Command {
-    /// Start an interactive REPL.
-    Repl,
-    /// Start a server.
-    Serve,
-}
+mod cli;
+mod config;
+mod db;
+mod error;
+mod routes;
+mod types;
+mod ui;
+mod www;
 
 #[tokio::main]
 async fn main() -> ExitCode {
-    let c: Command = Command::parse();
-    let res = match c {
-        Command::Repl => start_repl(),
-        Command::Serve => start_server().await,
-    };
-    match res {
-        Ok(_) => ExitCode::SUCCESS,
-        Err(e) => {
-            eprintln!("zetanom: {e}");
-            ExitCode::FAILURE
-        }
-    }
+    entrypoint().await
 }

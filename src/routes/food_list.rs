@@ -17,10 +17,10 @@ use axum::extract::State;
 use axum::http::StatusCode;
 use axum::response::Html;
 use axum::routing::get;
-use db::FoodListEntry;
-use error::Fallible;
 use maud::html;
 
+use crate::db::FoodListEntry;
+use crate::error::Fallible;
 use crate::routes::food_new::FoodNewHandler;
 use crate::routes::food_view::FoodViewHandler;
 use crate::ui::*;

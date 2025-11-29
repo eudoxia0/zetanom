@@ -14,61 +14,68 @@
 
 use axum::Form;
 use axum::Router;
+use axum::extract::Path;
 use axum::extract::State;
 use axum::http::StatusCode;
 use axum::response::Html;
 use axum::response::Redirect;
 use axum::routing::get;
 use axum::routing::post;
-use chrono::Utc;
-use db::CreateFoodInput;
-use db::FoodId;
-use error::Fallible;
 use maud::html;
 use serde::Deserialize;
-use shared::BasicUnit;
 
+use crate::db::EditFoodInput;
+use crate::db::FoodEntry;
+use crate::db::FoodId;
+use crate::error::Fallible;
 use crate::routes::food_view::FoodViewHandler;
+use crate::types::BasicUnit;
 use crate::ui::*;
 use crate::www::ServerState;
 
-pub struct FoodNewHandler {}
+pub struct FoodEditHandler {}
 
-impl FoodNewHandler {
+impl FoodEditHandler {
     pub fn route(router: Router<ServerState>) -> Router<ServerState> {
-        let router = router.route(Self::url(), get(get_handler));
-        router.route(Self::url(), post(post_handler))
+        let router = router.route("/library/{food_id}/edit", get(get_handler));
+        router.route("/library/{food_id}/edit", post(post_handler))
     }
 
-    pub fn url() -> &'static str {
-        "/library/new"
+    pub fn url(food_id: FoodId) -> String {
+        format!("/library/{food_id}/edit")
     }
 }
 
-async fn get_handler() -> Fallible<(StatusCode, Html<String>)> {
-    let nav = default_nav("food_new");
+async fn get_handler(
+    State(state): State<ServerState>,
+    Path(food_id): Path<FoodId>,
+) -> Fallible<(StatusCode, Html<String>)> {
+    let nav = default_nav("food_list");
+
+    let db = state.db.try_lock()?;
+    let food: FoodEntry = db.get_food(food_id)?;
 
     let form_content = html! {
-        form method="post" action=(FoodNewHandler::url()) {
+        form method="post" action=(FoodEditHandler::url(food_id)) {
             // Basic Information Section
             (form_section("Basic Information", html! {
                 (form_row(html! {
                     (form_group(html! {
                         (label_required("food_name", "Food Name"))
-                        (text_input("food_name", "food_name", "e.g., Rolled Oats"))
+                        (text_input_value("food_name", "food_name", &food.name, "e.g., Rolled Oats"))
                     }))
                 }))
                 (form_row(html! {
                     (form_group_half(html! {
                         (label_with_hint("brand", "Brand", "(optional, leave blank for generic foods)"))
-                        (text_input("brand", "brand", "e.g., Uncle Tobys"))
+                        (text_input_value("brand", "brand", &food.brand, "e.g., Uncle Tobys"))
                     }))
                     (form_group_half(html! {
                         (label_required("serving_unit", "Base Unit"))
-                        (select("serving_unit", "serving_unit", vec![
+                        (select_with_selected("serving_unit", "serving_unit", vec![
                             ("g".to_string(), "Grams (g)".to_string()),
                             ("ml".to_string(), "Milliliters (ml)".to_string()),
-                        ]))
+                        ], food.serving_unit.as_str()))
                     }))
                 }))
             }))
@@ -76,55 +83,35 @@ async fn get_handler() -> Fallible<(StatusCode, Html<String>)> {
             // Nutrition Information Section
             (form_section("Nutrition Information (per 100g or 100ml)", html! {
                 (nutrition_table(html! {
-                    (nutrition_row("Energy *", "energy", "energy", "kcal", 0))
-                    (nutrition_row("Protein *", "protein", "protein", "g", 0))
-                    (nutrition_row("Fat, Total *", "fat", "fat", "g", 0))
-                    (nutrition_row("Saturated *", "fat_saturated", "fat_saturated", "g", 1))
-                    (nutrition_row("Carbohydrate *", "carbs", "carbs", "g", 0))
-                    (nutrition_row("Sugars *", "carbs_sugars", "carbs_sugars", "g", 1))
-                    (nutrition_row("Dietary Fibre *", "fibre", "fibre", "g", 0))
-                    (nutrition_row("Sodium *", "sodium", "sodium", "mg", 0))
+                    (nutrition_row_with_value("Energy *", "energy", "energy", "kcal", &format!("{:.1}", food.energy), 0))
+                    (nutrition_row_with_value("Protein *", "protein", "protein", "g", &format!("{:.1}", food.protein), 0))
+                    (nutrition_row_with_value("Fat, Total *", "fat", "fat", "g", &format!("{:.1}", food.fat), 0))
+                    (nutrition_row_with_value("Saturated *", "fat_saturated", "fat_saturated", "g", &format!("{:.1}", food.fat_saturated), 1))
+                    (nutrition_row_with_value("Carbohydrate *", "carbs", "carbs", "g", &format!("{:.1}", food.carbs), 0))
+                    (nutrition_row_with_value("Sugars *", "carbs_sugars", "carbs_sugars", "g", &format!("{:.1}", food.carbs_sugars), 1))
+                    (nutrition_row_with_value("Dietary Fibre *", "fibre", "fibre", "g", &format!("{:.1}", food.fibre), 0))
+                    (nutrition_row_with_value("Sodium *", "sodium", "sodium", "mg", &format!("{:.0}", food.sodium), 0))
                 }))
             }))
 
             // Action Buttons
             (button_bar(html! {
-                (submit_button_primary("Save Food"))
-                (button("Cancel"))
+                (submit_button_primary("Save Changes"))
+                (button_link("Cancel", &FoodViewHandler::url(food_id)))
             }))
-        }
-    };
-
-    let help_content = html! {
-        p {
-            strong { "Where to find nutrition information:" }
-            br;
-            "Look at the nutrition information panel on the back of food packaging. In Australia, all values are shown per 100g or per 100ml."
-        }
-        p {
-            strong { "Carbohydrate vs. Sugars:" }
-            br;
-            "\"Carbohydrate\" refers to available carbohydrate (excluding fiber). \"Sugars\" is a subset of carbohydrate and should be indented underneath it on labels."
         }
     };
 
     let content = html! {
-        (panel("Add New Food", html! {
-            (info_box(html! {
-                strong { "Note:" }
-                "All nutrition information should be entered per 100g or per 100ml as shown on the Australian nutrition label."
-            }))
-            (form_content)
-        }))
-        (panel("Help", help_content))
+        (panel(&format!("Edit Food: {}", food.name), form_content))
     };
 
-    let html_page = page("Add New Food — zetanom", nav, content);
+    let html_page = page(&format!("Edit {} — zetanom", food.name), nav, content);
     Ok((StatusCode::OK, Html(html_page.into_string())))
 }
 
 #[derive(Deserialize)]
-struct CreateFoodForm {
+struct EditFoodForm {
     food_name: String,
     brand: String,
     serving_unit: String,
@@ -140,9 +127,10 @@ struct CreateFoodForm {
 
 async fn post_handler(
     State(state): State<ServerState>,
-    Form(form): Form<CreateFoodForm>,
+    Path(food_id): Path<FoodId>,
+    Form(form): Form<EditFoodForm>,
 ) -> Fallible<Redirect> {
-    let CreateFoodForm {
+    let EditFoodForm {
         food_name,
         brand,
         serving_unit,
@@ -155,8 +143,8 @@ async fn post_handler(
         fibre,
         sodium,
     } = form;
-    let created_at = Utc::now();
-    let input = CreateFoodInput {
+    let input = EditFoodInput {
+        food_id,
         name: food_name,
         brand,
         serving_unit: BasicUnit::try_from(serving_unit.as_ref())?,
@@ -168,9 +156,8 @@ async fn post_handler(
         carbs_sugars,
         fibre,
         sodium,
-        created_at,
     };
     let db = state.db.try_lock()?;
-    let food_id: FoodId = db.create_food(input)?;
+    db.edit_food(input)?;
     Ok(Redirect::to(&FoodViewHandler::url(food_id)))
 }
