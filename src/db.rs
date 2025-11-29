@@ -128,10 +128,8 @@ pub struct ServingInput {
 
 pub struct Serving {
     pub serving_id: ServingId,
-    pub food_id: FoodId,
     pub serving_name: ServingName,
     pub serving_amount: f64,
-    pub created_at: DateTime<Utc>,
 }
 
 pub type EntryId = i64;
@@ -337,7 +335,7 @@ impl Db {
     pub fn list_servings(&self, food_id: FoodId) -> Fallible<Vec<Serving>> {
         let sql = "
             select
-                serving_id, food_id, serving_name, serving_amount, created_at
+                serving_id, serving_name, serving_amount
             from
                 serving_sizes
             where
@@ -349,10 +347,8 @@ impl Db {
         let rows = stmt.query_map(params![food_id], |row| {
             Ok(Serving {
                 serving_id: row.get(0)?,
-                food_id: row.get(1)?,
-                serving_name: row.get(2)?,
-                serving_amount: row.get(3)?,
-                created_at: row.get(4)?,
+                serving_name: row.get(1)?,
+                serving_amount: row.get(2)?,
             })
         })?;
         let mut servings = Vec::new();
