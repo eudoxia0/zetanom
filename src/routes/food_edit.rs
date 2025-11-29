@@ -94,17 +94,13 @@ async fn get_handler(
 
             // Action Buttons
             (button_bar(html! {
-                (submit_button_primary("Save Changes"))
+                input .button type="submit" { "Save" }
                 (button_link("Cancel", &FoodViewHandler::url(food_id)))
             }))
         }
     };
 
-    let content = html! {
-        (panel(&format!("Edit Food: {}", food.name), form_content))
-    };
-
-    let html_page = page(&format!("Edit {}", food.name), content);
+    let html_page = page(&format!("Edit {}", food.name), form_content);
     Ok((StatusCode::OK, Html(html_page.into_string())))
 }
 

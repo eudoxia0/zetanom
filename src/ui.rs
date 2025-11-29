@@ -81,15 +81,6 @@ pub fn panel(header: &str, content: Markup) -> Markup {
     }
 }
 
-/// Info box (yellow background for tips/notes)
-pub fn info_box(content: Markup) -> Markup {
-    html! {
-        div."info-box" {
-            (content)
-        }
-    }
-}
-
 /// Form section with title
 pub fn form_section(title: &str, content: Markup) -> Markup {
     html! {
@@ -206,24 +197,10 @@ pub fn select_with_selected(
     }
 }
 
-/// Button
-pub fn button(text: &str) -> Markup {
-    html! {
-        button type="button" { (text) }
-    }
-}
-
 /// Submit button
 pub fn submit_button(text: &str) -> Markup {
     html! {
-        button type="submit" { (text) }
-    }
-}
-
-/// Primary submit button
-pub fn submit_button_primary(text: &str) -> Markup {
-    html! {
-        button."primary" type="submit" { (text) }
+        button .button type="submit" { (text) }
     }
 }
 

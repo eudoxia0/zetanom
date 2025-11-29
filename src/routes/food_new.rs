@@ -87,37 +87,12 @@ async fn get_handler() -> Fallible<(StatusCode, Html<String>)> {
 
             // Action Buttons
             (button_bar(html! {
-                (submit_button_primary("Save Food"))
-                (button("Cancel"))
+                input .button type="submit" { "Save" }
             }))
         }
     };
 
-    let help_content = html! {
-        p {
-            strong { "Where to find nutrition information:" }
-            br;
-            "Look at the nutrition information panel on the back of food packaging. In Australia, all values are shown per 100g or per 100ml."
-        }
-        p {
-            strong { "Carbohydrate vs. Sugars:" }
-            br;
-            "\"Carbohydrate\" refers to available carbohydrate (excluding fiber). \"Sugars\" is a subset of carbohydrate and should be indented underneath it on labels."
-        }
-    };
-
-    let content = html! {
-        (panel("Add New Food", html! {
-            (info_box(html! {
-                strong { "Note:" }
-                "All nutrition information should be entered per 100g or per 100ml as shown on the Australian nutrition label."
-            }))
-            (form_content)
-        }))
-        (panel("Help", help_content))
-    };
-
-    let html_page = page("Add New Food", content);
+    let html_page = page("Add New Food", form_content);
     Ok((StatusCode::OK, Html(html_page.into_string())))
 }
 

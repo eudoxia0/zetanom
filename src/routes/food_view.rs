@@ -119,7 +119,7 @@ async fn handler(
                             (serving.serving_name) ": " (serving.serving_amount) (food.serving_unit.as_str())
                         }
                         form method="post" action=(ServingDeleteHandler::url(food_id, serving.serving_id)) style="display: inline;" {
-                            button type="submit" { "Delete" }
+                            input .button type="submit" { "Delete" }
                         }
                     }
                 }

@@ -169,8 +169,7 @@ async fn get_handler_with_food_id(
             }))
 
             (button_bar(html! {
-                (submit_button_primary("Log Food"))
-                (button_link("Cancel", &LogViewHandler::url(date)))
+                input .button type="submit" { "Log Food" }
             }))
         }
     };
