@@ -25,7 +25,6 @@ use crate::db::FoodId;
 use crate::db::Serving;
 use crate::error::Fallible;
 use crate::routes::food_edit::FoodEditHandler;
-use crate::routes::food_list::FoodListHandler;
 use crate::routes::serving_delete::ServingDeleteHandler;
 use crate::routes::serving_new::ServingNewHandler;
 use crate::ui::*;
@@ -146,9 +145,9 @@ async fn handler(
     };
 
     let content = html! {
-        (button_bar(html! {
+        .button-bar {
             (button_link("Edit Food", &FoodEditHandler::url(food_id)))
-        }))
+        }
         (nutrition_table)
         h2 {
             "Custom Serving Sizes"

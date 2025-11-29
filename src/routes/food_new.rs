@@ -86,9 +86,9 @@ async fn get_handler() -> Fallible<(StatusCode, Html<String>)> {
             }))
 
             // Action Buttons
-            (button_bar(html! {
+            .button-bar {
                 input .button type="submit" { "Save" }
-            }))
+            }
         }
     };
 

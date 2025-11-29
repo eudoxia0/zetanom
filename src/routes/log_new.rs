@@ -63,8 +63,6 @@ async fn get_handler(
     let foods = db.list_foods()?;
     let date = Date::try_from(date)?;
 
-    let formatted_date = date.humanize();
-
     let table_content = if foods.is_empty() {
         html! {
             p {
@@ -183,9 +181,9 @@ async fn get_handler_with_food_id(
                 }))
             }))
 
-            (button_bar(html! {
+            .button-bar {
                 input .button type="submit" { "Log Food" }
-            }))
+            }
         }
     };
 

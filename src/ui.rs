@@ -197,22 +197,6 @@ pub fn button_link(text: &str, href: &str) -> Markup {
     }
 }
 
-/// Primary button as link
-pub fn button_link_primary(text: &str, href: &str) -> Markup {
-    html! {
-        a.button.primary href=(href) { (text) }
-    }
-}
-
-/// Button bar (horizontal button container)
-pub fn button_bar(content: Markup) -> Markup {
-    html! {
-        div."button-bar" {
-            (content)
-        }
-    }
-}
-
 /// Nutrition table row (for form input)
 pub fn nutrition_row(
     label_text: &str,

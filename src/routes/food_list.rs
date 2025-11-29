@@ -84,9 +84,9 @@ async fn handler(State(state): State<ServerState>) -> Fallible<(StatusCode, Html
     };
 
     let content = html! {
-        (button_bar(html! {
-            (button_link_primary("Add New Food", FoodNewHandler::url()))
-        }))
+        .button-bar {
+            a .button href=(FoodNewHandler::url()) { "Add New Food" }
+        }
         (table_content)
     };
 
