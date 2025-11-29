@@ -146,17 +146,15 @@ async fn handler(
     };
 
     let content = html! {
-        (panel(&food_title, html! {
-            (button_bar(html! {
-                (button_link("Edit Food", &FoodEditHandler::url(food_id)))
-                (button_link("Back to Library", FoodListHandler::url()))
-            }))
-            (nutrition_table)
+        (button_bar(html! {
+            (button_link("Edit Food", &FoodEditHandler::url(food_id)))
         }))
-        (panel("Custom Serving Sizes", html! {
-            (servings_list)
-            (add_serving_form)
-        }))
+        (nutrition_table)
+        h2 {
+            "Custom Serving Sizes"
+        }
+        (servings_list)
+        (add_serving_form)
     };
 
     let html_page = page(&format!("{}", food_title), content);
