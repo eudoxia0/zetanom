@@ -49,51 +49,35 @@ async fn handler(State(state): State<ServerState>) -> Fallible<(StatusCode, Html
             }
         }
     } else {
-        let columns = vec![
-            TableColumn {
-                header: "Name".to_string(),
-                numeric: false,
-            },
-            TableColumn {
-                header: "Brand".to_string(),
-                numeric: false,
-            },
-        ];
-
-        let rows = html! {
-            @for food in &foods {
-                tr {
-                    td {
-                        a href=(FoodViewHandler::url(food.food_id)) {
-                            (food.name)
-                        }
-                    }
-                    td {
-                        @if food.brand.is_empty() {
-                            "—"
-                        } @else {
-                            (food.brand)
-                        }
-                    }
-                }
-            }
-        };
-
         html! {
             table {
                 thead {
                     tr {
-                        @for col in columns {
-                            @if col.numeric {
-                                th.numeric { (col.header) }
-                            } @else {
-                                th { (col.header) }
-                            }
+                        th {
+                            "Name"
+                        }
+                        th {
+                            "Brand"
                         }
                     }
                 }
                 tbody {
-                    (rows)
+                    @for food in &foods {
+                        tr {
+                            td {
+                                a href=(FoodViewHandler::url(food.food_id)) {
+                                    (food.name)
+                                }
+                            }
+                            td {
+                                @if food.brand.is_empty() {
+                                    "—"
+                                } @else {
+                                    (food.brand)
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
