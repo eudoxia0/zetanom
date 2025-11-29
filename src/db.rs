@@ -172,15 +172,6 @@ impl Db {
         }
     }
 
-    pub fn new_in_memory() -> Fallible<Self> {
-        let mut conn = Connection::open_in_memory()?;
-        conn.set_db_config(DbConfig::SQLITE_DBCONFIG_ENABLE_FKEY, true)?;
-        let tx = conn.transaction()?;
-        tx.execute_batch(include_str!("schema.sql"))?;
-        tx.commit()?;
-        Ok(Self { conn })
-    }
-
     /// Create a new food.
     pub fn create_food(&self, input: CreateFoodInput) -> Fallible<FoodId> {
         let sql = "
