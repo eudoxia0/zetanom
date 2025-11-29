@@ -134,9 +134,7 @@ async fn get_handler(
         }
     };
 
-    let content = html! {
-        (panel(&format!("Add Food Entry — {}", formatted_date), table_content))
-    };
+    let content = table_content;
 
     let html_page = page("Add Food Entry", content);
     Ok((StatusCode::OK, Html(html_page.into_string())))
@@ -191,9 +189,7 @@ async fn get_handler_with_food_id(
         }
     };
 
-    let content = html! {
-        (panel(&format!("Log: {}", food_title), form_content))
-    };
+    let content = form_content;
 
     let html_page = page(&format!("Log {}", food_title), content);
     Ok((StatusCode::OK, Html(html_page.into_string())))

@@ -67,20 +67,6 @@ pub fn page(title: &str, body: Markup) -> Markup {
     }
 }
 
-/// Panel component with header
-pub fn panel(header: &str, content: Markup) -> Markup {
-    html! {
-        div.panel {
-            div."panel-header" {
-                (header)
-            }
-            div."panel-content" {
-                (content)
-            }
-        }
-    }
-}
-
 /// Form section with title
 pub fn form_section(title: &str, content: Markup) -> Markup {
     html! {
