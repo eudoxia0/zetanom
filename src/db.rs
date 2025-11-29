@@ -97,7 +97,6 @@ pub struct FoodEntry {
     pub carbs_sugars: Sugars,
     pub fibre: Fibre,
     pub sodium: Sodium,
-    pub created_at: DateTime<Utc>,
 }
 
 /// Data needed to edit an existing food.
@@ -237,8 +236,7 @@ impl Db {
                 carbs,
                 carbs_sugars,
                 fibre,
-                sodium,
-                created_at
+                sodium
             from
                 foods
             where
@@ -261,7 +259,6 @@ impl Db {
                 carbs_sugars: row.get(9)?,
                 fibre: row.get(10)?,
                 sodium: row.get(11)?,
-                created_at: row.get(12)?,
             })
         })?;
         Ok(entry)
