@@ -273,6 +273,6 @@ async fn handler(
         }))
     };
 
-    let html_page = page("Daily Log — zetanom", content);
+    let html_page = page(&format!("Log: {formatted_date}"), content);
     Ok((StatusCode::OK, Html(html_page.into_string())))
 }

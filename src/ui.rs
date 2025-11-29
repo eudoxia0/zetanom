@@ -21,19 +21,6 @@ use crate::routes::assets::CssResetHandler;
 use crate::routes::food_list::FoodListHandler;
 use crate::routes::root::RootHandler;
 
-/// Navigation section item
-pub struct NavItem {
-    pub label: String,
-    pub url: String,
-    pub active: bool,
-}
-
-/// Navigation section
-pub struct NavSection {
-    pub title: String,
-    pub items: Vec<NavItem>,
-}
-
 /// Page template with sidebar navigation
 pub fn page(title: &str, body: Markup) -> Markup {
     html! {
@@ -44,7 +31,7 @@ pub fn page(title: &str, body: Markup) -> Markup {
                 meta name="viewport" content="width=device-width, initial-scale=1";
                 link rel="stylesheet" href=(CssResetHandler::url());
                 link rel="stylesheet" href=(CssHandler::url());
-                title { (title) }
+                title { (title) " | zetanom" }
             }
             body {
                 .root {
@@ -65,7 +52,14 @@ pub fn page(title: &str, body: Markup) -> Markup {
                         }
                     }
                     .content-pane {
-                        (body)
+                        .title-container {
+                            h1 .title {
+                                (title)
+                            }
+                        }
+                        .page-content {
+                            (body)
+                        }
                     }
                 }
             }
