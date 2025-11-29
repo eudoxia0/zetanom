@@ -18,6 +18,7 @@ use axum::extract::State;
 use axum::http::StatusCode;
 use axum::response::Html;
 use axum::routing::get;
+use chrono::Local;
 use maud::html;
 
 use crate::error::Fallible;
@@ -142,7 +143,7 @@ async fn handler(
                     @let sodium = food.sodium * factor;
 
                     tr {
-                        td { (entry.created_at.format("%H:%M").to_string()) }
+                        td { (entry.created_at.with_timezone(&Local).format("%H:%M").to_string()) }
                         td {
                             a href=(FoodViewHandler::url(food.food_id)) {
                                 (food.name)
