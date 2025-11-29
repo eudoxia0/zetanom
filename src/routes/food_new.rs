@@ -117,7 +117,7 @@ async fn get_handler() -> Fallible<(StatusCode, Html<String>)> {
         (panel("Help", help_content))
     };
 
-    let html_page = page("Add New Food — zetanom", content);
+    let html_page = page("Add New Food", content);
     Ok((StatusCode::OK, Html(html_page.into_string())))
 }
 

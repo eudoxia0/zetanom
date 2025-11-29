@@ -87,6 +87,6 @@ async fn handler(State(state): State<ServerState>) -> Fallible<(StatusCode, Html
         }))
     };
 
-    let html_page = page("Food Library — zetanom", content);
+    let html_page = page("Food Library", content);
     Ok((StatusCode::OK, Html(html_page.into_string())))
 }

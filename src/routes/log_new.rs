@@ -117,7 +117,7 @@ async fn get_handler(
         (panel(&format!("Add Food Entry — {}", formatted_date), table_content))
     };
 
-    let html_page = page("Add Food Entry — zetanom", content);
+    let html_page = page("Add Food Entry", content);
     Ok((StatusCode::OK, Html(html_page.into_string())))
 }
 
@@ -175,7 +175,7 @@ async fn get_handler_with_food_id(
         (panel(&format!("Log: {}", food_title), form_content))
     };
 
-    let html_page = page(&format!("Log {} — zetanom", food_title), content);
+    let html_page = page(&format!("Log {}", food_title), content);
     Ok((StatusCode::OK, Html(html_page.into_string())))
 }
 

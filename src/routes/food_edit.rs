@@ -104,7 +104,7 @@ async fn get_handler(
         (panel(&format!("Edit Food: {}", food.name), form_content))
     };
 
-    let html_page = page(&format!("Edit {} — zetanom", food.name), content);
+    let html_page = page(&format!("Edit {}", food.name), content);
     Ok((StatusCode::OK, Html(html_page.into_string())))
 }
 

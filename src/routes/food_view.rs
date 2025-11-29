@@ -155,6 +155,6 @@ async fn handler(
         }))
     };
 
-    let html_page = page(&format!("{} — zetanom", food_title), content);
+    let html_page = page(&format!("{}", food_title), content);
     Ok((StatusCode::OK, Html(html_page.into_string())))
 }
