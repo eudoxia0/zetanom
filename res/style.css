@@ -39,6 +39,7 @@ body {
     display: flex;
     flex-direction: row;
     margin-top: 16px;
+    margin-bottom: 16px;
 }
 
 .button {
@@ -51,4 +52,31 @@ body {
 
 .spacer {
     flex: 1;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border: 1px solid #999;
+}
+
+th,
+td {
+    padding: 4px 8px;
+}
+
+th {
+    background: #cccccc;
+    text-align: center;
+    border: 1px solid #999;
+    font-weight: bold;
+}
+
+td {
+    border: 1px solid #ddd;
+}
+
+.numeric {
+    text-align: right;
 }
