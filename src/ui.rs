@@ -183,13 +183,6 @@ pub fn select_with_selected(
     }
 }
 
-/// Submit button
-pub fn submit_button(text: &str) -> Markup {
-    html! {
-        button .button type="submit" { (text) }
-    }
-}
-
 /// Button as link
 pub fn button_link(text: &str, href: &str) -> Markup {
     html! {

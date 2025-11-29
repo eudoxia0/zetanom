@@ -128,19 +128,15 @@ async fn handler(
 
     let add_serving_form = html! {
         form method="post" action=(ServingNewHandler::url(food_id)) {
-            (form_section("Add Custom Serving Size", html! {
-                div."add-serving-row" {
-                    (form_group(html! {
-                        (label("serving_name", "Serving Name"))
-                        (text_input("serving_name", "serving_name", "e.g., cup, slice, package"))
-                    }))
-                    (form_group(html! {
-                        (label("serving_amount", &format!("Amount ({})", food.serving_unit.as_str())))
-                        (number_input("serving_amount", "serving_amount", "0.1", "e.g., 250"))
-                    }))
-                    (submit_button("Add Serving"))
-                }
+            (form_group(html! {
+                (label("serving_name", "Serving Name"))
+                (text_input("serving_name", "serving_name", "e.g., cup, slice, package"))
             }))
+            (form_group(html! {
+                (label("serving_amount", &format!("Amount ({})", food.serving_unit.as_str())))
+                (number_input("serving_amount", "serving_amount", "0.1", "e.g., 250"))
+            }))
+            input .button type="submit" value="Add Serving";
         }
     };
 
@@ -153,6 +149,9 @@ async fn handler(
             "Custom Serving Sizes"
         }
         (servings_list)
+        h2 {
+            "Add Custom Serving Size"
+        }
         (add_serving_form)
     };
 
