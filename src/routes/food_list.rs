@@ -39,8 +39,6 @@ impl FoodListHandler {
 }
 
 async fn handler(State(state): State<ServerState>) -> Fallible<(StatusCode, Html<String>)> {
-    let nav = default_nav("food_list");
-
     let db = state.db.try_lock()?;
     let foods: Vec<FoodListEntry> = db.list_foods()?;
 
@@ -89,6 +87,6 @@ async fn handler(State(state): State<ServerState>) -> Fallible<(StatusCode, Html
         }))
     };
 
-    let html_page = page("Food Library — zetanom", nav, content);
+    let html_page = page("Food Library — zetanom", content);
     Ok((StatusCode::OK, Html(html_page.into_string())))
 }

@@ -47,8 +47,6 @@ async fn handler(
     State(state): State<ServerState>,
     Path(food_id): Path<FoodId>,
 ) -> Fallible<(StatusCode, Html<String>)> {
-    let nav = default_nav("food_list");
-
     let db = state.db.try_lock()?;
     let food: FoodEntry = db.get_food(food_id)?;
     let servings: Vec<Serving> = db.list_servings(food_id)?;
@@ -157,6 +155,6 @@ async fn handler(
         }))
     };
 
-    let html_page = page(&format!("{} — zetanom", food_title), nav, content);
+    let html_page = page(&format!("{} — zetanom", food_title), content);
     Ok((StatusCode::OK, Html(html_page.into_string())))
 }

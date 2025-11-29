@@ -46,8 +46,6 @@ async fn handler(
 ) -> Fallible<(StatusCode, Html<String>)> {
     let date: Date = Date::try_from(date)?;
 
-    let nav = default_nav("today");
-
     // Get database lock and query entries for this date
     let db = state.db.try_lock()?;
     let entries = db.list_entries(date)?;
@@ -275,6 +273,6 @@ async fn handler(
         }))
     };
 
-    let html_page = page("Daily Log — zetanom", nav, content);
+    let html_page = page("Daily Log — zetanom", content);
     Ok((StatusCode::OK, Html(html_page.into_string())))
 }

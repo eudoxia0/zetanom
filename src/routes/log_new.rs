@@ -59,8 +59,6 @@ async fn get_handler(
     State(state): State<ServerState>,
     Path(date): Path<String>,
 ) -> Fallible<(StatusCode, Html<String>)> {
-    let nav = default_nav("today");
-
     let db = state.db.try_lock()?;
     let foods = db.list_foods()?;
     let date = Date::try_from(date)?;
@@ -119,7 +117,7 @@ async fn get_handler(
         (panel(&format!("Add Food Entry — {}", formatted_date), table_content))
     };
 
-    let html_page = page("Add Food Entry — zetanom", nav, content);
+    let html_page = page("Add Food Entry — zetanom", content);
     Ok((StatusCode::OK, Html(html_page.into_string())))
 }
 
@@ -127,8 +125,6 @@ async fn get_handler_with_food_id(
     State(state): State<ServerState>,
     Path((date, food_id)): Path<(String, FoodId)>,
 ) -> Fallible<(StatusCode, Html<String>)> {
-    let nav = default_nav("today");
-
     let db = state.db.try_lock()?;
     let food = db.get_food(food_id)?;
     let servings = db.list_servings(food_id)?;
@@ -179,7 +175,7 @@ async fn get_handler_with_food_id(
         (panel(&format!("Log: {}", food_title), form_content))
     };
 
-    let html_page = page(&format!("Log {} — zetanom", food_title), nav, content);
+    let html_page = page(&format!("Log {} — zetanom", food_title), content);
     Ok((StatusCode::OK, Html(html_page.into_string())))
 }
 

@@ -50,8 +50,6 @@ async fn get_handler(
     State(state): State<ServerState>,
     Path(food_id): Path<FoodId>,
 ) -> Fallible<(StatusCode, Html<String>)> {
-    let nav = default_nav("food_list");
-
     let db = state.db.try_lock()?;
     let food: FoodEntry = db.get_food(food_id)?;
 
@@ -106,7 +104,7 @@ async fn get_handler(
         (panel(&format!("Edit Food: {}", food.name), form_content))
     };
 
-    let html_page = page(&format!("Edit {} — zetanom", food.name), nav, content);
+    let html_page = page(&format!("Edit {} — zetanom", food.name), content);
     Ok((StatusCode::OK, Html(html_page.into_string())))
 }
 

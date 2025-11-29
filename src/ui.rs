@@ -19,7 +19,6 @@ use maud::html;
 use crate::routes::assets::CssHandler;
 use crate::routes::assets::CssResetHandler;
 use crate::routes::food_list::FoodListHandler;
-use crate::routes::food_new::FoodNewHandler;
 use crate::routes::root::RootHandler;
 
 /// Navigation section item
@@ -36,7 +35,7 @@ pub struct NavSection {
 }
 
 /// Page template with sidebar navigation
-pub fn page(title: &str, nav_sections: Vec<NavSection>, body: Markup) -> Markup {
+pub fn page(title: &str, body: Markup) -> Markup {
     html! {
         (DOCTYPE)
         html lang="en" {
@@ -48,73 +47,30 @@ pub fn page(title: &str, nav_sections: Vec<NavSection>, body: Markup) -> Markup 
                 title { (title) }
             }
             body {
-                div .Root {
-                    (sidebar(nav_sections))
-                    div.ContentPane {
+                .root {
+                    .sidebar {
+                        nav {
+                            ul {
+                                li {
+                                    a href=(RootHandler::url()) {
+                                        "Today"
+                                    }
+                                }
+                                li {
+                                    a href=(FoodListHandler::url()) {
+                                        "Library"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .content-pane {
                         (body)
                     }
                 }
             }
         }
     }
-}
-
-/// Sidebar navigation component
-fn sidebar(sections: Vec<NavSection>) -> Markup {
-    html! {
-        div.NavPane {
-            div.app-title {
-                "DIET TRACKER"
-            }
-            @for section in sections {
-                div.nav-section {
-                    div."nav-section-title" {
-                        (section.title)
-                    }
-                    @for item in section.items {
-                        @if item.active {
-                            a.nav-item.active href=(item.url) {
-                                (item.label)
-                            }
-                        } @else {
-                            a.nav-item href=(item.url) {
-                                (item.label)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-/// Create default navigation sections for a page
-pub fn default_nav(active_page: &str) -> Vec<NavSection> {
-    vec![
-        NavSection {
-            title: "Views".to_string(),
-            items: vec![NavItem {
-                label: "Today".to_string(),
-                url: RootHandler::url().to_string(),
-                active: active_page == "today",
-            }],
-        },
-        NavSection {
-            title: "Library".to_string(),
-            items: vec![
-                NavItem {
-                    label: "All Foods".to_string(),
-                    url: FoodListHandler::url().to_string(),
-                    active: active_page == "food_list",
-                },
-                NavItem {
-                    label: "Add New Food".to_string(),
-                    url: FoodNewHandler::url().to_string(),
-                    active: active_page == "food_new",
-                },
-            ],
-        },
-    ]
 }
 
 /// Panel component with header

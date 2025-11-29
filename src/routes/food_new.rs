@@ -46,8 +46,6 @@ impl FoodNewHandler {
 }
 
 async fn get_handler() -> Fallible<(StatusCode, Html<String>)> {
-    let nav = default_nav("food_new");
-
     let form_content = html! {
         form method="post" action=(FoodNewHandler::url()) {
             // Basic Information Section
@@ -119,7 +117,7 @@ async fn get_handler() -> Fallible<(StatusCode, Html<String>)> {
         (panel("Help", help_content))
     };
 
-    let html_page = page("Add New Food — zetanom", nav, content);
+    let html_page = page("Add New Food — zetanom", content);
     Ok((StatusCode::OK, Html(html_page.into_string())))
 }
 
