@@ -261,16 +261,22 @@ async fn handler(
     };
 
     let content = html! {
-        (panel(&format!("Daily Log — {}", formatted_date), html! {
-            (button_bar(html! {
-                (button_link("← Previous", &LogViewHandler::url(date.prev_day())))
-                (button_link("Today", &LogViewHandler::url(Date::today())))
-                (button_link("Next →", &LogViewHandler::url(date.next_day())))
-                (spacer())
-                (button_link_primary("Log Food", &LogNewHandler::url(date)))
-            }))
-            (table_content)
-        }))
+        .button-bar {
+            a .button href=(LogViewHandler::url(date.prev_day())) {
+                "← Previous"
+            }
+            a .button href=(LogViewHandler::url(Date::today())) {
+                "Today"
+            }
+            a .button href=(LogViewHandler::url(date.next_day())) {
+                "Next →"
+            }
+            .spacer {}
+            a .button href=(LogNewHandler::url(date)) {
+                "Log Food"
+            }
+        }
+        (table_content)
     };
 
     let html_page = page(&format!("Log: {formatted_date}"), content);

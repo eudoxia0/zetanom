@@ -38,6 +38,7 @@ body {
 .button-bar {
     display: flex;
     flex-direction: row;
+    margin-top: 16px;
 }
 
 .button {
