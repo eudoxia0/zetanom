@@ -304,24 +304,3 @@ pub struct TableColumn {
     pub header: String,
     pub numeric: bool,
 }
-
-pub fn data_table(columns: Vec<TableColumn>, rows: Markup) -> Markup {
-    html! {
-        table {
-            thead {
-                tr {
-                    @for col in columns {
-                        @if col.numeric {
-                            th.numeric { (col.header) }
-                        } @else {
-                            th { (col.header) }
-                        }
-                    }
-                }
-            }
-            tbody {
-                (rows)
-            }
-        }
-    }
-}

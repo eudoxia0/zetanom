@@ -114,7 +114,24 @@ async fn get_handler(
             }
         };
 
-        data_table(columns, rows)
+        html! {
+            table {
+                thead {
+                    tr {
+                        @for col in columns {
+                            @if col.numeric {
+                                th.numeric { (col.header) }
+                            } @else {
+                                th { (col.header) }
+                            }
+                        }
+                    }
+                }
+                tbody {
+                    (rows)
+                }
+            }
+        }
     };
 
     let content = html! {

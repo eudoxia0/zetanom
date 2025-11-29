@@ -173,7 +173,22 @@ async fn handler(
             }
         };
         html! {
-            (data_table(columns, rows))
+            table {
+                thead {
+                    tr {
+                        @for col in columns {
+                            @if col.numeric {
+                                th.numeric { (col.header) }
+                            } @else {
+                                th { (col.header) }
+                            }
+                        }
+                    }
+                }
+                tbody {
+                    (rows)
+                }
+            }
         }
     };
 
