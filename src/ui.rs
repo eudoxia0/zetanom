@@ -348,35 +348,3 @@ pub fn data_table(columns: Vec<TableColumn>, rows: Markup) -> Markup {
         }
     }
 }
-
-/// Summary box (for displaying totals)
-pub fn summary_box(header: &str, content: Markup) -> Markup {
-    html! {
-        div."summary-box" {
-            div."panel-header" {
-                (header)
-            }
-            div."summary-content" {
-                (content)
-            }
-        }
-    }
-}
-
-/// Summary table (borderless table for totals)
-pub fn summary_table(rows: Markup) -> Markup {
-    html! {
-        table."summary-table" {
-            (rows)
-        }
-    }
-}
-
-/// Empty state message
-pub fn empty_state(message: &str) -> Markup {
-    html! {
-        div."text-center"."text-muted" style="padding: 20px;" {
-            (message)
-        }
-    }
-}

@@ -66,7 +66,11 @@ async fn get_handler(
     let formatted_date = date.humanize();
 
     let table_content = if foods.is_empty() {
-        empty_state("No foods in library. Add foods to the library first.")
+        html! {
+            p {
+                "No food logged for this date."
+            }
+        }
     } else {
         let columns = vec![
             TableColumn {

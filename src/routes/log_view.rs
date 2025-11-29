@@ -55,7 +55,11 @@ async fn handler(
 
     // Build table of logged foods
     let table_content = if entries.is_empty() {
-        empty_state("No food logged for this date.")
+        html! {
+            p {
+                "No food logged for this date."
+            }
+        }
     } else {
         let columns = vec![
             TableColumn {
@@ -107,45 +111,6 @@ async fn handler(
                 numeric: false,
             },
         ];
-
-        // Calculate daily totals
-        let mut total_energy = 0.0;
-        let mut total_protein = 0.0;
-        let mut total_fat = 0.0;
-        let mut total_fat_saturated = 0.0;
-        let mut total_carbs = 0.0;
-        let mut total_fibre = 0.0;
-        let mut total_sodium = 0.0;
-
-        for entry in &entries {
-            if let Ok(food) = db.get_food(entry.food_id) {
-                let multiplier = if let Some(serving_id) = entry.serving_id {
-                    // If there's a serving, get its details
-                    if let Ok(servings) = db.list_servings(food.food_id) {
-                        if let Some(serving) = servings.iter().find(|s| s.serving_id == serving_id)
-                        {
-                            serving.serving_amount / 100.0
-                        } else {
-                            0.01
-                        }
-                    } else {
-                        0.01
-                    }
-                } else {
-                    // No serving, use base unit
-                    0.01
-                };
-
-                let factor = entry.amount * multiplier;
-                total_energy += food.energy * factor;
-                total_protein += food.protein * factor;
-                total_fat += food.fat * factor;
-                total_fat_saturated += food.fat_saturated * factor;
-                total_carbs += food.carbs * factor;
-                total_fibre += food.fibre * factor;
-                total_sodium += food.sodium * factor;
-            }
-        }
 
         // Render table rows
         let rows = html! {
@@ -207,58 +172,8 @@ async fn handler(
                 }
             }
         };
-
-        let totals_summary = summary_box(
-            "Daily Totals",
-            html! {
-                (summary_table(html! {
-                    tr {
-                        td { "Energy" }
-                        td.numeric { (format!("{:.0} kcal", total_energy)) }
-                        td.target-info { "Target: 2,000 kcal" }
-                    }
-                    tr {
-                        td { "Protein" }
-                        td.numeric { (format!("{:.1} g", total_protein)) }
-                        td {}
-                    }
-                    tr {
-                        td { "Fat" }
-                        td.numeric { (format!("{:.1} g", total_fat)) }
-                        td {}
-                    }
-                    tr {
-                        td { "Saturated Fat" }
-                        @if total_fat_saturated > 15.0 {
-                            td.numeric.over-limit { (format!("{:.1} g", total_fat_saturated)) }
-                            td.target-info.over-limit { "Limit: 15g (EXCEEDED)" }
-                        } @else {
-                            td.numeric { (format!("{:.1} g", total_fat_saturated)) }
-                            td.target-info { "Limit: 15g" }
-                        }
-                    }
-                    tr {
-                        td { "Carbohydrate" }
-                        td.numeric { (format!("{:.1} g", total_carbs)) }
-                        td {}
-                    }
-                    tr {
-                        td { "Fiber" }
-                        td.numeric { (format!("{:.1} g", total_fibre)) }
-                        td {}
-                    }
-                    tr {
-                        td { "Sodium" }
-                        td.numeric { (format!("{:.0} mg", total_sodium)) }
-                        td.target-info { "Limit: 2,300 mg" }
-                    }
-                }))
-            },
-        );
-
         html! {
             (data_table(columns, rows))
-            (totals_summary)
         }
     };
 

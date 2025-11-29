@@ -43,7 +43,11 @@ async fn handler(State(state): State<ServerState>) -> Fallible<(StatusCode, Html
     let foods: Vec<FoodListEntry> = db.list_foods()?;
 
     let table_content = if foods.is_empty() {
-        empty_state("No foods in library yet.")
+        html! {
+            p {
+                "No food logged for this date."
+            }
+        }
     } else {
         let columns = vec![
             TableColumn {
