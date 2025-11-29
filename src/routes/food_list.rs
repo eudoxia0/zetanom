@@ -39,56 +39,57 @@ impl FoodListHandler {
 }
 
 async fn handler(State(state): State<ServerState>) -> Fallible<(StatusCode, Html<String>)> {
-    let nav = default_nav("food_list");
-
     let db = state.db.try_lock()?;
     let foods: Vec<FoodListEntry> = db.list_foods()?;
 
     let table_content = if foods.is_empty() {
-        empty_state("No foods in library yet.")
+        html! {
+            p {
+                "No foods."
+            }
+        }
     } else {
-        let columns = vec![
-            TableColumn {
-                header: "Name".to_string(),
-                numeric: false,
-            },
-            TableColumn {
-                header: "Brand".to_string(),
-                numeric: false,
-            },
-        ];
-
-        let rows = html! {
-            @for food in &foods {
-                tr {
-                    td {
-                        a href=(FoodViewHandler::url(food.food_id)) {
-                            (food.name)
+        html! {
+            table {
+                thead {
+                    tr {
+                        th {
+                            "Name"
+                        }
+                        th {
+                            "Brand"
                         }
                     }
-                    td {
-                        @if food.brand.is_empty() {
-                            "—"
-                        } @else {
-                            (food.brand)
+                }
+                tbody {
+                    @for food in &foods {
+                        tr {
+                            td {
+                                a href=(FoodViewHandler::url(food.food_id)) {
+                                    (food.name)
+                                }
+                            }
+                            td {
+                                @if food.brand.is_empty() {
+                                    "—"
+                                } @else {
+                                    (food.brand)
+                                }
+                            }
                         }
                     }
                 }
             }
-        };
-
-        data_table(columns, rows)
+        }
     };
 
     let content = html! {
-        (panel("Food Library", html! {
-            (button_bar(html! {
-                (button_link_primary("Add New Food", FoodNewHandler::url()))
-            }))
-            (table_content)
-        }))
+        .button-bar {
+            a .button href=(FoodNewHandler::url()) { "Add New Food" }
+        }
+        (table_content)
     };
 
-    let html_page = page("Food Library — zetanom", nav, content);
+    let html_page = page("Food Library", content);
     Ok((StatusCode::OK, Html(html_page.into_string())))
 }

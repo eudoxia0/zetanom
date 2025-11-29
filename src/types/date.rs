@@ -30,10 +30,6 @@ use crate::error::AppError;
 pub struct Date(NaiveDate);
 
 impl Date {
-    pub fn new(naive_date: NaiveDate) -> Self {
-        Self(naive_date)
-    }
-
     pub fn today() -> Self {
         Self(Local::now().naive_local().date())
     }
@@ -44,10 +40,6 @@ impl Date {
 
     pub fn next_day(self) -> Self {
         Self(self.0.succ_opt().unwrap_or(self.0))
-    }
-
-    pub fn into_inner(self) -> NaiveDate {
-        self.0
     }
 
     pub fn humanize(&self) -> String {

@@ -59,67 +59,54 @@ async fn get_handler(
     State(state): State<ServerState>,
     Path(date): Path<String>,
 ) -> Fallible<(StatusCode, Html<String>)> {
-    let nav = default_nav("today");
-
     let db = state.db.try_lock()?;
     let foods = db.list_foods()?;
     let date = Date::try_from(date)?;
 
-    let formatted_date = date.humanize();
-
     let table_content = if foods.is_empty() {
-        empty_state("No foods in library. Add foods to the library first.")
+        html! {
+            p {
+                "No foods."
+            }
+        }
     } else {
-        let columns = vec![
-            TableColumn {
-                header: "Name".to_string(),
-                numeric: false,
-            },
-            TableColumn {
-                header: "Brand".to_string(),
-                numeric: false,
-            },
-            TableColumn {
-                header: "Energy (kcal)".to_string(),
-                numeric: true,
-            },
-            TableColumn {
-                header: "".to_string(),
-                numeric: false,
-            },
-        ];
-
-        let rows = html! {
-            @for food in &foods {
-                tr {
-                    td {
-                        a href=(LogNewHandler::url_with_food_id(date, food.food_id)) {
-                            (food.name)
+        html! {
+            table {
+                thead {
+                    tr {
+                        th {
+                            "Name"
+                        }
+                        th {
+                            "Brand"
                         }
                     }
-                    td {
-                        @if food.brand.is_empty() {
-                            "—"
-                        } @else {
-                            (food.brand)
+                }
+                tbody {
+                    @for food in &foods {
+                        tr {
+                            td {
+                                a href=(LogNewHandler::url_with_food_id(date, food.food_id)) {
+                                    (food.name)
+                                }
+                            }
+                            td {
+                                @if food.brand.is_empty() {
+                                    "—"
+                                } @else {
+                                    (food.brand)
+                                }
+                            }
                         }
-                    }
-                    td.numeric { (format!("{:.1}", food.energy)) }
-                    td {
-                        (button_link("Select", &LogNewHandler::url_with_food_id(date, food.food_id)))
                     }
                 }
             }
-        };
-
-        data_table(columns, rows)
+        }
     };
 
-    let content = html! {
-        (panel(&format!("Add Food Entry — {}", formatted_date), table_content))
-    };
+    let content = table_content;
 
-    let html_page = page("Add Food Entry — zetanom", nav, content);
+    let html_page = page("Add Food Entry", content);
     Ok((StatusCode::OK, Html(html_page.into_string())))
 }
 
@@ -127,8 +114,6 @@ async fn get_handler_with_food_id(
     State(state): State<ServerState>,
     Path((date, food_id)): Path<(String, FoodId)>,
 ) -> Fallible<(StatusCode, Html<String>)> {
-    let nav = default_nav("today");
-
     let db = state.db.try_lock()?;
     let food = db.get_food(food_id)?;
     let servings = db.list_servings(food_id)?;
@@ -141,45 +126,36 @@ async fn get_handler_with_food_id(
     };
 
     let form_content = html! {
-        form method="post" action=(LogNewHandler::url_with_food_id(date, food_id)) {
+        form .main-form method="post" action=(LogNewHandler::url_with_food_id(date, food_id)) {
             input type="hidden" name="food_id" value={(food_id.to_string())};
-
-            (form_section("Log Food Entry", html! {
-                (form_row(html! {
-                    (form_group_half(html! {
-                        (label_required("serving_id", "Serving Size"))
-                        (select("serving_id", "serving_id", {
-                            let mut options = vec![
-                                ("".to_string(), format!("Base serving (100{})", food.serving_unit.as_str()))
-                            ];
-                            for serving in &servings {
-                                options.push((
-                                    serving.serving_id.to_string(),
-                                    format!("{} ({} {})", serving.serving_name, serving.serving_amount, food.serving_unit.as_str())
-                                ));
-                            }
-                            options
-                        }))
-                    }))
-                    (form_group_half(html! {
-                        (label_required("amount", "Amount"))
-                        (number_input("amount", "amount", "0.1", "e.g., 1.5"))
-                    }))
+            .form-group {
+                (label_required("amount", "Amount"))
+                (number_input("amount", "amount", "0.1", "e.g., 1.5"))
+            }
+            .form-group {
+                (label_required("serving_id", "Serving Size"))
+                (select("serving_id", "serving_id", {
+                    let mut options = vec![
+                        ("".to_string(), format!("Base serving (100{})", food.serving_unit.as_str()))
+                    ];
+                    for serving in &servings {
+                        options.push((
+                            serving.serving_id.to_string(),
+                            format!("{} ({} {})", serving.serving_name, serving.serving_amount, food.serving_unit.as_str())
+                        ));
+                    }
+                    options
                 }))
-            }))
-
-            (button_bar(html! {
-                (submit_button_primary("Log Food"))
-                (button_link("Cancel", &LogViewHandler::url(date)))
-            }))
+            }
+            .button-bar {
+                input .button type="submit" value="Log Entry";
+            }
         }
     };
 
-    let content = html! {
-        (panel(&format!("Log: {}", food_title), form_content))
-    };
+    let content = form_content;
 
-    let html_page = page(&format!("Log {} — zetanom", food_title), nav, content);
+    let html_page = page(&format!("Log {}", food_title), content);
     Ok((StatusCode::OK, Html(html_page.into_string())))
 }
 

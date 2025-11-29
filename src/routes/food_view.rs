@@ -25,7 +25,6 @@ use crate::db::FoodId;
 use crate::db::Serving;
 use crate::error::Fallible;
 use crate::routes::food_edit::FoodEditHandler;
-use crate::routes::food_list::FoodListHandler;
 use crate::routes::serving_delete::ServingDeleteHandler;
 use crate::routes::serving_new::ServingNewHandler;
 use crate::ui::*;
@@ -47,8 +46,6 @@ async fn handler(
     State(state): State<ServerState>,
     Path(food_id): Path<FoodId>,
 ) -> Fallible<(StatusCode, Html<String>)> {
-    let nav = default_nav("food_list");
-
     let db = state.db.try_lock()?;
     let food: FoodEntry = db.get_food(food_id)?;
     let servings: Vec<Serving> = db.list_servings(food_id)?;
@@ -81,7 +78,7 @@ async fn handler(
                     td { "Fat, Total" }
                     td.numeric { (format!("{:.1} g", food.fat)) }
                 }
-                tr style="background: #f8f8f8;" {
+                tr {
                     td { "— Saturated" }
                     td.numeric { (format!("{:.1} g", food.fat_saturated)) }
                 }
@@ -89,7 +86,7 @@ async fn handler(
                     td { "Carbohydrate" }
                     td.numeric { (format!("{:.1} g", food.carbs)) }
                 }
-                tr style="background: #f8f8f8;" {
+                tr {
                     td { "— Sugars" }
                     td.numeric { (format!("{:.1} g", food.carbs_sugars)) }
                 }
@@ -105,58 +102,59 @@ async fn handler(
         }
     };
 
-    // Servings section
-    let servings_list = if servings.is_empty() {
-        empty_state("No custom serving sizes defined.")
-    } else {
-        html! {
-            div."serving-list" {
+    let content = html! {
+        .button-bar {
+            a .button href=(FoodEditHandler::url(food_id)) {
+                "Edit Food"
+            }
+        }
+        (nutrition_table)
+        h2 {
+            "Custom Serving Sizes"
+        }
+        table {
+            thead {
+                tr {
+                    th { "Name" }
+                    th { "Equals" }
+                    th { "Delete" }
+                }
+            }
+            tbody {
                 @for serving in &servings {
-                    div."serving-item" {
-                        span {
-                            (serving.serving_name) ": " (serving.serving_amount) (food.serving_unit.as_str())
+                    tr {
+                        td {
+                            (serving.serving_name)
                         }
-                        form method="post" action=(ServingDeleteHandler::url(food_id, serving.serving_id)) style="display: inline;" {
-                            button type="submit" { "Delete" }
+                        td {
+                            (serving.serving_amount) (food.serving_unit.as_str())
+                        }
+                        td {
+                            form method="post" action=(ServingDeleteHandler::url(food_id, serving.serving_id)) {
+                                input .button type="submit" value="Delete";
+                            }
                         }
                     }
                 }
             }
         }
-    };
 
-    let add_serving_form = html! {
+        h2 {
+            "Add Custom Serving Size"
+        }
         form method="post" action=(ServingNewHandler::url(food_id)) {
-            (form_section("Add Custom Serving Size", html! {
-                div."add-serving-row" {
-                    (form_group(html! {
-                        (label("serving_name", "Serving Name"))
-                        (text_input("serving_name", "serving_name", "e.g., cup, slice, package"))
-                    }))
-                    (form_group(html! {
-                        (label("serving_amount", &format!("Amount ({})", food.serving_unit.as_str())))
-                        (number_input("serving_amount", "serving_amount", "0.1", "e.g., 250"))
-                    }))
-                    (submit_button("Add Serving"))
-                }
-            }))
+            .form-group {
+                (label("serving_name", "Serving Name"))
+                (text_input("serving_name", "serving_name", "e.g., cup, slice, package"))
+            }
+            .form-group {
+                (label("serving_amount", &format!("Amount ({})", food.serving_unit.as_str())))
+                (number_input("serving_amount", "serving_amount", "0.1", "e.g., 250"))
+            }
+            input .button type="submit" value="Add Serving";
         }
     };
 
-    let content = html! {
-        (panel(&food_title, html! {
-            (button_bar(html! {
-                (button_link("Edit Food", &FoodEditHandler::url(food_id)))
-                (button_link("Back to Library", FoodListHandler::url()))
-            }))
-            (nutrition_table)
-        }))
-        (panel("Custom Serving Sizes", html! {
-            (servings_list)
-            (add_serving_form)
-        }))
-    };
-
-    let html_page = page(&format!("{} — zetanom", food_title), nav, content);
+    let html_page = page(&format!("{}", food_title), content);
     Ok((StatusCode::OK, Html(html_page.into_string())))
 }

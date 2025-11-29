@@ -46,12 +46,12 @@ impl FoodNewHandler {
 }
 
 async fn get_handler() -> Fallible<(StatusCode, Html<String>)> {
-    let nav = default_nav("food_new");
-
     let form_content = html! {
-        form method="post" action=(FoodNewHandler::url()) {
-            // Basic Information Section
-            (form_section("Basic Information", html! {
+        form .main-form method="post" action=(FoodNewHandler::url()) {
+            .form-section {
+                .form-section-title {
+                    "Basic Information"
+                }
                 (form_row(html! {
                     (form_group(html! {
                         (label_required("food_name", "Food Name"))
@@ -71,55 +71,29 @@ async fn get_handler() -> Fallible<(StatusCode, Html<String>)> {
                         ]))
                     }))
                 }))
-            }))
-
-            // Nutrition Information Section
-            (form_section("Nutrition Information (per 100g or 100ml)", html! {
+            }
+            .form-section {
+                .form-section-title {
+                    "Nutrition Information (per 100g or 100ml)"
+                }
                 (nutrition_table(html! {
-                    (nutrition_row("Energy *", "energy", "energy", "kcal", 0))
-                    (nutrition_row("Protein *", "protein", "protein", "g", 0))
-                    (nutrition_row("Fat, Total *", "fat", "fat", "g", 0))
-                    (nutrition_row("Saturated *", "fat_saturated", "fat_saturated", "g", 1))
-                    (nutrition_row("Carbohydrate *", "carbs", "carbs", "g", 0))
-                    (nutrition_row("Sugars *", "carbs_sugars", "carbs_sugars", "g", 1))
-                    (nutrition_row("Dietary Fibre *", "fibre", "fibre", "g", 0))
-                    (nutrition_row("Sodium *", "sodium", "sodium", "mg", 0))
+                    (nutrition_row("Energy", "energy", "energy", "kcal", 0))
+                    (nutrition_row("Protein", "protein", "protein", "g", 0))
+                    (nutrition_row("Fat, Total", "fat", "fat", "g", 0))
+                    (nutrition_row("Saturated", "fat_saturated", "fat_saturated", "g", 1))
+                    (nutrition_row("Carbohydrate", "carbs", "carbs", "g", 0))
+                    (nutrition_row("Sugars", "carbs_sugars", "carbs_sugars", "g", 1))
+                    (nutrition_row("Dietary Fibre", "fibre", "fibre", "g", 0))
+                    (nutrition_row("Sodium", "sodium", "sodium", "mg", 0))
                 }))
-            }))
-
-            // Action Buttons
-            (button_bar(html! {
-                (submit_button_primary("Save Food"))
-                (button("Cancel"))
-            }))
+            }
+            .button-bar {
+                input .button type="submit" value="Save";
+            }
         }
     };
 
-    let help_content = html! {
-        p {
-            strong { "Where to find nutrition information:" }
-            br;
-            "Look at the nutrition information panel on the back of food packaging. In Australia, all values are shown per 100g or per 100ml."
-        }
-        p {
-            strong { "Carbohydrate vs. Sugars:" }
-            br;
-            "\"Carbohydrate\" refers to available carbohydrate (excluding fiber). \"Sugars\" is a subset of carbohydrate and should be indented underneath it on labels."
-        }
-    };
-
-    let content = html! {
-        (panel("Add New Food", html! {
-            (info_box(html! {
-                strong { "Note:" }
-                "All nutrition information should be entered per 100g or per 100ml as shown on the Australian nutrition label."
-            }))
-            (form_content)
-        }))
-        (panel("Help", help_content))
-    };
-
-    let html_page = page("Add New Food — zetanom", nav, content);
+    let html_page = page("Add New Food", form_content);
     Ok((StatusCode::OK, Html(html_page.into_string())))
 }
 

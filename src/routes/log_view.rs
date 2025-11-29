@@ -18,6 +18,7 @@ use axum::extract::State;
 use axum::http::StatusCode;
 use axum::response::Html;
 use axum::routing::get;
+use chrono::Local;
 use maud::html;
 
 use crate::error::Fallible;
@@ -46,8 +47,6 @@ async fn handler(
 ) -> Fallible<(StatusCode, Html<String>)> {
     let date: Date = Date::try_from(date)?;
 
-    let nav = default_nav("today");
-
     // Get database lock and query entries for this date
     let db = state.db.try_lock()?;
     let entries = db.list_entries(date)?;
@@ -57,7 +56,11 @@ async fn handler(
 
     // Build table of logged foods
     let table_content = if entries.is_empty() {
-        empty_state("No food logged for this date.")
+        html! {
+            p {
+                "No food logged for this date."
+            }
+        }
     } else {
         let columns = vec![
             TableColumn {
@@ -110,45 +113,6 @@ async fn handler(
             },
         ];
 
-        // Calculate daily totals
-        let mut total_energy = 0.0;
-        let mut total_protein = 0.0;
-        let mut total_fat = 0.0;
-        let mut total_fat_saturated = 0.0;
-        let mut total_carbs = 0.0;
-        let mut total_fibre = 0.0;
-        let mut total_sodium = 0.0;
-
-        for entry in &entries {
-            if let Ok(food) = db.get_food(entry.food_id) {
-                let multiplier = if let Some(serving_id) = entry.serving_id {
-                    // If there's a serving, get its details
-                    if let Ok(servings) = db.list_servings(food.food_id) {
-                        if let Some(serving) = servings.iter().find(|s| s.serving_id == serving_id)
-                        {
-                            serving.serving_amount / 100.0
-                        } else {
-                            0.01
-                        }
-                    } else {
-                        0.01
-                    }
-                } else {
-                    // No serving, use base unit
-                    0.01
-                };
-
-                let factor = entry.amount * multiplier;
-                total_energy += food.energy * factor;
-                total_protein += food.protein * factor;
-                total_fat += food.fat * factor;
-                total_fat_saturated += food.fat_saturated * factor;
-                total_carbs += food.carbs * factor;
-                total_fibre += food.fibre * factor;
-                total_sodium += food.sodium * factor;
-            }
-        }
-
         // Render table rows
         let rows = html! {
             @for entry in &entries {
@@ -179,7 +143,7 @@ async fn handler(
                     @let sodium = food.sodium * factor;
 
                     tr {
-                        td { (entry.created_at.format("%H:%M").to_string()) }
+                        td { (entry.created_at.with_timezone(&Local).format("%H:%M").to_string()) }
                         td {
                             a href=(FoodViewHandler::url(food.food_id)) {
                                 (food.name)
@@ -192,7 +156,7 @@ async fn handler(
                                 (food.brand)
                             }
                         }
-                        td { (format!("{:.1}{}", entry.amount, unit)) }
+                        td { (format!("{:.1} {}", entry.amount, unit)) }
                         td.numeric { (format!("{:.0}", energy)) }
                         td.numeric { (format!("{:.1}", protein)) }
                         td.numeric { (format!("{:.1}", fat)) }
@@ -201,80 +165,53 @@ async fn handler(
                         td.numeric { (format!("{:.1}", fibre)) }
                         td.numeric { (format!("{:.0}", sodium)) }
                         td {
-                            (form_button("Delete", &LogDeleteHandler::url(date, entry.entry_id)))
+                            form method="POST" action=(LogDeleteHandler::url(date, entry.entry_id)) {
+                                input .button type="submit" value="Delete";
+                            }
                         }
                     }
                 }
             }
         };
-
-        let totals_summary = summary_box(
-            "Daily Totals",
-            html! {
-                (summary_table(html! {
+        html! {
+            table {
+                thead {
                     tr {
-                        td { "Energy" }
-                        td.numeric { (format!("{:.0} kcal", total_energy)) }
-                        td.target-info { "Target: 2,000 kcal" }
-                    }
-                    tr {
-                        td { "Protein" }
-                        td.numeric { (format!("{:.1} g", total_protein)) }
-                        td {}
-                    }
-                    tr {
-                        td { "Fat" }
-                        td.numeric { (format!("{:.1} g", total_fat)) }
-                        td {}
-                    }
-                    tr {
-                        td { "Saturated Fat" }
-                        @if total_fat_saturated > 15.0 {
-                            td.numeric.over-limit { (format!("{:.1} g", total_fat_saturated)) }
-                            td.target-info.over-limit { "Limit: 15g (EXCEEDED)" }
-                        } @else {
-                            td.numeric { (format!("{:.1} g", total_fat_saturated)) }
-                            td.target-info { "Limit: 15g" }
+                        @for col in columns {
+                            @if col.numeric {
+                                th.numeric { (col.header) }
+                            } @else {
+                                th { (col.header) }
+                            }
                         }
                     }
-                    tr {
-                        td { "Carbohydrate" }
-                        td.numeric { (format!("{:.1} g", total_carbs)) }
-                        td {}
-                    }
-                    tr {
-                        td { "Fiber" }
-                        td.numeric { (format!("{:.1} g", total_fibre)) }
-                        td {}
-                    }
-                    tr {
-                        td { "Sodium" }
-                        td.numeric { (format!("{:.0} mg", total_sodium)) }
-                        td.target-info { "Limit: 2,300 mg" }
-                    }
-                }))
-            },
-        );
-
-        html! {
-            (data_table(columns, rows))
-            (totals_summary)
+                }
+                tbody {
+                    (rows)
+                }
+            }
         }
     };
 
     let content = html! {
-        (panel(&format!("Daily Log — {}", formatted_date), html! {
-            (button_bar(html! {
-                (button_link("← Previous", &LogViewHandler::url(date.prev_day())))
-                (button_link("Today", &LogViewHandler::url(Date::today())))
-                (button_link("Next →", &LogViewHandler::url(date.next_day())))
-                (spacer())
-                (button_link_primary("Log Food", &LogNewHandler::url(date)))
-            }))
-            (table_content)
-        }))
+        .button-bar {
+            a .button href=(LogViewHandler::url(date.prev_day())) {
+                "← Previous"
+            }
+            a .button href=(LogViewHandler::url(Date::today())) {
+                "Today"
+            }
+            a .button href=(LogViewHandler::url(date.next_day())) {
+                "Next →"
+            }
+            .spacer {}
+            a .button href=(LogNewHandler::url(date)) {
+                "Log Food"
+            }
+        }
+        (table_content)
     };
 
-    let html_page = page("Daily Log — zetanom", nav, content);
+    let html_page = page(&format!("Log: {formatted_date}"), content);
     Ok((StatusCode::OK, Html(html_page.into_string())))
 }

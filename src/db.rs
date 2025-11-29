@@ -81,9 +81,6 @@ pub struct FoodListEntry {
     pub food_id: FoodId,
     pub name: FoodName,
     pub brand: BrandName,
-    pub serving_unit: BasicUnit,
-    pub energy: Energy,
-    pub protein: Protein,
 }
 
 /// A food entry.
@@ -100,7 +97,6 @@ pub struct FoodEntry {
     pub carbs_sugars: Sugars,
     pub fibre: Fibre,
     pub sodium: Sodium,
-    pub created_at: DateTime<Utc>,
 }
 
 /// Data needed to edit an existing food.
@@ -131,10 +127,8 @@ pub struct ServingInput {
 
 pub struct Serving {
     pub serving_id: ServingId,
-    pub food_id: FoodId,
     pub serving_name: ServingName,
     pub serving_amount: f64,
-    pub created_at: DateTime<Utc>,
 }
 
 pub type EntryId = i64;
@@ -149,7 +143,6 @@ pub struct CreateEntryInput {
 
 pub struct Entry {
     pub entry_id: EntryId,
-    pub date: Date,
     pub food_id: FoodId,
     pub serving_id: Option<ServingId>,
     pub amount: f64,
@@ -170,22 +163,6 @@ impl Db {
             tx.commit()?;
             Ok(Self { conn })
         }
-    }
-
-    pub fn new_in_memory() -> Fallible<Self> {
-        let mut conn = Connection::open_in_memory()?;
-        conn.set_db_config(DbConfig::SQLITE_DBCONFIG_ENABLE_FKEY, true)?;
-        let tx = conn.transaction()?;
-        tx.execute_batch(include_str!("schema.sql"))?;
-        tx.commit()?;
-        Ok(Self { conn })
-    }
-
-    /// Return the total number of foods in the library.
-    pub fn count_foods(&self) -> Fallible<usize> {
-        let sql = "select count(*) from foods;";
-        let count: i64 = self.conn.query_row(sql, [], |row| row.get(0))?;
-        Ok(count as usize)
     }
 
     /// Create a new food.
@@ -222,7 +199,7 @@ impl Db {
     pub fn list_foods(&self) -> Fallible<Vec<FoodListEntry>> {
         let sql = "
             select
-                food_id, name, brand, serving_unit, energy, protein
+                food_id, name, brand
             from
                 foods
             order by
@@ -230,16 +207,10 @@ impl Db {
         ";
         let mut stmt = self.conn.prepare(sql)?;
         let rows = stmt.query_map([], |row| {
-            let serving_unit_str: String = row.get(3)?;
-            let serving_unit = BasicUnit::try_from(serving_unit_str.as_str())
-                .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?;
             Ok(FoodListEntry {
                 food_id: row.get(0)?,
                 name: row.get(1)?,
                 brand: row.get(2)?,
-                serving_unit,
-                energy: row.get(4)?,
-                protein: row.get(5)?,
             })
         })?;
         let mut foods = Vec::new();
@@ -264,8 +235,7 @@ impl Db {
                 carbs,
                 carbs_sugars,
                 fibre,
-                sodium,
-                created_at
+                sodium
             from
                 foods
             where
@@ -288,7 +258,6 @@ impl Db {
                 carbs_sugars: row.get(9)?,
                 fibre: row.get(10)?,
                 sodium: row.get(11)?,
-                created_at: row.get(12)?,
             })
         })?;
         Ok(entry)
@@ -362,7 +331,7 @@ impl Db {
     pub fn list_servings(&self, food_id: FoodId) -> Fallible<Vec<Serving>> {
         let sql = "
             select
-                serving_id, food_id, serving_name, serving_amount, created_at
+                serving_id, serving_name, serving_amount
             from
                 serving_sizes
             where
@@ -374,10 +343,8 @@ impl Db {
         let rows = stmt.query_map(params![food_id], |row| {
             Ok(Serving {
                 serving_id: row.get(0)?,
-                food_id: row.get(1)?,
-                serving_name: row.get(2)?,
-                serving_amount: row.get(3)?,
-                created_at: row.get(4)?,
+                serving_name: row.get(1)?,
+                serving_amount: row.get(2)?,
             })
         })?;
         let mut servings = Vec::new();
@@ -418,7 +385,7 @@ impl Db {
     pub fn list_entries(&self, date: Date) -> Fallible<Vec<Entry>> {
         let sql = "
             select
-                entry_id, date, food_id, serving_id, amount, created_at
+                entry_id, food_id, serving_id, amount, created_at
             from
                 entries
             where
@@ -430,11 +397,10 @@ impl Db {
         let rows = stmt.query_map(params![date], |row| {
             Ok(Entry {
                 entry_id: row.get(0)?,
-                date: row.get(1)?,
-                food_id: row.get(2)?,
-                serving_id: row.get(3)?,
-                amount: row.get(4)?,
-                created_at: row.get(5)?,
+                food_id: row.get(1)?,
+                serving_id: row.get(2)?,
+                amount: row.get(3)?,
+                created_at: row.get(4)?,
             })
         })?;
         let mut entries = Vec::new();
