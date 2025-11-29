@@ -79,12 +79,10 @@ async fn handler(State(state): State<ServerState>) -> Fallible<(StatusCode, Html
     };
 
     let content = html! {
-        (panel("Food Library", html! {
-            (button_bar(html! {
-                (button_link_primary("Add New Food", FoodNewHandler::url()))
-            }))
-            (table_content)
+        (button_bar(html! {
+            (button_link_primary("Add New Food", FoodNewHandler::url()))
         }))
+        (table_content)
     };
 
     let html_page = page("Food Library", content);

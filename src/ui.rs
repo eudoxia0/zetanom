@@ -259,13 +259,6 @@ pub fn button_bar(content: Markup) -> Markup {
     }
 }
 
-/// Spacer element (flex: 1)
-pub fn spacer() -> Markup {
-    html! {
-        span.spacer {}
-    }
-}
-
 /// Nutrition table row (for form input)
 pub fn nutrition_row(
     label_text: &str,
