@@ -155,7 +155,7 @@ async fn handler(
                                 (food.brand)
                             }
                         }
-                        td { (format!("{:.1}{}", entry.amount, unit)) }
+                        td { (format!("{:.1} {}", entry.amount, unit)) }
                         td.numeric { (format!("{:.0}", energy)) }
                         td.numeric { (format!("{:.1}", protein)) }
                         td.numeric { (format!("{:.1}", fat)) }
