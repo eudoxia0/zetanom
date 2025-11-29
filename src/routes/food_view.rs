@@ -155,6 +155,6 @@ async fn handler(
         }
     };
 
-    let html_page = page(&format!("{}", food_title), content);
+    let html_page = page(&food_title.to_string(), content);
     Ok((StatusCode::OK, Html(html_page.into_string())))
 }
