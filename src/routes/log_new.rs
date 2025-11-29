@@ -66,7 +66,7 @@ async fn get_handler(
     let table_content = if foods.is_empty() {
         html! {
             p {
-                "No food logged for this date."
+                "No foods."
             }
         }
     } else {

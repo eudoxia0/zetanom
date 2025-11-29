@@ -106,7 +106,7 @@ async fn handler(
     let servings_list = if servings.is_empty() {
         html! {
             p {
-                "No food logged for this date."
+                "No custom serving sizes."
             }
         }
     } else {

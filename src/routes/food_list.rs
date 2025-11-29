@@ -45,7 +45,7 @@ async fn handler(State(state): State<ServerState>) -> Fallible<(StatusCode, Html
     let table_content = if foods.is_empty() {
         html! {
             p {
-                "No food logged for this date."
+                "No foods."
             }
         }
     } else {
