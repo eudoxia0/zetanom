@@ -47,3 +47,7 @@ body {
     font-size: 16px;
     padding: 3px 8px;
 }
+
+.spacer {
+    flex: 1;
+}
