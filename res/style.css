@@ -91,13 +91,8 @@ h2 {
 }
 
 .form-section-title {
-    font-size: 10px;
     font-weight: bold;
-    color: #003366;
-    text-transform: uppercase;
-    margin-bottom: 12px;
     padding-bottom: 4px;
-    border-bottom: 1px solid #ccc;
 }
 
 .form-row {

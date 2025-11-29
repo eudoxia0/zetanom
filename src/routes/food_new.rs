@@ -47,9 +47,11 @@ impl FoodNewHandler {
 
 async fn get_handler() -> Fallible<(StatusCode, Html<String>)> {
     let form_content = html! {
-        form method="post" action=(FoodNewHandler::url()) {
-            // Basic Information Section
-            (form_section("Basic Information", html! {
+        form .main-form method="post" action=(FoodNewHandler::url()) {
+            .form-section {
+                .form-section-title {
+                    "Basic Information"
+                }
                 (form_row(html! {
                     (form_group(html! {
                         (label_required("food_name", "Food Name"))
@@ -69,10 +71,11 @@ async fn get_handler() -> Fallible<(StatusCode, Html<String>)> {
                         ]))
                     }))
                 }))
-            }))
-
-            // Nutrition Information Section
-            (form_section("Nutrition Information (per 100g or 100ml)", html! {
+            }
+            .form-section {
+                .form-section-title {
+                    "Nutrition Information (per 100g or 100ml)"
+                }
                 (nutrition_table(html! {
                     (nutrition_row("Energy *", "energy", "energy", "kcal", 0))
                     (nutrition_row("Protein *", "protein", "protein", "g", 0))
@@ -83,11 +86,9 @@ async fn get_handler() -> Fallible<(StatusCode, Html<String>)> {
                     (nutrition_row("Dietary Fibre *", "fibre", "fibre", "g", 0))
                     (nutrition_row("Sodium *", "sodium", "sodium", "mg", 0))
                 }))
-            }))
-
-            // Action Buttons
+            }
             .button-bar {
-                input .button type="submit" { "Save" }
+                input .button type="submit" value="Save";
             }
         }
     };
