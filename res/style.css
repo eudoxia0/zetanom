@@ -236,3 +236,7 @@ input[type="submit"]:hover {
 .narrow {
     width: 200px;
 }
+
+.center {
+    text-align: center;
+}

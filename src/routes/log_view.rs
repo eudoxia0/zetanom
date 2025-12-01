@@ -143,7 +143,9 @@ async fn handler(
                     @let sodium = food.sodium * factor;
 
                     tr {
-                        td { (entry.created_at.with_timezone(&Local).format("%H:%M").to_string()) }
+                        td .center {
+                            (entry.created_at.with_timezone(&Local).format("%H:%M").to_string())
+                        }
                         td {
                             a href=(FoodViewHandler::url(food.food_id)) {
                                 (food.name)
@@ -164,7 +166,7 @@ async fn handler(
                         td .numeric { (format!("{:.1}", carbs)) }
                         td .numeric { (format!("{:.1}", fibre)) }
                         td .numeric { (format!("{:.0}", sodium)) }
-                        td {
+                        td .center {
                             form method="POST" action=(LogDeleteHandler::url(date, entry.entry_id)) {
                                 input .button type="submit" value="Delete";
                             }
