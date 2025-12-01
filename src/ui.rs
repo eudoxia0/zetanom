@@ -254,9 +254,3 @@ pub fn nutrition_table(rows: Markup) -> Markup {
         }
     }
 }
-
-/// Data table component
-pub struct TableColumn {
-    pub header: String,
-    pub numeric: bool,
-}

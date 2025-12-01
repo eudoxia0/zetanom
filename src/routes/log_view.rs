@@ -19,8 +19,11 @@ use axum::http::StatusCode;
 use axum::response::Html;
 use axum::routing::get;
 use chrono::Local;
+use maud::Markup;
 use maud::html;
 
+use crate::db::Db;
+use crate::db::Entry;
 use crate::error::Fallible;
 use crate::routes::food_view::FoodViewHandler;
 use crate::routes::log_delete::LogDeleteHandler;
@@ -46,101 +49,41 @@ async fn handler(
     Path(date): Path<String>,
 ) -> Fallible<(StatusCode, Html<String>)> {
     let date: Date = Date::try_from(date)?;
-
-    // Get database lock and query entries for this date
     let db = state.db.try_lock()?;
-    let entries = db.list_entries(date)?;
+    let entries: Vec<Entry> = db.list_entries(date)?;
+    let tbl = render_log_table(&db, &entries, date)?;
+    let content = html! {
+        .button-bar {
+            a .button href=(LogViewHandler::url(date.prev_day())) {
+                "← Previous"
+            }
+            a .button href=(LogViewHandler::url(Date::today())) {
+                "Today"
+            }
+            a .button href=(LogViewHandler::url(date.next_day())) {
+                "Next →"
+            }
+            .spacer {}
+            a .button href=(LogNewHandler::url(date)) {
+                "Log Food"
+            }
+        }
+        (tbl)
+    };
+    let title = format!("Log: {}", date.humanize());
+    let html_page = page(&title, content);
+    Ok((StatusCode::OK, Html(html_page.into_string())))
+}
 
-    // Format the date nicely
-    let formatted_date = date.humanize();
-
-    // Build table of logged foods
-    let table_content = if entries.is_empty() {
-        html! {
+fn render_log_table(db: &Db, entries: &[Entry], date: Date) -> Fallible<Markup> {
+    if entries.is_empty() {
+        Ok(html! {
             p {
                 "No food logged for this date."
             }
-        }
+        })
     } else {
-        // Render table rows
-        let rows = html! {
-            @for entry in &entries {
-                @if let Ok(food) = db.get_food(entry.food_id) {
-                    @let (unit, multiplier) = if let Some(serving_id) = entry.serving_id {
-                        // If there's a serving, get its details
-                        if let Ok(servings) = db.list_servings(food.food_id) {
-                            if let Some(serving) = servings.iter().find(|s| s.serving_id == serving_id) {
-                                (serving.serving_name.clone(), serving.serving_amount / 100.0)
-                            } else {
-                                (food.serving_unit.as_str().to_string(), 0.01)
-                            }
-                        } else {
-                            (food.serving_unit.as_str().to_string(), 0.01)
-                        }
-                    } else {
-                        // No serving, use base unit
-                        (food.serving_unit.as_str().to_string(), 0.01)
-                    };
-
-                    @let factor = entry.amount * multiplier;
-                    @let energy = food.energy * factor;
-                    @let protein = food.protein * factor;
-                    @let fat = food.fat * factor;
-                    @let fat_saturated = food.fat_saturated * factor;
-                    @let carbs = food.carbs * factor;
-                    @let fibre = food.fibre * factor;
-                    @let sodium = food.sodium * factor;
-
-                    tr {
-                        td .center {
-                            (entry.created_at.with_timezone(&Local).format("%H:%M").to_string())
-                        }
-                        td {
-                            a href=(FoodViewHandler::url(food.food_id)) {
-                                (food.name)
-                            }
-                        }
-                        td {
-                            @if food.brand.is_empty() {
-                                "—"
-                            } @else {
-                                (food.brand)
-                            }
-                        }
-                        td {
-                            (format!("{:.1} {}", entry.amount, unit))
-                        }
-                        td .numeric {
-                            (format!("{:.0}", energy))
-                        }
-                        td .numeric {
-                            (format!("{:.1}", protein))
-                        }
-                        td .numeric {
-                            (format!("{:.1}", fat))
-                        }
-                        td .numeric {
-                            (format!("{:.1}", fat_saturated))
-                        }
-                        td .numeric {
-                            (format!("{:.1}", carbs))
-                        }
-                        td .numeric {
-                            (format!("{:.1}", fibre))
-                        }
-                        td .numeric {
-                            (format!("{:.0}", sodium))
-                        }
-                        td .center {
-                            form method="POST" action=(LogDeleteHandler::url(date, entry.entry_id)) {
-                                input .button type="submit" value="Delete";
-                            }
-                        }
-                    }
-                }
-            }
-        };
-        html! {
+        Ok(html! {
             table {
                 thead {
                     tr {
@@ -183,31 +126,89 @@ async fn handler(
                     }
                 }
                 tbody {
-                    (rows)
+                    @for entry in entries {
+                        (render_log_entry_row(db, entry, date)?)
+                    }
+                }
+            }
+        })
+    }
+}
+
+fn render_log_entry_row(db: &Db, entry: &Entry, date: Date) -> Fallible<Markup> {
+    let food = db.get_food(entry.food_id)?;
+
+    let (unit, multiplier) = if let Some(serving_id) = entry.serving_id {
+        // If there's a serving, get its details.
+        if let Ok(servings) = db.list_servings(food.food_id) {
+            if let Some(serving) = servings.iter().find(|s| s.serving_id == serving_id) {
+                (serving.serving_name.clone(), serving.serving_amount / 100.0)
+            } else {
+                (food.serving_unit.as_str().to_string(), 0.01)
+            }
+        } else {
+            (food.serving_unit.as_str().to_string(), 0.01)
+        }
+    } else {
+        // No serving, use base unit
+        (food.serving_unit.as_str().to_string(), 0.01)
+    };
+
+    let factor = entry.amount * multiplier;
+    let energy = food.energy * factor;
+    let protein = food.protein * factor;
+    let fat = food.fat * factor;
+    let fat_saturated = food.fat_saturated * factor;
+    let carbs = food.carbs * factor;
+    let fibre = food.fibre * factor;
+    let sodium = food.sodium * factor;
+
+    Ok(html! {
+        tr {
+            td .center {
+                (entry.created_at.with_timezone(&Local).format("%H:%M").to_string())
+            }
+            td {
+                a href=(FoodViewHandler::url(food.food_id)) {
+                    (food.name)
+                }
+            }
+            td {
+                @if food.brand.is_empty() {
+                    "—"
+                } @else {
+                    (food.brand)
+                }
+            }
+            td {
+                (format!("{:.1} {}", entry.amount, unit))
+            }
+            td .numeric {
+                (format!("{:.0}", energy))
+            }
+            td .numeric {
+                (format!("{:.1}", protein))
+            }
+            td .numeric {
+                (format!("{:.1}", fat))
+            }
+            td .numeric {
+                (format!("{:.1}", fat_saturated))
+            }
+            td .numeric {
+                (format!("{:.1}", carbs))
+            }
+            td .numeric {
+                (format!("{:.1}", fibre))
+            }
+            td .numeric {
+                (format!("{:.0}", sodium))
+            }
+            td .center {
+                form method="POST" action=(LogDeleteHandler::url(date, entry.entry_id)) {
+                    input .button type="submit" value="Delete";
                 }
             }
         }
-    };
-
-    let content = html! {
-        .button-bar {
-            a .button href=(LogViewHandler::url(date.prev_day())) {
-                "← Previous"
-            }
-            a .button href=(LogViewHandler::url(Date::today())) {
-                "Today"
-            }
-            a .button href=(LogViewHandler::url(date.next_day())) {
-                "Next →"
-            }
-            .spacer {}
-            a .button href=(LogNewHandler::url(date)) {
-                "Log Food"
-            }
-        }
-        (table_content)
-    };
-
-    let html_page = page(&format!("Log: {formatted_date}"), content);
-    Ok((StatusCode::OK, Html(html_page.into_string())))
+    })
 }
