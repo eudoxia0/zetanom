@@ -24,6 +24,7 @@ use maud::html;
 
 use crate::db::Db;
 use crate::db::Entry;
+use crate::db::FoodEntry;
 use crate::error::Fallible;
 use crate::routes::food_view::FoodViewHandler;
 use crate::routes::log_delete::LogDeleteHandler;
@@ -136,9 +137,9 @@ fn render_log_table(db: &Db, entries: &[Entry], date: Date) -> Fallible<Markup> 
 }
 
 fn render_log_entry_row(db: &Db, entry: &Entry, date: Date) -> Fallible<Markup> {
-    let food = db.get_food(entry.food_id)?;
+    let food: FoodEntry = db.get_food(entry.food_id)?;
 
-    let (unit, multiplier) = if let Some(serving_id) = entry.serving_id {
+    let (unit, multiplier): (String, f64) = if let Some(serving_id) = entry.serving_id {
         // If there's a serving, get its details.
         if let Ok(servings) = db.list_servings(food.food_id) {
             if let Some(serving) = servings.iter().find(|s| s.serving_id == serving_id) {
