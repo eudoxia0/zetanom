@@ -128,18 +128,42 @@ async fn handler(
             table {
                 thead {
                     tr {
-                        th { "Time" }
-                        th { "Food" }
-                        th { "Brand" }
-                        th { "Amount" }
-                        th.numeric { "Energy (kcal)" }
-                        th.numeric { "Protein (g)" }
-                        th.numeric { "Fat (g)" }
-                        th.numeric { "Sat Fat (g)" }
-                        th.numeric { "Carbs (g)" }
-                        th.numeric { "Fiber (g)" }
-                        th.numeric { "Sodium (mg)" }
-                        th { "" }
+                        th {
+                            "Time"
+                        }
+                        th {
+                            "Food"
+                        }
+                        th {
+                            "Brand"
+                        }
+                        th {
+                            "Amount"
+                        }
+                        th .numeric {
+                            "Energy (kcal)"
+                        }
+                        th .numeric {
+                            "Protein (g)"
+                        }
+                        th .numeric {
+                            "Fat (g)"
+                        }
+                        th .numeric {
+                            "Sat Fat (g)"
+                        }
+                        th .numeric {
+                            "Carbs (g)"
+                        }
+                        th .numeric {
+                            "Fiber (g)"
+                        }
+                        th .numeric {
+                            "Sodium (mg)"
+                        }
+                        th {
+                            ""
+                        }
                     }
                 }
                 tbody {
