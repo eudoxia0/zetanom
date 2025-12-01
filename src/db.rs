@@ -354,6 +354,25 @@ impl Db {
         Ok(servings)
     }
 
+    pub fn get_serving_by_id(&self, serving_id: ServingId) -> Fallible<Serving> {
+        let sql = "
+            select
+                serving_name, serving_amount
+            from
+                serving_sizes
+            where
+                serving_id = ?1;
+        ";
+        let serving: Serving = self.conn.query_row(sql, params![serving_id], |row| {
+            Ok(Serving {
+                serving_id,
+                serving_name: row.get(0)?,
+                serving_amount: row.get(1)?,
+            })
+        })?;
+        Ok(serving)
+    }
+
     pub fn create_entry(&self, input: CreateEntryInput) -> Fallible<EntryId> {
         let sql = "
             insert into entries

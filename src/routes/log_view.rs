@@ -138,23 +138,26 @@ fn render_log_table(db: &Db, entries: &[Entry], date: Date) -> Fallible<Markup> 
 
 fn render_log_entry_row(db: &Db, entry: &Entry, date: Date) -> Fallible<Markup> {
     let food: FoodEntry = db.get_food(entry.food_id)?;
-    let (unit, multiplier): (String, f64) = if let Some(serving_id) = entry.serving_id {
-        // If there's a serving, get its details.
-        if let Ok(servings) = db.list_servings(food.food_id) {
-            if let Some(serving) = servings.iter().find(|s| s.serving_id == serving_id) {
-                (serving.serving_name.clone(), serving.serving_amount / 100.0)
-            } else {
-                (food.serving_unit.as_str().to_string(), 0.01)
-            }
-        } else {
-            (food.serving_unit.as_str().to_string(), 0.01)
-        }
+
+    // If there's a custom unit, use that. Otherwise, use the base unit name.
+    let unit_name: String = if let Some(serving_id) = entry.serving_id {
+        let serving = db.get_serving_by_id(serving_id)?;
+        serving.serving_name
     } else {
-        // No serving, use base unit
-        (food.serving_unit.as_str().to_string(), 0.01)
+        food.serving_unit.as_str().to_string()
     };
 
-    let factor = entry.amount * multiplier;
+    // Get the amount of the food in its base unit. If there's a custom unit,
+    // multiply the amount by the unit's definition. Otherwise, use the base
+    // unit amount.
+    let amount_base: f64 = if let Some(serving_id) = entry.serving_id {
+        let serving = db.get_serving_by_id(serving_id)?;
+        entry.amount * serving.serving_amount
+    } else {
+        entry.amount
+    };
+    let factor = amount_base / 100.0;
+
     let energy = food.energy * factor;
     let protein = food.protein * factor;
     let fat = food.fat * factor;
@@ -168,7 +171,7 @@ fn render_log_entry_row(db: &Db, entry: &Entry, date: Date) -> Fallible<Markup> 
         .with_timezone(&Local)
         .format("%H:%M")
         .to_string();
-    let amount_str = format!("{:.1} {}", entry.amount, unit);
+    let amount_str = format!("{:.0} {}", entry.amount, unit_name);
     let energy_str = format!("{:.0}", energy);
     let protein_str = format!("{:.1}", protein);
     let fat_str = format!("{:.1}", fat);
