@@ -125,27 +125,34 @@ async fn get_handler_with_food_id(
         format!("{} — {}", food.name, food.brand)
     };
 
+    let mut options: Vec<(String, String)> =
+        vec![("".to_string(), food.serving_unit.as_str().to_owned())];
+    for serving in &servings {
+        options.push((
+            serving.serving_id.to_string(),
+            format!(
+                "{} ({} {})",
+                serving.serving_name,
+                serving.serving_amount,
+                food.serving_unit.as_str()
+            ),
+        ));
+    }
+
     let form_content = html! {
         form .main-form method="post" action=(LogNewHandler::url_with_food_id(date, food_id)) {
             input type="hidden" name="food_id" value={(food_id.to_string())};
             .form-group {
-                (label_required("amount", "Amount"))
-                (number_input("amount", "amount", "0.1", "e.g., 1.5"))
+                label .label-required for="amount" { "Amount" }
+                input .narrow type="number" id="amount" name="amount" step="0.1" placeholder="e.g., 1.5";
             }
             .form-group {
-                (label_required("serving_id", "Serving Size"))
-                (select("serving_id", "serving_id", {
-                    let mut options = vec![
-                        ("".to_string(), format!("Base serving (100{})", food.serving_unit.as_str()))
-                    ];
-                    for serving in &servings {
-                        options.push((
-                            serving.serving_id.to_string(),
-                            format!("{} ({} {})", serving.serving_name, serving.serving_amount, food.serving_unit.as_str())
-                        ));
+                label .label-required for="serving_id" { "Unit" }
+                select .narrow id="serving_id" name="serving_id" {
+                    @for (value, label) in options {
+                        option value=(value) { (label) }
                     }
-                    options
-                }))
+                }
             }
             .button-bar {
                 input .button type="submit" value="Log Entry";

@@ -232,3 +232,7 @@ input[type="submit"]:hover {
     color: #666;
     width: 35px;
 }
+
+.narrow {
+    width: 200px;
+}
