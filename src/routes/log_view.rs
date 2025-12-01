@@ -163,10 +163,24 @@ fn render_log_entry_row(db: &Db, entry: &Entry, date: Date) -> Fallible<Markup> 
     let fibre = food.fibre * factor;
     let sodium = food.sodium * factor;
 
+    let time_str = entry
+        .created_at
+        .with_timezone(&Local)
+        .format("%H:%M")
+        .to_string();
+    let amount_str = format!("{:.1} {}", entry.amount, unit);
+    let energy_str = format!("{:.0}", energy);
+    let protein_str = format!("{:.1}", protein);
+    let fat_str = format!("{:.1}", fat);
+    let fat_saturated_str = format!("{:.1}", fat_saturated);
+    let carbs_str = format!("{:.1}", carbs);
+    let fibre_str = format!("{:.1}", fibre);
+    let sodium_str = format!("{:.0}", sodium);
+
     Ok(html! {
         tr {
             td .center {
-                (entry.created_at.with_timezone(&Local).format("%H:%M").to_string())
+                (time_str)
             }
             td {
                 a href=(FoodViewHandler::url(food.food_id)) {
@@ -181,28 +195,28 @@ fn render_log_entry_row(db: &Db, entry: &Entry, date: Date) -> Fallible<Markup> 
                 }
             }
             td {
-                (format!("{:.1} {}", entry.amount, unit))
+                (amount_str)
             }
             td .numeric {
-                (format!("{:.0}", energy))
+                (energy_str)
             }
             td .numeric {
-                (format!("{:.1}", protein))
+                (protein_str)
             }
             td .numeric {
-                (format!("{:.1}", fat))
+                (fat_str)
             }
             td .numeric {
-                (format!("{:.1}", fat_saturated))
+                (fat_saturated_str)
             }
             td .numeric {
-                (format!("{:.1}", carbs))
+                (carbs_str)
             }
             td .numeric {
-                (format!("{:.1}", fibre))
+                (fibre_str)
             }
             td .numeric {
-                (format!("{:.0}", sodium))
+                (sodium_str)
             }
             td .center {
                 form method="POST" action=(LogDeleteHandler::url(date, entry.entry_id)) {
