@@ -157,13 +157,13 @@ async fn handler(
                             }
                         }
                         td { (format!("{:.1} {}", entry.amount, unit)) }
-                        td.numeric { (format!("{:.0}", energy)) }
-                        td.numeric { (format!("{:.1}", protein)) }
-                        td.numeric { (format!("{:.1}", fat)) }
-                        td.numeric { (format!("{:.1}", fat_saturated)) }
-                        td.numeric { (format!("{:.1}", carbs)) }
-                        td.numeric { (format!("{:.1}", fibre)) }
-                        td.numeric { (format!("{:.0}", sodium)) }
+                        td .numeric { (format!("{:.0}", energy)) }
+                        td .numeric { (format!("{:.1}", protein)) }
+                        td .numeric { (format!("{:.1}", fat)) }
+                        td .numeric { (format!("{:.1}", fat_saturated)) }
+                        td .numeric { (format!("{:.1}", carbs)) }
+                        td .numeric { (format!("{:.1}", fibre)) }
+                        td .numeric { (format!("{:.0}", sodium)) }
                         td {
                             form method="POST" action=(LogDeleteHandler::url(date, entry.entry_id)) {
                                 input .button type="submit" value="Delete";
