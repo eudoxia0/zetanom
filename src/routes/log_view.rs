@@ -62,57 +62,6 @@ async fn handler(
             }
         }
     } else {
-        let columns = vec![
-            TableColumn {
-                header: "Time".to_string(),
-                numeric: false,
-            },
-            TableColumn {
-                header: "Food".to_string(),
-                numeric: false,
-            },
-            TableColumn {
-                header: "Brand".to_string(),
-                numeric: false,
-            },
-            TableColumn {
-                header: "Amount".to_string(),
-                numeric: false,
-            },
-            TableColumn {
-                header: "Energy (kcal)".to_string(),
-                numeric: true,
-            },
-            TableColumn {
-                header: "Protein (g)".to_string(),
-                numeric: true,
-            },
-            TableColumn {
-                header: "Fat (g)".to_string(),
-                numeric: true,
-            },
-            TableColumn {
-                header: "Sat Fat (g)".to_string(),
-                numeric: true,
-            },
-            TableColumn {
-                header: "Carbs (g)".to_string(),
-                numeric: true,
-            },
-            TableColumn {
-                header: "Fiber (g)".to_string(),
-                numeric: true,
-            },
-            TableColumn {
-                header: "Sodium (mg)".to_string(),
-                numeric: true,
-            },
-            TableColumn {
-                header: "".to_string(),
-                numeric: false,
-            },
-        ];
-
         // Render table rows
         let rows = html! {
             @for entry in &entries {
@@ -179,13 +128,18 @@ async fn handler(
             table {
                 thead {
                     tr {
-                        @for col in columns {
-                            @if col.numeric {
-                                th.numeric { (col.header) }
-                            } @else {
-                                th { (col.header) }
-                            }
-                        }
+                        th { "Time" }
+                        th { "Food" }
+                        th { "Brand" }
+                        th { "Amount" }
+                        th.numeric { "Energy (kcal)" }
+                        th.numeric { "Protein (g)" }
+                        th.numeric { "Fat (g)" }
+                        th.numeric { "Sat Fat (g)" }
+                        th.numeric { "Carbs (g)" }
+                        th.numeric { "Fiber (g)" }
+                        th.numeric { "Sodium (mg)" }
+                        th { "" }
                     }
                 }
                 tbody {
