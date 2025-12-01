@@ -125,8 +125,7 @@ async fn get_handler_with_food_id(
         format!("{} — {}", food.name, food.brand)
     };
 
-    let mut options: Vec<(String, String)> =
-        vec![("".to_string(), food.serving_unit.as_str().to_owned())];
+    let mut options: Vec<(String, String)> = Vec::new();
     for serving in &servings {
         options.push((
             serving.serving_id.to_string(),
@@ -138,6 +137,7 @@ async fn get_handler_with_food_id(
             ),
         ));
     }
+    options.push(("".to_string(), food.serving_unit.as_str().to_owned()));
 
     let form_content = html! {
         form .main-form method="post" action=(LogNewHandler::url_with_food_id(date, food_id)) {
