@@ -138,7 +138,6 @@ fn render_log_table(db: &Db, entries: &[Entry], date: Date) -> Fallible<Markup> 
 
 fn render_log_entry_row(db: &Db, entry: &Entry, date: Date) -> Fallible<Markup> {
     let food: FoodEntry = db.get_food(entry.food_id)?;
-
     let (unit, multiplier): (String, f64) = if let Some(serving_id) = entry.serving_id {
         // If there's a serving, get its details.
         if let Ok(servings) = db.list_servings(food.food_id) {
