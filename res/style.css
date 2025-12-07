@@ -240,3 +240,7 @@ input[type="submit"]:hover {
 .center {
     text-align: center;
 }
+
+.totals {
+    width: auto;
+}

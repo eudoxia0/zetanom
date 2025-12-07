@@ -23,6 +23,7 @@ use rusqlite::params;
 use crate::error::Fallible;
 use crate::types::BasicUnit;
 use crate::types::Date;
+use crate::types::Nutrition;
 
 pub struct Db {
     conn: Connection,
@@ -99,6 +100,21 @@ pub struct FoodEntry {
     pub sodium: Sodium,
 }
 
+impl FoodEntry {
+    pub fn nutrition(&self) -> Nutrition {
+        Nutrition {
+            energy: self.energy,
+            protein: self.protein,
+            fat: self.fat,
+            fat_saturated: self.fat_saturated,
+            carbs: self.carbs,
+            carbs_sugars: self.carbs_sugars,
+            fibre: self.fibre,
+            sodium: self.sodium,
+        }
+    }
+}
+
 /// Data needed to edit an existing food.
 pub struct EditFoodInput {
     pub food_id: FoodId,
@@ -147,6 +163,27 @@ pub struct Entry {
     pub serving_id: Option<ServingId>,
     pub amount: f64,
     pub created_at: DateTime<Utc>,
+}
+
+impl Entry {
+    pub fn nutrition(&self, db: &Db) -> Fallible<Nutrition> {
+        let food: FoodEntry = db.get_food(self.food_id)?;
+
+        // Get the amount of the food in its base unit. If there's a custom unit,
+        // multiply the amount by the unit's definition. Otherwise, use the base
+        // unit amount.
+        let amount_base: f64 = if let Some(serving_id) = self.serving_id {
+            let serving = db.get_serving_by_id(serving_id)?;
+            self.amount * serving.serving_amount
+        } else {
+            self.amount
+        };
+        let factor = amount_base / 100.0;
+
+        let nutrition = food.nutrition();
+        let nutrition = nutrition.scale(factor);
+        Ok(nutrition)
+    }
 }
 
 impl Db {

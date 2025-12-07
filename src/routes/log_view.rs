@@ -30,6 +30,7 @@ use crate::routes::food_view::FoodViewHandler;
 use crate::routes::log_delete::LogDeleteHandler;
 use crate::routes::log_new::LogNewHandler;
 use crate::types::Date;
+use crate::types::Nutrition;
 use crate::ui::*;
 use crate::www::ServerState;
 
@@ -53,6 +54,8 @@ async fn handler(
     let db = state.db.try_lock()?;
     let entries: Vec<Entry> = db.list_entries(date)?;
     let tbl = render_log_table(&db, &entries, date)?;
+    let totals: Nutrition = calculate_totals(&db, &entries)?;
+    let totals: Markup = render_totals(totals);
     let content = html! {
         .button-bar {
             a .button href=(LogViewHandler::url(date.prev_day())) {
@@ -70,6 +73,10 @@ async fn handler(
             }
         }
         (tbl)
+        h2 {
+            "Totals"
+        }
+        (totals)
     };
     let title = format!("Log: {}", date.humanize());
     let html_page = page(&title, content);
@@ -138,7 +145,7 @@ fn render_log_table(db: &Db, entries: &[Entry], date: Date) -> Fallible<Markup> 
 
 fn render_log_entry_row(db: &Db, entry: &Entry, date: Date) -> Fallible<Markup> {
     let food: FoodEntry = db.get_food(entry.food_id)?;
-
+    let nutrition: Nutrition = entry.nutrition(db)?;
     // If there's a custom unit, use that. Otherwise, use the base unit name.
     let unit_name: String = if let Some(serving_id) = entry.serving_id {
         let serving = db.get_serving_by_id(serving_id)?;
@@ -146,39 +153,19 @@ fn render_log_entry_row(db: &Db, entry: &Entry, date: Date) -> Fallible<Markup> 
     } else {
         food.serving_unit.as_str().to_string()
     };
-
-    // Get the amount of the food in its base unit. If there's a custom unit,
-    // multiply the amount by the unit's definition. Otherwise, use the base
-    // unit amount.
-    let amount_base: f64 = if let Some(serving_id) = entry.serving_id {
-        let serving = db.get_serving_by_id(serving_id)?;
-        entry.amount * serving.serving_amount
-    } else {
-        entry.amount
-    };
-    let factor = amount_base / 100.0;
-
-    let energy = food.energy * factor;
-    let protein = food.protein * factor;
-    let fat = food.fat * factor;
-    let fat_saturated = food.fat_saturated * factor;
-    let carbs = food.carbs * factor;
-    let fibre = food.fibre * factor;
-    let sodium = food.sodium * factor;
-
-    let time_str = entry
+    let time_str: String = entry
         .created_at
         .with_timezone(&Local)
         .format("%H:%M")
         .to_string();
     let amount_str = format!("{:.0} {}", entry.amount, unit_name);
-    let energy_str = format!("{:.0}", energy);
-    let protein_str = format!("{:.1}", protein);
-    let fat_str = format!("{:.1}", fat);
-    let fat_saturated_str = format!("{:.1}", fat_saturated);
-    let carbs_str = format!("{:.1}", carbs);
-    let fibre_str = format!("{:.1}", fibre);
-    let sodium_str = format!("{:.0}", sodium);
+    let energy_str = format!("{:.0}", nutrition.energy);
+    let protein_str = format!("{:.1}", nutrition.protein);
+    let fat_str = format!("{:.1}", nutrition.fat);
+    let fat_saturated_str = format!("{:.1}", nutrition.fat_saturated);
+    let carbs_str = format!("{:.1}", nutrition.carbs);
+    let fibre_str = format!("{:.1}", nutrition.fibre);
+    let sodium_str = format!("{:.0}", nutrition.sodium);
 
     Ok(html! {
         tr {
@@ -228,4 +215,107 @@ fn render_log_entry_row(db: &Db, entry: &Entry, date: Date) -> Fallible<Markup> 
             }
         }
     })
+}
+
+fn calculate_totals(db: &Db, entries: &[Entry]) -> Fallible<Nutrition> {
+    let mut n: Nutrition = Nutrition {
+        energy: 0.0,
+        protein: 0.0,
+        fat: 0.0,
+        fat_saturated: 0.0,
+        carbs: 0.0,
+        carbs_sugars: 0.0,
+        fibre: 0.0,
+        sodium: 0.0,
+    };
+    for entry in entries {
+        let en: Nutrition = entry.nutrition(db)?;
+        n = n + en;
+    }
+    Ok(n)
+}
+
+fn humanize_float(f: f64) -> String {
+    format!("{:.1}", f)
+}
+
+fn render_totals(t: Nutrition) -> Markup {
+    let Nutrition {
+        energy,
+        protein,
+        fat,
+        fat_saturated,
+        carbs,
+        carbs_sugars,
+        fibre,
+        sodium,
+    } = t;
+    html! {
+        table .totals {
+            tr {
+                th {
+                    "Energy"
+                }
+                td {
+                    (humanize_float(energy))
+                }
+            }
+            tr {
+                th {
+                    "Protein"
+                }
+                td {
+                    (humanize_float(protein))
+                }
+            }
+            tr {
+                th {
+                    "Fat"
+                }
+                td {
+                    (humanize_float(fat))
+                }
+            }
+            tr {
+                th {
+                    "Fat — Saturated"
+                }
+                td {
+                    (humanize_float(fat_saturated))
+                }
+            }
+            tr {
+                th {
+                    "Carbs"
+                }
+                td {
+                    (humanize_float(carbs))
+                }
+            }
+            tr {
+                th {
+                    "Carbs — Sugars"
+                }
+                td {
+                    (humanize_float(carbs_sugars))
+                }
+            }
+            tr {
+                th {
+                    "Fibre"
+                }
+                td {
+                    (humanize_float(fibre))
+                }
+            }
+            tr {
+                th {
+                    "Sodium"
+                }
+                td {
+                    (humanize_float(sodium))
+                }
+            }
+        }
+    }
 }

@@ -14,6 +14,8 @@
 
 mod basic_unit;
 mod date;
+mod nutrition;
 
 pub use basic_unit::*;
 pub use date::*;
+pub use nutrition::*;
