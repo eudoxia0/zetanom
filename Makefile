@@ -7,6 +7,11 @@ $(BIN): $(SRC)
 	cargo build --release
 	cp target/release/$(BIN) $(BIN)
 
+install: $(BIN)
+	systemctl --user stop $(BIN)
+	cp $(BIN) ~/.eudoxia.d/bin/$(BIN)
+	systemctl --user start $(BIN)
+
 watch:
 	cargo watch -x "run -- serve"
 
